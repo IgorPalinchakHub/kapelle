@@ -13,7 +13,6 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 6. Skips are explicit and confirmed.
 7. No git operations are performed by the harness.
 8. Project-specific behavior belongs in native project capabilities, not in core stages.
-9. Distribution packs are install-time bundles only. Their manifests are never read at runtime.
 
 ## Handoff
 

@@ -8,7 +8,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 errors: list[str] = []
 checks = 0
-RESOURCE_NAME = re.compile(r'^[A-Za-z0-9][A-Za-z0-9._-]*$')
 
 def check(ok: bool, msg: str):
     global checks
@@ -45,7 +44,7 @@ if marketplace:
         check(entries[0].get('name') == 'kapelle', 'marketplace plugin name must be kapelle')
         check(entries[0].get('source') == './', 'marketplace plugin source must be ./')
 
-for rel in ['README.md', 'CLAUDE.md', 'config/kapelle.config.schema.json', 'config/pack.manifest.schema.json', 'dispatcher/task-context.schema.json', 'scripts/install_project_pack.py']:
+for rel in ['README.md', 'CLAUDE.md', 'config/kapelle.config.schema.json', 'dispatcher/task-context.schema.json']:
     check((ROOT / rel).exists(), f"missing {rel}")
 
 skills = sorted((ROOT / 'skills').glob('*/SKILL.md'))
@@ -67,25 +66,6 @@ for skill in skills:
             a = raw.strip()
             if a:
                 check(a in agent_names, f'{skill}: unknown agent {a}')
-
-for pack in sorted((ROOT / 'packs').glob('*/pack.manifest.json')):
-    data = load_json(str(pack.relative_to(ROOT)))
-    if not data:
-        continue
-    for key in ['id', 'version']:
-        check(key in data, f'{pack}: missing {key}')
-    check(not (set(data) - {'id', 'version', 'description'}), f'{pack}: runtime metadata is forbidden')
-    check(bool(RESOURCE_NAME.fullmatch(data.get('id', ''))), f'{pack}: invalid id')
-    check(bool(re.match(r'^\d+\.\d+\.\d+$', data.get('version', ''))), f'{pack}: invalid version')
-    pack_skills = sorted((pack.parent / 'skills').glob('*.md'))
-    check(bool(pack_skills), f'{pack}: no installable skills')
-    for source_template in pack_skills:
-        skill_name = source_template.stem
-        source_text = source_template.read_text()
-        check(source_text.startswith('---'), f'{source_template}: missing native skill frontmatter')
-        check(f'name: {skill_name}' in source_text, f'{source_template}: native skill name mismatch')
-    for agent in sorted((pack.parent / 'agents').glob('*.md')):
-        check(agent.read_text().startswith('---'), f'{agent}: missing native agent frontmatter')
 
 for rel in ['config/kapelle.config.schema.json', 'dispatcher/task-context.schema.json']:
     data = load_json(rel)
@@ -114,4 +94,4 @@ if errors:
     for e in errors:
         print(f'- {e}')
     sys.exit(1)
-print(f'PASSED: {checks} checks; {len(skills)} skills; {len(agent_names)} agents; {len(list((ROOT/"packs").glob("*/pack.manifest.json")))} packs')
+print(f'PASSED: {checks} checks; {len(skills)} skills; {len(agent_names)} agents')

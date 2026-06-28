@@ -1,7 +1,7 @@
 # Config loader
 
 The loader reads the optional `.claude/kapelle.config.json` and provides SDLC artifact and module context.
-It does not register packs, skills, agents, gates, rules, or knowledge providers.
+It does not register skills, agents, gates, rules, or knowledge providers.
 
 ## `load()` → ResolvedConfig
 

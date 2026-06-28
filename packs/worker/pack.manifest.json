@@ -1,5 +1,0 @@
-{
-  "id": "worker-eventdriven",
-  "version": "0.2.0",
-  "description": "Install-time reference bundle of native worker skills, agents, and optional project rules."
-}

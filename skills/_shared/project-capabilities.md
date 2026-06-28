@@ -13,4 +13,4 @@ Kapelle provides task intent, acceptance criteria, artifact paths, and repositor
 selects applicable project capabilities semantically from their native descriptions. Kapelle does not
 maintain `label → skill`, `surface → pack`, or `skill → agent` mappings.
 
-A distribution pack may install native resources, but its manifest is not read at runtime.
+Project-specific capabilities live in the project itself or in separate reusable plugins.

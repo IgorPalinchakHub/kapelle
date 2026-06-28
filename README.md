@@ -115,23 +115,3 @@ a CLI adapter, MCP, an API, or another plugin. Kapelle consumes only:
 
 A provider coupled to a particular CLI or rule repository belongs in the project or in a separate reusable
 provider plugin, not in Kapelle core.
-
-## Distribution packs
-
-`packs/backend` and `packs/worker` are install-time example bundles. A pack manifest contains only bundle
-identity and version. The installer discovers its `skills/`, `agents/`, and optional `rules/` files and
-installs them into standard `.claude` locations.
-
-```bash
-python3 scripts/install_project_pack.py \
-  --pack backend \
-  --project /path/to/project \
-  --dry-run
-
-python3 scripts/install_project_pack.py \
-  --pack backend \
-  --project /path/to/project
-```
-
-The manifest is not copied to the target project and is never read at runtime. Identical files are skipped;
-conflicts require an explicit `--force`.
