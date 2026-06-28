@@ -35,6 +35,16 @@ for rel in ['.claude-plugin/plugin.json', '.codex-plugin/plugin.json']:
         check(bool(re.match(r'^\d+\.\d+\.\d+$', data.get('version', ''))), f"{rel}: version must be semver")
         check(bool(data.get('description')), f"{rel}: missing description")
 
+marketplace = load_json('.claude-plugin/marketplace.json')
+if marketplace:
+    check(marketplace.get('name') == 'kapelle-marketplace', 'marketplace name must be kapelle-marketplace')
+    check(bool(marketplace.get('description')), 'marketplace description missing')
+    entries = marketplace.get('plugins', [])
+    check(len(entries) == 1, 'marketplace must contain exactly one plugin')
+    if entries:
+        check(entries[0].get('name') == 'kapelle', 'marketplace plugin name must be kapelle')
+        check(entries[0].get('source') == './', 'marketplace plugin source must be ./')
+
 for rel in ['README.md', 'CLAUDE.md', 'config/kapelle.config.schema.json', 'config/pack.manifest.schema.json', 'dispatcher/task-context.schema.json', 'scripts/install_project_pack.py']:
     check((ROOT / rel).exists(), f"missing {rel}")
 

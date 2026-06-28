@@ -1,0 +1,14 @@
+{
+  "name": "kapelle-marketplace",
+  "owner": {
+    "name": "Ihor Pal"
+  },
+  "description": "Personal marketplace for the Kapelle SDLC plugin.",
+  "plugins": [
+    {
+      "name": "kapelle",
+      "source": "./",
+      "description": "Provider-neutral spec-driven SDLC harness with native project capability discovery."
+    }
+  ]
+}
