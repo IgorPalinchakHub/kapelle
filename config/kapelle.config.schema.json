@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/kapelle.config.schema.json",
+  "title": "Kapelle application config (.claude/kapelle.config.json)",
+  "description": "Minimal SDLC configuration. Project capabilities and knowledge providers are discovered natively by Claude Code and are not registered here.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["application"],
+  "properties": {
+    "//": { "type": "string" },
+    "application": { "type": "string", "minLength": 1 },
+    "artifact_root": {
+      "type": "string",
+      "minLength": 1,
+      "default": "docs/features",
+      "description": "Project-relative root for durable feature artifacts."
+    },
+    "modules": {
+      "type": "array",
+      "description": "Optional module boundaries used only as task context, never for capability routing.",
+      "items": { "$ref": "#/$defs/module" }
+    },
+    "guidance_evidence": {
+      "type": "string",
+      "enum": ["required", "optional", "disabled"],
+      "default": "optional",
+      "description": "Whether implementation tasks must report project-guidance evidence. Kapelle does not prescribe how guidance is obtained."
+    }
+  },
+  "$defs": {
+    "module": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "path"],
+      "properties": {
+        "//": { "type": "string" },
+        "id": { "type": "string", "minLength": 1 },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Path prefix used to provide module context."
+        }
+      }
+    }
+  }
+}

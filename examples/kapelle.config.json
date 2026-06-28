@@ -1,0 +1,11 @@
+{
+  "application": "example-app",
+  "artifact_root": "docs/features",
+  "guidance_evidence": "optional",
+  "modules": [
+    {
+      "id": "root",
+      "path": "."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/pack.manifest.schema.json",
+  "title": "Kapelle distribution-pack manifest",
+  "description": "Install-time metadata for a bundle of native Claude Code project resources. The installer discovers skills/, agents/, and rules/ from the bundle. Kapelle never reads this manifest at runtime.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "version"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "description": {
+      "type": "string"
+    }
+  }
+}

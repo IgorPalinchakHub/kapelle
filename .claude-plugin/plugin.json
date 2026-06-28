@@ -1,0 +1,10 @@
+{
+  "name": "kapelle",
+  "version": "0.4.0",
+  "description": "Provider-neutral spec-driven SDLC harness with native project capability discovery.",
+  "author": {
+    "name": "Ihor Pal"
+  },
+  "license": "MIT",
+  "keywords": ["sdlc", "spec-driven-development", "architecture-governance", "claude-code", "agentic-development"]
+}
