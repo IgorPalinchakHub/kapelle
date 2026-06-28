@@ -44,7 +44,15 @@ if marketplace:
         check(entries[0].get('name') == 'kapelle', 'marketplace plugin name must be kapelle')
         check(entries[0].get('source') == './', 'marketplace plugin source must be ./')
 
-for rel in ['README.md', 'CLAUDE.md', 'config/kapelle.config.schema.json', 'dispatcher/task-context.schema.json']:
+for rel in [
+    'README.md',
+    'CLAUDE.md',
+    'config/kapelle.config.schema.json',
+    'dispatcher/task-context.schema.json',
+    'dispatcher/execution-contract.md',
+    'dispatcher/execution-verdict.schema.json',
+    'references/agent-orchestration.md',
+]:
     check((ROOT / rel).exists(), f"missing {rel}")
 
 skills = sorted((ROOT / 'skills').glob('*/SKILL.md'))
@@ -56,22 +64,46 @@ for skill in skills:
     check(f'name: {name}' in txt, f'{skill}: frontmatter name mismatch')
     check('description:' in txt, f'{skill}: missing description')
     check('stage-handoff block' in txt or name in {'tasks', 'implement', 'contracts'}, f'{skill}: missing handoff wording')
+    check(not re.search(r'^agents:', txt, re.M), f'{skill}: unsupported agents frontmatter')
 
 agent_names = {p.stem for p in (ROOT / 'agents').glob('*.md')}
-for skill in skills:
-    txt = skill.read_text()
-    m = re.search(r'^agents:\s*\[(.*?)\]', txt, re.M)
-    if m:
-        for raw in m.group(1).split(','):
-            a = raw.strip()
-            if a:
-                check(a in agent_names, f'{skill}: unknown agent {a}')
+orchestration_text = '\n'.join(
+    path.read_text()
+    for path in [
+        ROOT / 'references/agent-orchestration.md',
+        ROOT / 'dispatcher/execution-contract.md',
+    ]
+)
+for agent in sorted(agent_names):
+    check(f'`{agent}`' in orchestration_text or f'kapelle:{agent}' in orchestration_text,
+          f'agent {agent}: missing orchestration contract')
 
-for rel in ['config/kapelle.config.schema.json', 'dispatcher/task-context.schema.json']:
+for rel in [
+    'config/kapelle.config.schema.json',
+    'dispatcher/task-context.schema.json',
+    'dispatcher/execution-verdict.schema.json',
+]:
     data = load_json(rel)
     if data:
         text = json.dumps(data)
         check('"spec"' not in text, f'{rel}: stale phase spec present')
+
+config = load_json('config/kapelle.config.schema.json')
+if config:
+    implementation = config.get('properties', {}).get('implementation', {})
+    mode = implementation.get('properties', {}).get('mode', {})
+    check(mode.get('enum') == ['sequential', 'agent-team'],
+          'config: implementation.mode must support sequential and agent-team only')
+
+implementation_skill = (ROOT / 'skills/implement/SKILL.md').read_text()
+for required in [
+    'kapelle:test-author',
+    'kapelle:implementer',
+    'kapelle:reviewer',
+    'explicit user approval',
+    'unofficial `Workflow`',
+]:
+    check(required in implementation_skill, f'implement: missing orchestration guard {required!r}')
 
 for forbidden in [
     'rule_query',

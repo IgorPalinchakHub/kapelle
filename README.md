@@ -14,6 +14,9 @@ Kapelle owns:
 - lifecycle stages and artifact gates;
 - durable state under `docs/features/<slug>/`;
 - task dependency ordering;
+- explicit generic subagent orchestration;
+- sequential test-first implementation and structured role verdicts;
+- optional, guarded Agent Team execution;
 - native project-capability delegation;
 - provider-neutral guidance and validation evidence;
 - review, handoff, and audit discipline.
@@ -25,6 +28,7 @@ Kapelle does not own:
 - rule storage or retrieval;
 - query generation;
 - CLI, MCP, API, or knowledge-provider selection;
+- unofficial workflow runtimes;
 - git operations.
 
 ## Runtime model
@@ -42,7 +46,10 @@ Project skill / agent
 Any project or user guidance provider (optional)
                 |
                 v
-Implementation + project validation + provider-neutral evidence
+Kapelle test-author -> implementer -> reviewer
+                |
+                v
+Project validation + provider-neutral evidence
 ```
 
 Project capabilities use standard Claude Code locations:
@@ -55,6 +62,22 @@ Project capabilities use standard Claude Code locations:
 
 Claude Code selects them from their native descriptions. Kapelle has no `label â†’ skill`,
 `surface â†’ pack`, or `skill â†’ agent` routing table.
+
+Kapelle's bundled agents are generic SDLC execution roles. Skills dispatch them explicitly using
+plugin-namespaced agent types such as `kapelle:reviewer`; an `agents:` frontmatter list is not used.
+
+## Implementation modes
+
+`implement` always executes this per-task lifecycle:
+
+```text
+SELECT-CAPABILITY -> GUIDANCE -> RED -> GREEN -> REFACTOR -> VERIFY -> GATE
+```
+
+Sequential execution is the default. Agent Teams are opt-in and are used only when Claude Code
+supports them, the user approves team creation, and at least two dependency-ready tasks declare
+non-overlapping `files_hint`. Unknown or overlapping ownership remains sequential. Kapelle does not
+create worktrees or use an unofficial `Workflow` tool.
 
 ## Commands
 
@@ -82,6 +105,10 @@ Claude Code selects them from their native descriptions. Kapelle has no `label â
   "application": "my-app",
   "artifact_root": "docs/features",
   "guidance_evidence": "optional",
+  "implementation": {
+    "mode": "sequential",
+    "max_parallel_agents": 3
+  },
   "modules": [
     {
       "id": "root",
@@ -92,6 +119,8 @@ Claude Code selects them from their native descriptions. Kapelle has no `label â
 ```
 
 `guidance_evidence` controls only whether evidence is required. It never chooses or configures a provider.
+Set `implementation.mode` to `agent-team` to request team execution; runtime checks and explicit
+approval still apply.
 
 ## Guidance providers
 

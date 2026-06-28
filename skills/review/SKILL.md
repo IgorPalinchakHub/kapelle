@@ -2,7 +2,6 @@
 name: review
 model: opus
 effort: high
-agents: [reviewer]
 description: >
   Run clean-context review against spec, architecture, contracts, tests, and available project guidance. Invoke as /kapelle:review <slug> for feature-scoped work.
 ---
@@ -15,17 +14,19 @@ Run clean-context review against spec, architecture, contracts, tests, and avail
 
 - `<slug>` for feature-scoped work.
 - Reads: `implemented diff + feature artifacts`.
-- Shared contract: [`../_shared/stage-contract.md`](../_shared/stage-contract.md).
+- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
-2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../_shared/project-capabilities.md`](../_shared/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../_shared/guidance.md`](../_shared/guidance.md).
-6. Write outputs: `_review/review-<date>.md`.
-7. Emit the stage-handoff block per [`../_shared/handoff.md`](../_shared/handoff.md).
+2. Collect feature artifacts, changed-file evidence supplied by the host, implementation audit
+   records, and applicable project guidance.
+3. Dispatch `kapelle:reviewer` in fresh read-only context.
+4. Require a structured `PASS`, `CHANGES_REQUESTED`, or `BLOCKED` verdict matching
+   `dispatcher/execution-verdict.schema.json`.
+5. Write outputs: `_review/review-<date>.md`.
+6. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

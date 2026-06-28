@@ -2,7 +2,6 @@
 name: classify-size
 model: haiku
 effort: low
-agents: []
 description: >
   Classify feature size and write `.size`. Invoke as /kapelle:classify-size <slug> for feature-scoped work.
 ---
@@ -15,17 +14,17 @@ Classify feature size and write `.size`.
 
 - `<slug>` for feature-scoped work.
 - Reads: `feature idea/spec`.
-- Shared contract: [`../_shared/stage-contract.md`](../_shared/stage-contract.md).
+- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
 3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../_shared/project-capabilities.md`](../_shared/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../_shared/guidance.md`](../_shared/guidance.md).
+4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
+5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
 6. Write outputs: `.size`.
-7. Emit the stage-handoff block per [`../_shared/handoff.md`](../_shared/handoff.md).
+7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

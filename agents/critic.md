@@ -18,8 +18,9 @@ Clean-context critique of specs/designs for contradictions, weak AC, and missing
 ## Protocol
 
 1. Read referenced files directly.
-2. Perform only the declared role.
-3. Return typed output or an explicit `NO_*` sentinel.
+2. Check upstream-to-current traceability, internal contradictions, missing decisions, and
+   unverifiable acceptance criteria.
+3. Return `FINDINGS` or `NO_FINDINGS`, with severity and cited paths.
 4. Do not expose search/work chatter to the parent context.
 
 ## Output

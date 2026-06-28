@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.5.0",
-  "description": "Provider-neutral spec-driven SDLC harness with native project capability discovery.",
+  "version": "0.6.0",
+  "description": "Provider-neutral spec-driven SDLC harness with explicit subagent orchestration and native project capability discovery.",
   "author": {
     "name": "Ihor Pal"
   },

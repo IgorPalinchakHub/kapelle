@@ -2,7 +2,6 @@
 name: fix
 model: opus
 effort: high
-agents: [explorer]
 description: >
   Investigate a bug or review finding and route a minimal fix through tests. Invoke as /kapelle:fix <slug> for feature-scoped work.
 ---
@@ -15,17 +14,21 @@ Investigate a bug or review finding and route a minimal fix through tests.
 
 - `<slug>` for feature-scoped work.
 - Reads: `bug report or review finding`.
-- Shared contract: [`../_shared/stage-contract.md`](../_shared/stage-contract.md).
+- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
-2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../_shared/project-capabilities.md`](../_shared/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../_shared/guidance.md`](../_shared/guidance.md).
-6. Write outputs: `_fixes/*.md + code/tests`.
-7. Emit the stage-handoff block per [`../_shared/handoff.md`](../_shared/handoff.md).
+2. Dispatch `kapelle:explorer` to trace the symptom, affected acceptance criteria, and closest
+   working precedent.
+3. Reproduce the defect before changing production code.
+4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
+5. Request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
+6. Execute the same RED → GREEN → REFACTOR → VERIFY → GATE lifecycle as
+   [`../../dispatcher/execution-contract.md`](../../dispatcher/execution-contract.md).
+7. Write outputs: `_fixes/*.md + code/tests`.
+8. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

@@ -1,9 +1,23 @@
 {
   "name": "kapelle",
-  "version": "0.5.0",
-  "description": "Provider-neutral spec-driven SDLC harness with native project capability discovery.",
+  "version": "0.6.0",
+  "description": "Provider-neutral spec-driven SDLC harness with explicit subagent orchestration and native project capability discovery.",
   "author": {
     "name": "Ihor Pal"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kapelle",
+    "shortDescription": "Provider-neutral spec-driven SDLC",
+    "longDescription": "A gated SDLC harness with durable feature artifacts, explicit generic agent roles, and native project capability discovery.",
+    "developerName": "Ihor Pal",
+    "category": "Developer Tools",
+    "capabilities": ["Interactive", "Write"],
+    "defaultPrompt": [
+      "Survey this repository with Kapelle.",
+      "Specify and design a feature with Kapelle.",
+      "Implement a feature from its Kapelle tasks."
+    ]
+  }
 }

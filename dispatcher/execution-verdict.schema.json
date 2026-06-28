@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/execution-verdict.schema.json",
+  "title": "Kapelle task execution verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "role", "status", "summary", "evidence"],
+  "properties": {
+    "task_id": { "type": "string", "minLength": 1 },
+    "role": {
+      "type": "string",
+      "enum": ["test-author", "implementer", "reviewer", "validator"]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "GOOD_RED",
+        "BAD_RED",
+        "FALSE_PASS",
+        "NON_RED",
+        "PASS",
+        "CHANGES_REQUESTED",
+        "BLOCKED"
+      ]
+    },
+    "summary": { "type": "string", "minLength": 1 },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "changed_files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    }
+  }
+}

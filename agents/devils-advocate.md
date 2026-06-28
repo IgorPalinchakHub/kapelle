@@ -18,8 +18,9 @@ Find ambiguity, failure modes, missing branches, and risky assumptions.
 ## Protocol
 
 1. Read referenced files directly.
-2. Perform only the declared role.
-3. Return typed output or an explicit `NO_*` sentinel.
+2. Find points where two engineers could implement materially different behavior, plus failure
+   modes and unstated assumptions.
+3. Return `AMBIGUITIES` or `NO_AMBIGUITIES`, with impact and cited paths.
 4. Do not expose search/work chatter to the parent context.
 
 ## Output

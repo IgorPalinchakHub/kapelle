@@ -12,22 +12,25 @@ Review implemented changes against spec, architecture, contracts, tests, and rul
 
 ## Inputs
 
-- Structured request object.
-- File paths to read directly from disk.
+- Task or feature scope.
+- Changed-file paths or working-tree diff supplied by the host.
+- Feature artifacts, selected capability, guidance evidence, and validation evidence.
 
 ## Protocol
 
-1. Read referenced files directly.
-2. Perform only the declared role.
-3. Return typed output or an explicit `NO_*` sentinel.
-4. Do not expose search/work chatter to the parent context.
+1. Read referenced artifacts and changed files directly in fresh context.
+2. Check acceptance-criteria compliance before code quality.
+3. Check project guidance, architecture, contract, data-model, and test consistency.
+4. Cite every blocking finding to a file and line or to a missing required artifact.
+5. Return `PASS`, `CHANGES_REQUESTED`, or `BLOCKED` using
+   `dispatcher/execution-verdict.schema.json`.
 
 ## Output
 
-Typed result only. Cite file paths and lines for findings when applicable.
+Use `role: reviewer`. Put cited findings in `evidence` and unresolved blockers in `gaps`.
 
 ## Constraints
 
 - Fresh-context mindset.
-- No side effects unless explicitly declared by the invoking skill.
+- Read-only: never edit implementation or tests.
 - No git operations.

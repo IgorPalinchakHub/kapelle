@@ -2,6 +2,10 @@
   "application": "example-app",
   "artifact_root": "docs/features",
   "guidance_evidence": "optional",
+  "implementation": {
+    "mode": "sequential",
+    "max_parallel_agents": 3
+  },
   "modules": [
     {
       "id": "root",

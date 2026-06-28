@@ -2,7 +2,6 @@
 name: tasks
 model: inherit
 effort: medium
-agents: []
 description: >
   Break a feature into atomic, dependency-ordered implementation tasks with descriptive context. Invoke as /kapelle:tasks <slug>.
 ---

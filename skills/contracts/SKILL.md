@@ -2,7 +2,6 @@
 name: contracts
 model: inherit
 effort: medium
-agents: []
 description: >
   Generate interface contracts through native project capabilities. Invoke as /kapelle:contracts <slug>.
 ---

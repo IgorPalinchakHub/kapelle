@@ -2,7 +2,6 @@
 name: clarify
 model: opus
 effort: high
-agents: [devils-advocate]
 description: >
   Tighten `spec.md` by finding ambiguities, gaps, and unresolved decisions. Invoke as /kapelle:clarify <slug> for feature-scoped work.
 ---
@@ -15,17 +14,19 @@ Tighten `spec.md` by finding ambiguities, gaps, and unresolved decisions.
 
 - `<slug>` for feature-scoped work.
 - Reads: `docs/features/<slug>/spec.md`.
-- Shared contract: [`../_shared/stage-contract.md`](../_shared/stage-contract.md).
+- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../_shared/project-capabilities.md`](../_shared/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../_shared/guidance.md`](../_shared/guidance.md).
+3. Run an inline ambiguity sweep over vague terms, missing actors, unmeasured NFRs, conflicting
+   requirements, and underspecified acceptance criteria.
+4. Dispatch `kapelle:devils-advocate` in fresh context with only the slug and artifact paths.
+5. Merge and deduplicate findings. Resolve each in the spec or defer it with owner and reason.
 6. Write outputs: `updated spec.md`.
-7. Emit the stage-handoff block per [`../_shared/handoff.md`](../_shared/handoff.md).
+7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

@@ -2,7 +2,6 @@
 name: specify
 model: opus
 effort: high
-agents: [critic, devils-advocate]
 description: >
   Turn a raw feature idea into `spec.md` with acceptance criteria. Invoke as /kapelle:specify <slug> for feature-scoped work.
 ---
@@ -15,17 +14,22 @@ Turn a raw feature idea into `spec.md` with acceptance criteria.
 
 - `<slug>` for feature-scoped work.
 - Reads: `idea + optional architecture-map.md`.
-- Shared contract: [`../_shared/stage-contract.md`](../_shared/stage-contract.md).
+- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../_shared/project-capabilities.md`](../_shared/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../_shared/guidance.md`](../_shared/guidance.md).
-6. Write outputs: `docs/features/<slug>/spec.md and .size`.
-7. Emit the stage-handoff block per [`../_shared/handoff.md`](../_shared/handoff.md).
+3. Draft goals, non-goals, actors, user stories, measurable acceptance criteria, NFRs, and open
+   questions without introducing implementation routing.
+4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
+5. Dispatch `kapelle:devils-advocate` to find failure modes and ambiguous behavioral branches.
+6. Resolve or explicitly defer every blocking finding.
+7. Dispatch `kapelle:critic` against the final draft and architecture map; close contradictions and
+   unverifiable acceptance criteria.
+8. Write outputs: `docs/features/<slug>/spec.md and .size`.
+9. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

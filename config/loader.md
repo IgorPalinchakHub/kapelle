@@ -6,9 +6,11 @@ It does not register skills, agents, gates, rules, or knowledge providers.
 ## `load()` → ResolvedConfig
 
 1. If the config does not exist, use:
-   `{ "application": "<repository-name>", "artifact_root": "docs/features", "modules": [] }`.
+   `{ "application": "<repository-name>", "artifact_root": "docs/features", "modules": [],
+   "implementation": { "mode": "sequential", "max_parallel_agents": 3 } }`.
 2. Validate a present config against `kapelle.config.schema.json`.
-3. Resolve the artifact root and optional module path prefixes.
+3. Apply defaults for omitted implementation settings.
+4. Resolve the artifact root and optional module path prefixes.
 
 ## `resolveModuleHint(path)` → module | null
 
@@ -21,4 +23,5 @@ skill, agent, provider, or gate.
 - Invalid explicit config fails loudly.
 - Native Claude Code discovery owns project capabilities.
 - Project instructions own development conventions and knowledge-provider selection.
+- Agent-team mode never bypasses runtime availability, explicit approval, or file-overlap guards.
 - Kapelle core does not know where rules live or how they are retrieved.

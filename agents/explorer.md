@@ -18,8 +18,8 @@ Map repository structure, conventions, and candidate files without writing code.
 ## Protocol
 
 1. Read referenced files directly.
-2. Perform only the declared role.
-3. Return typed output or an explicit `NO_*` sentinel.
+2. Map only the requested scope and identify representative project precedents.
+3. Return `MAP_READY` or `NO_PRECEDENT`, with cited paths and lines.
 4. Do not expose search/work chatter to the parent context.
 
 ## Output

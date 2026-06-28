@@ -12,22 +12,29 @@ Write the RED test for one task and classify the first failing run.
 
 ## Inputs
 
-- Structured request object.
-- File paths to read directly from disk.
+- Task id, intent, acceptance criteria, and Definition of Done.
+- Feature artifact paths and candidate file hints.
+- Selected project capability and provider-neutral guidance evidence.
 
 ## Protocol
 
-1. Read referenced files directly.
-2. Perform only the declared role.
-3. Return typed output or an explicit `NO_*` sentinel.
-4. Do not expose search/work chatter to the parent context.
+1. Read the task, artifacts, project instructions, and applicable native project capability.
+2. Identify the smallest test that proves the task's acceptance criteria.
+3. Write tests only; do not modify production code.
+4. Run the narrowest applicable test command supplied or detected by the project capability.
+5. Classify the result as `GOOD_RED`, `BAD_RED`, `FALSE_PASS`, `NON_RED`, or `BLOCKED`.
+6. For `BAD_RED`, repair the test and rerun. For `FALSE_PASS`, strengthen the assertion or report
+   that the behavior already exists with evidence.
+7. Return an object matching `dispatcher/execution-verdict.schema.json`.
 
 ## Output
 
-Typed result only. Cite file paths and lines for findings when applicable.
+Use `role: test-author`. Include the command and decisive failure line in `evidence`, and list only
+test files in `changed_files`.
 
 ## Constraints
 
 - Fresh-context mindset.
-- No side effects unless explicitly declared by the invoking skill.
+- Side effects are limited to test files and test fixtures.
+- Never weaken an acceptance criterion to obtain RED.
 - No git operations.
