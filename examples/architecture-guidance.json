@@ -1,0 +1,22 @@
+{
+  "status": "ARCHITECTURE_GUIDANCE_READY",
+  "capability": {
+    "name": "architecture-rules",
+    "kind": "project-subagent"
+  },
+  "scope": {
+    "aspects": ["backend", "frontend"],
+    "modules": ["api", "web"],
+    "entrypoints": ["http", "browser"],
+    "paths": ["src/api", "src/web"]
+  },
+  "rules": [
+    {
+      "title": "Consumer contract boundary",
+      "summary": "Frontend code consumes the public API contract and does not import backend internals.",
+      "source": "project-defined architecture source"
+    }
+  ],
+  "sources": ["project-defined architecture source"],
+  "gaps": []
+}

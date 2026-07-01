@@ -8,7 +8,7 @@
     {
       "name": "kapelle",
       "source": "./",
-      "description": "Provider-neutral spec-driven SDLC harness with explicit subagent orchestration and native project capability discovery."
+      "description": "Provider-neutral spec-driven SDLC harness with immutable change revisions, artifact invalidation, reconciliation, and plan-first adaptive implementation."
     }
   ]
 }

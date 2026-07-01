@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.6.0",
-  "description": "Provider-neutral spec-driven SDLC harness with explicit subagent orchestration and native project capability discovery.",
+  "version": "0.9.0+codex.20260629131951",
+  "description": "Provider-neutral spec-driven SDLC harness with immutable change revisions, artifact invalidation, reconciliation, and plan-first adaptive implementation.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -10,14 +10,17 @@
   "interface": {
     "displayName": "Kapelle",
     "shortDescription": "Provider-neutral spec-driven SDLC",
-    "longDescription": "A gated SDLC harness with durable feature artifacts, explicit generic agent roles, and native project capability discovery.",
+    "longDescription": "A gated SDLC harness with immutable requirement and architecture revisions, artifact fingerprints, task reconciliation, resumable changes, and adaptive implementation.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
-    "capabilities": ["Interactive", "Write"],
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
     "defaultPrompt": [
       "Survey this repository with Kapelle.",
-      "Specify and design a feature with Kapelle.",
-      "Implement a feature from its Kapelle tasks."
+      "Change an existing feature safely with Kapelle.",
+      "Resume a reconciled Kapelle change."
     ]
   }
 }

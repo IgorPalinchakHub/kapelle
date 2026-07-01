@@ -17,18 +17,21 @@ This contract is the shared backbone all stages in `kapelle/stages/` follow; a c
 2. **Absent → REFUSE (AC-07).** Do not run. Emit a refusal that **names the prior stage to run first**:
    `Status: REFUSED-missing-input` · `missing: <path>` · `run-first: <prior_stage>`. Write nothing.
 3. **Present → RESUME (AC-08).** Read the inputs **from disk** and proceed. Do **not** re-run any earlier
-   stage — a `/clear`-ed context resumes purely from on-disk state. Resume is **presence-check only** in
-   v1; freshness vs. a hand-edited file is out of scope (spec §8).
+   stage — a `/clear`-ed context resumes purely from on-disk state. Normal feature work uses a
+   presence check. Approved existing-feature changes additionally use revision fingerprints from
+   `references/change-lifecycle.md`; no stage invents another stale heuristic.
 4. Run the stage body; write `produces` to disk.
 
 ## Invariants
 
 - **Artifact-is-state.** A stage's only durable state is the files it writes; nothing lives in conversation.
+- **One logical artifact, one physical path.** Stage state is never hidden in another stage's file.
 - **Writing/overwriting the stage's OWN artifacts is NOT an irreversible action** (ADR-0007) — it needs no
   developer hand-off. (Any *other* irreversible action is governed by the no-git guard — see
   [`./_irreversible-guard.md`](./_irreversible-guard.md), T14.)
 - **One-way control.** A stage calls skills / subagents / tools; a skill never calls back up into a stage.
-- **Confirmed-skips-never-silent.** A refusal is always reported with the named prior stage, never a silent no-op.
+- **Confirmed-skips-never-silent.** An inapplicable stage writes its normal artifact with
+  `Status: SKIPPED-confirmed` and evidence; a refusal always names the prior stage.
 
 ## Status lines (parsed by the caller)
 

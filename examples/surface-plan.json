@@ -1,0 +1,35 @@
+{
+  "slug": "example-feature",
+  "aspects": [
+    {
+      "id": "backend",
+      "intent": "Provide the feature behavior and a stable consumer contract.",
+      "modules": ["api"],
+      "entrypoints": ["http"],
+      "depends_on": []
+    },
+    {
+      "id": "frontend",
+      "intent": "Expose the feature through the existing user interface.",
+      "modules": ["web"],
+      "entrypoints": ["browser"],
+      "depends_on": ["backend"]
+    }
+  ],
+  "contracts": [
+    {
+      "id": "feature-api",
+      "provider_aspect": "backend",
+      "consumer_aspects": ["frontend"],
+      "artifact": "contracts/feature-api"
+    }
+  ],
+  "integration_checks": [
+    {
+      "id": "feature-round-trip",
+      "aspects": ["backend", "frontend"],
+      "intent": "Verify the UI consumes the implemented backend contract.",
+      "validation": "Run the project-defined integrated feature check."
+    }
+  ]
+}

@@ -4,7 +4,11 @@
   "guidance_evidence": "optional",
   "implementation": {
     "mode": "sequential",
-    "max_parallel_agents": 3
+    "max_parallel_agents": 3,
+    "approval_policy": "risk-based",
+    "max_task_attempts": 3,
+    "max_agent_runs_per_task": 8,
+    "telemetry": true
   },
   "modules": [
     {

@@ -5,7 +5,7 @@
   "description": "Descriptive context passed to native Claude Code project capabilities. No field selects a skill, agent, provider, or gate.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "title", "intent", "deps", "acs", "dod", "status"],
+  "required": ["id", "title", "intent", "deps", "acs", "dod", "aspects", "status"],
   "properties": {
     "id": { "type": "string", "minLength": 1 },
     "title": { "type": "string", "minLength": 1 },
@@ -20,15 +20,34 @@
     },
     "dod": { "type": "string", "minLength": 1 },
     "module_hint": { "type": ["string", "null"] },
-    "surface_hint": { "type": ["string", "null"] },
+    "aspects": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
     "entrypoint_hint": { "type": ["string", "null"] },
+    "integration_checks": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true,
+      "default": []
+    },
     "files_hint": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 }
     },
     "status": {
       "type": "string",
-      "enum": ["pending", "in-progress", "blocked", "completed"]
+      "enum": [
+        "pending",
+        "in-progress",
+        "blocked",
+        "completed",
+        "stale",
+        "needs-rework",
+        "superseded"
+      ]
     }
   }
 }

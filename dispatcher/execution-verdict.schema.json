@@ -9,11 +9,19 @@
     "task_id": { "type": "string", "minLength": 1 },
     "role": {
       "type": "string",
-      "enum": ["test-author", "implementer", "reviewer", "validator"]
+      "enum": [
+        "implementation-planner",
+        "test-author",
+        "implementer",
+        "reviewer",
+        "validator"
+      ]
     },
     "status": {
       "type": "string",
       "enum": [
+        "STRATEGY_READY",
+        "PLAN_READY",
         "GOOD_RED",
         "BAD_RED",
         "FALSE_PASS",
@@ -37,6 +45,13 @@
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
       "default": []
+    },
+    "attempt": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "strategy": {
+      "type": "string"
     }
   }
 }

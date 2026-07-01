@@ -16,6 +16,7 @@ Turn a raw feature idea into `spec.md` with acceptance criteria.
 - Reads: `idea + optional architecture-map.md`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
+- Execution depth: [`../../references/execution-depth.md`](../../references/execution-depth.md).
 
 ## Protocol
 
@@ -24,11 +25,12 @@ Turn a raw feature idea into `spec.md` with acceptance criteria.
 3. Draft goals, non-goals, actors, user stories, measurable acceptance criteria, NFRs, and open
    questions without introducing implementation routing.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. Dispatch `kapelle:devils-advocate` to find failure modes and ambiguous behavioral branches.
+5. Classify size and execution depth. At `lean`, perform one inline acceptance-criteria and failure
+   branch check. At `standard`/`full`, dispatch `kapelle:devils-advocate`.
 6. Resolve or explicitly defer every blocking finding.
-7. Dispatch `kapelle:critic` against the final draft and architecture map; close contradictions and
-   unverifiable acceptance criteria.
-8. Write outputs: `docs/features/<slug>/spec.md and .size`.
+7. Dispatch `kapelle:critic` only at `full` depth or when requirements conflict with repository
+   constraints. Otherwise leave the independent ambiguity delta pass to `clarify`.
+8. Write outputs: `docs/features/<slug>/spec.md and .size`, including the execution-depth reason.
 9. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output

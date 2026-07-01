@@ -1,0 +1,34 @@
+{
+  "spec.md": [],
+  "sad.md": ["spec.md"],
+  "surface-plan.json": ["spec.md", "sad.md"],
+  "sequences.md": ["spec.md", "sad.md", "surface-plan.json"],
+  "data-model.md": ["spec.md", "sad.md", "surface-plan.json", "sequences.md"],
+  "contracts": ["spec.md", "sad.md", "surface-plan.json", "sequences.md", "data-model.md"],
+  "tasks.json": [
+    "spec.md",
+    "sad.md",
+    "surface-plan.json",
+    "sequences.md",
+    "data-model.md",
+    "contracts"
+  ],
+  "test-plan.md": [
+    "spec.md",
+    "surface-plan.json",
+    "data-model.md",
+    "contracts",
+    "tasks.json"
+  ],
+  "implementation-plans": [
+    "spec.md",
+    "sad.md",
+    "surface-plan.json",
+    "sequences.md",
+    "data-model.md",
+    "contracts",
+    "tasks.json",
+    "test-plan.md"
+  ],
+  "validation": ["implementation-plans"]
+}

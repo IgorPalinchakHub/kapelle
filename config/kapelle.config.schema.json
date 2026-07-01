@@ -41,11 +41,36 @@
           "minimum": 1,
           "maximum": 8,
           "default": 3
+        },
+        "approval_policy": {
+          "type": "string",
+          "enum": ["always", "risk-based", "never"],
+          "default": "risk-based"
+        },
+        "max_task_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5,
+          "default": 3
+        },
+        "max_agent_runs_per_task": {
+          "type": "integer",
+          "minimum": 3,
+          "maximum": 20,
+          "default": 8
+        },
+        "telemetry": {
+          "type": "boolean",
+          "default": true
         }
       },
       "default": {
         "mode": "sequential",
-        "max_parallel_agents": 3
+        "max_parallel_agents": 3,
+        "approval_policy": "risk-based",
+        "max_task_attempts": 3,
+        "max_agent_runs_per_task": 8,
+        "telemetry": true
       }
     }
   },

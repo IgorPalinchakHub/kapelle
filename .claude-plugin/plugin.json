@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.6.0",
-  "description": "Provider-neutral spec-driven SDLC harness with explicit subagent orchestration and native project capability discovery.",
+  "version": "0.9.0",
+  "description": "Provider-neutral spec-driven SDLC harness with immutable change revisions, artifact invalidation, reconciliation, and plan-first adaptive implementation.",
   "author": {
     "name": "Ihor Pal"
   },

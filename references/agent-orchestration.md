@@ -21,13 +21,24 @@ isolated role must dispatch it in its protocol.
 | `explorer` | Map repository structure and precedents | none |
 | `critic` | Find specification or design inconsistencies | none |
 | `devils-advocate` | Find ambiguity and failure modes | none |
-| `test-author` | Produce and classify the RED test | tests only |
-| `implementer` | Reach GREEN, refactor, and validate | project files and tests |
+| `implementation-planner` | Produce an approval-ready project-aware plan | plan artifact only |
+| `change-reconciler` | Classify existing work against a new change revision | none |
+| `test-author` | Select and execute the task's test strategy | tests and test fixtures |
+| `implementer` | Execute the approved plan and validate each slice | project files and tests |
 | `reviewer` | Return an independent structured verdict | none |
 
 Project-specific skills and agents remain native project capabilities. Kapelle agents coordinate
 generic SDLC roles and must apply the selected project capability and guidance rather than replace
 them.
+
+For each feature aspect or implementation task, the host semantically discovers applicable project
+skills and subagents from their native descriptions. A selected project subagent may discover and
+delegate to narrower project skills/subagents. Kapelle records these selections but never turns
+them into a routing registry.
+
+Every project must also provide a semantically discoverable subagent that can return scoped
+architecture rules according to [`architecture-guidance.md`](./architecture-guidance.md). This is a
+project capability, not a bundled Kapelle role, and its name is not fixed.
 
 ## Agent Teams
 

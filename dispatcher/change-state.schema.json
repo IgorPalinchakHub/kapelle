@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/change-state.schema.json",
+  "title": "Kapelle active change runtime state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "change_id",
+    "current_revision",
+    "state",
+    "paused_task",
+    "reason"
+  ],
+  "properties": {
+    "change_id": { "type": "string", "minLength": 1 },
+    "current_revision": { "type": "integer", "minimum": 1 },
+    "state": {
+      "type": "string",
+      "enum": [
+        "running",
+        "paused",
+        "reconciling",
+        "waiting-approval",
+        "approved",
+        "resumable",
+        "blocked",
+        "completed"
+      ]
+    },
+    "paused_task": { "type": ["string", "null"] },
+    "reason": { "type": "string" },
+    "checkpoint_evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    }
+  }
+}

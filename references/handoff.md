@@ -17,3 +17,5 @@ Use this at the end of each backbone stage:
 ```
 
 For review -> implement loopbacks, say explicitly whether `/clear` should be skipped to keep fix context.
+
+For an active change request, preserve `--change=<change-id>` in every next-stage command.

@@ -3,36 +3,36 @@ name: fix
 model: opus
 effort: high
 description: >
-  Investigate a bug or review finding and route a minimal fix through tests. Invoke as /kapelle:fix <slug> for feature-scoped work.
+  Backward-compatible bugfix shorthand for the existing-feature change lifecycle. Capture baseline,
+  reproduce the defect, assess impact, and run the minimal approved route. Invoke as
+  /kapelle:fix <slug> "<bug description>".
 ---
 
 # Skill: fix
 
-Investigate a bug or review finding and route a minimal fix through tests.
+Run the universal change lifecycle with `mode: bugfix`.
 
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `bug report or review finding`.
+- Reads: bug report or review finding plus existing feature artifacts.
+- Change contract: [`../../references/change-lifecycle.md`](../../references/change-lifecycle.md).
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
-2. Dispatch `kapelle:explorer` to trace the symptom, affected acceptance criteria, and closest
-   working precedent.
-3. Reproduce the defect before changing production code.
-4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. Request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Execute the same RED → GREEN → REFACTOR → VERIFY → GATE lifecycle as
-   [`../../dispatcher/execution-contract.md`](../../dispatcher/execution-contract.md).
-7. Write outputs: `_fixes/*.md + code/tests`.
-8. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+1. Require a bug description or review finding.
+2. Apply the `change` skill protocol with forced `mode: bugfix`.
+3. Reproduce the defect and link it to an existing acceptance criterion.
+4. If expected behavior is missing or wrong in the requirement, stop and request reclassification
+   to `enhancement`.
+5. Execute only the approved bugfix route through the adaptive implementation contract.
+6. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
-- `_fixes/*.md + code/tests`.
+- `changes/<change-id>/change.json`, baseline, progress, code and tests.
 - `Status: DONE | stage: fix | produced: <paths>`.
 
 ## Definition of Done
@@ -41,6 +41,7 @@ Investigate a bug or review finding and route a minimal fix through tests.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
 - Handoff points to `review`.
+- `/kapelle:fix` and `/kapelle:change --mode=bugfix` produce the same artifact model.
 
 ## Anti-patterns
 

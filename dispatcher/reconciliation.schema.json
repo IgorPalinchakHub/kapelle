@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/reconciliation.schema.json",
+  "title": "Kapelle task reconciliation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["change_id", "from_revision", "to_revision", "tasks"],
+  "properties": {
+    "change_id": { "type": "string", "minLength": 1 },
+    "from_revision": { "type": "integer", "minimum": 1 },
+    "to_revision": { "type": "integer", "minimum": 2 },
+    "tasks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["disposition", "reason", "evidence"],
+        "properties": {
+          "disposition": {
+            "type": "string",
+            "enum": [
+              "keep",
+              "revalidate",
+              "rework",
+              "supersede",
+              "revert-required"
+            ]
+          },
+          "reason": { "type": "string", "minLength": 1 },
+          "evidence": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "replacement_task": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

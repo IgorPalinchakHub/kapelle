@@ -13,7 +13,7 @@ Determine data/schema impact and stage migrations or explicit no-schema-change s
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `spec.md + sad.md`.
+- Reads: `spec.md + sad.md + surface-plan.json + sequences.md`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
@@ -21,11 +21,13 @@ Determine data/schema impact and stage migrations or explicit no-schema-change s
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Dispatch `kapelle:explorer` for existing persistence conventions, migration layout, and closest
-   domain/schema precedents.
+3. Read the selected execution depth. Dispatch `kapelle:explorer` only when persistence is affected
+   and the architecture map or scoped rules evidence does not cite a sufficient persistence
+   precedent.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. Before staging migrations, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `data-model.md and staged migrations or skip note`.
+6. Keep one shared logical model across all producer and consumer aspects. Write `data-model.md`
+   and staged migrations, or an explicit `Status: SKIPPED-confirmed` artifact.
 7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output

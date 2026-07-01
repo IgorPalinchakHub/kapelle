@@ -4,7 +4,8 @@
 .claude/
 ├── agents/
 │   ├── backend-implementer.md
-│   └── project-guidance-provider.md
+│   ├── frontend-implementer.md
+│   └── architecture-rules.md
 ├── skills/
 │   ├── service-create/
 │   │   └── SKILL.md
@@ -15,8 +16,11 @@
 └── kapelle.config.json
 ```
 
-Claude Code discovers capabilities from native descriptions. Kapelle provides task intent and artifact
-paths; it does not map the task to a named skill, agent, gate, or provider.
+Claude Code discovers capabilities from native descriptions. Kapelle provides task intent, aspect,
+and artifact paths; it does not map the task to a named skill, agent, gate, or provider. Selected
+project agents may discover and delegate to narrower project skills/subagents.
 
-`project-guidance-provider.md` is optional and project-specific. It may use a CLI, MCP, API, files, or any
-other mechanism. A reusable organization-specific provider can instead ship as a separate plugin.
+`architecture-rules.md` is required, but its filename and provider are project-defined. Its
+description must make the capability semantically discoverable, and it returns evidence matching
+`dispatcher/architecture-guidance.schema.json`. It may use a CLI, MCP, API, files, or any other
+project-supported mechanism.

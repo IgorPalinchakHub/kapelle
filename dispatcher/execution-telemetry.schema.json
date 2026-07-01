@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/execution-telemetry.schema.json",
+  "title": "Kapelle implementation telemetry event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "run_id",
+    "slug",
+    "task_id",
+    "event",
+    "status",
+    "agent_runs",
+    "edit_attempts"
+  ],
+  "properties": {
+    "run_id": { "type": "string", "minLength": 1 },
+    "slug": { "type": "string", "minLength": 1 },
+    "task_id": { "type": "string", "minLength": 1 },
+    "event": {
+      "type": "string",
+      "enum": [
+        "classified",
+        "strategy-selected",
+        "plan-ready",
+        "plan-approved",
+        "plan-rejected",
+        "implementation-attempt",
+        "review",
+        "validation",
+        "completed",
+        "blocked"
+      ]
+    },
+    "status": { "type": "string", "minLength": 1 },
+    "task_class": { "type": "string" },
+    "strategy": { "type": "string" },
+    "agent": { "type": "string" },
+    "agent_runs": { "type": "integer", "minimum": 0 },
+    "edit_attempts": { "type": "integer", "minimum": 0 },
+    "duration_ms": { "type": "integer", "minimum": 0 },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "input_tokens": { "type": "integer", "minimum": 0 },
+        "output_tokens": { "type": "integer", "minimum": 0 },
+        "cached_input_tokens": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    }
+  }
+}

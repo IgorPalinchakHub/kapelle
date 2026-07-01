@@ -14,6 +14,9 @@ Run clean-context review against spec, architecture, contracts, tests, and avail
 
 - `<slug>` for feature-scoped work.
 - Reads: `implemented diff + feature artifacts`.
+- Requires `surface-plan.json` and scoped architecture-guidance evidence for implemented tasks.
+- With `--change=<change-id>`, also read its baseline, approved impact matrix, and progress log;
+  review for unapproved behavioral or artifact drift.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
@@ -21,12 +24,14 @@ Run clean-context review against spec, architecture, contracts, tests, and avail
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Collect feature artifacts, changed-file evidence supplied by the host, implementation audit
-   records, and applicable project guidance.
+   records, scoped project architecture guidance, and applicable general project guidance.
 3. Dispatch `kapelle:reviewer` in fresh read-only context.
-4. Require a structured `PASS`, `CHANGES_REQUESTED`, or `BLOCKED` verdict matching
+4. Require the reviewer to cover every affected aspect, provider/consumer contract, and
+   cross-aspect integration check.
+5. Require a structured `PASS`, `CHANGES_REQUESTED`, or `BLOCKED` verdict matching
    `dispatcher/execution-verdict.schema.json`.
-5. Write outputs: `_review/review-<date>.md`.
-6. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+6. Write outputs: `_review/review-<date>.md`.
+7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
