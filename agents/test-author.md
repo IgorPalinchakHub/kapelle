@@ -1,7 +1,5 @@
 ---
 name: test-author
-model: sonnet
-effort: medium
 description: >
   Select and execute an evidence-based test strategy for one task: strict TDD, characterization,
   scenario-first, contract-first, validation-first, or validation-only.

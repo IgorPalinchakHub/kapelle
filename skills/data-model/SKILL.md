@@ -1,7 +1,5 @@
 ---
 name: data-model
-model: inherit
-effort: medium
 description: >
   Determine data/schema impact and stage migrations or explicit no-schema-change skip. Invoke as /kapelle:data-model <slug> for feature-scoped work.
 ---

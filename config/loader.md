@@ -9,10 +9,13 @@ It does not register skills, agents, gates, rules, or knowledge providers.
    `{ "application": "<repository-name>", "artifact_root": "docs/features", "modules": [],
    "implementation": { "mode": "sequential", "max_parallel_agents": 3,
    "approval_policy": "risk-based", "max_task_attempts": 3,
-   "max_agent_runs_per_task": 8, "telemetry": true } }`.
+   "max_agent_runs_per_task": 8, "telemetry": true },
+   "validation": { "development_policy": "ask" } }`.
 2. Validate a present config against `kapelle.config.schema.json`.
 3. Apply defaults for omitted implementation settings.
-4. Resolve the artifact root and optional module path prefixes.
+4. Apply `validation.development_policy`; a command-line override is scoped to one `implement`
+   invocation and never weakens the final review/ship gate.
+5. Resolve the artifact root and optional module path prefixes.
 
 ## `resolveModuleHint(path)` → module | null
 

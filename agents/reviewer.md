@@ -1,7 +1,5 @@
 ---
 name: reviewer
-model: opus
-effort: high
 description: >
   Review implemented changes against spec, architecture, contracts, tests, and rules.
 ---

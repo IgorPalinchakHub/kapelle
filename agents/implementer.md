@@ -1,7 +1,5 @@
 ---
 name: implementer
-model: sonnet
-effort: medium
 description: >
   Execute an approved implementation plan using its selected adaptive test strategy and project
   validation.

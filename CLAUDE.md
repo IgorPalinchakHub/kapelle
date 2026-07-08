@@ -31,6 +31,11 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
     checks; it contains no skill or agent routing.
 17. Execution depth reduces duplicate subagent runs but never weakens artifacts, architecture rules,
     acceptance-criteria coverage, or validation.
+18. `docs/architecture-map.md` is a shared baseline. Feature worktree drift is recorded under the
+    feature `_context/` directory and never triggers an automatic shared-map rewrite.
+19. Development validation commands use an explicit `ask | allow | skip` policy. Skipped or
+    cancelled required checks become `validation-deferred`; they are never reported as `PASS` and
+    block ship readiness.
 
 ## Handoff
 

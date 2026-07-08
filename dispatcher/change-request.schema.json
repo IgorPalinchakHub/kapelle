@@ -92,10 +92,10 @@
           "sequences",
           "data-model",
           "contracts",
-          "tasks",
+          "decompose",
           "plan-tests",
           "implement",
-          "review",
+          "feature-review",
           "ship"
         ]
       }

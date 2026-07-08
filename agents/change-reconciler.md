@@ -1,7 +1,5 @@
 ---
 name: change-reconciler
-model: opus
-effort: high
 description: >
   Reconcile completed, active, and pending implementation tasks against a new immutable change
   revision and classify each as keep, revalidate, rework, supersede, or revert-required.
@@ -34,4 +32,4 @@ Produce a read-only reconciliation between two approved change revisions.
 
 - Read-only; never edit source, tests, tasks, or canonical artifacts.
 - Do not perform git revert or infer unrecorded repository history.
-- Ambiguous business behavior is `rework` or `blocked`, never `keep`.
+- Ambiguous business behavior is `rework`, never `keep`.

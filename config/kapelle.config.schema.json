@@ -72,9 +72,56 @@
         "max_agent_runs_per_task": 8,
         "telemetry": true
       }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Permission policy for project validation commands during implementation. Final review and ship still require passing evidence.",
+      "properties": {
+        "development_policy": {
+          "type": "string",
+          "enum": ["ask", "allow", "skip"],
+          "default": "ask",
+          "description": "ask prompts with the exact batch; allow runs it; skip defers it. /kapelle:implement --validation=... may override this for one invocation."
+        }
+      },
+      "default": {
+        "development_policy": "ask"
+      }
+    },
+    "providers": {
+      "type": "object",
+      "description": "Optional provider adapter policies. Core role profiles (dispatcher/role-profiles.json) declare reasoning and cost intent only; a provider adapter maps a role or stage to a concrete model or effort here. Kapelle core never names a model. Unbound roles inherit the session default.",
+      "additionalProperties": { "$ref": "#/$defs/provider" }
     }
   },
   "$defs": {
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "//": { "type": "string" },
+        "roles": {
+          "type": "object",
+          "description": "Bindings for Kapelle agent roles, keyed by agent name.",
+          "additionalProperties": { "$ref": "#/$defs/role_binding" }
+        },
+        "stages": {
+          "type": "object",
+          "description": "Bindings for Kapelle stages, keyed by skill name.",
+          "additionalProperties": { "$ref": "#/$defs/role_binding" }
+        }
+      }
+    },
+    "role_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "//": { "type": "string" },
+        "model": { "type": "string", "minLength": 1 },
+        "effort": { "type": "string", "minLength": 1 }
+      }
+    },
     "module": {
       "type": "object",
       "additionalProperties": false,

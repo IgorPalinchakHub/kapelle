@@ -1,0 +1,87 @@
+{
+  "//": "Canonical Kapelle vocabulary. Single source of truth for states, dispositions, and stage order. Schemas and documents must match it; scripts/validate_plugin.py enforces consistency.",
+  "backbone_stages": [
+    "survey",
+    "specify",
+    "clarify",
+    "design",
+    "sequences",
+    "data-model",
+    "contracts",
+    "decompose",
+    "plan-tests",
+    "implement",
+    "feature-review",
+    "ship"
+  ],
+  "change_route_stages": [
+    "specify",
+    "clarify",
+    "design",
+    "decide-adr",
+    "sequences",
+    "data-model",
+    "contracts",
+    "decompose",
+    "plan-tests",
+    "implement",
+    "feature-review",
+    "ship"
+  ],
+  "task_states": [
+    "pending",
+    "in-progress",
+    "blocked",
+    "completed",
+    "validation-deferred",
+    "stale",
+    "needs-rework",
+    "superseded"
+  ],
+  "artifact_states": [
+    "current",
+    "review-required",
+    "stale",
+    "superseded"
+  ],
+  "implementation_plan_states": [
+    "draft",
+    "approved",
+    "stale",
+    "superseded"
+  ],
+  "change_states": [
+    "running",
+    "paused",
+    "reconciling",
+    "waiting-approval",
+    "approved",
+    "resumable",
+    "blocked",
+    "completed"
+  ],
+  "change_state_transitions": {
+    "running": ["paused", "completed"],
+    "paused": ["reconciling"],
+    "reconciling": ["waiting-approval"],
+    "waiting-approval": ["approved", "blocked"],
+    "approved": ["resumable"],
+    "resumable": ["running"],
+    "blocked": [],
+    "completed": []
+  },
+  "reconciliation_dispositions": [
+    "keep",
+    "revalidate",
+    "rework",
+    "supersede",
+    "revert-required"
+  ],
+  "disposition_to_task_state": {
+    "keep": "completed",
+    "revalidate": "stale",
+    "rework": "needs-rework",
+    "supersede": "superseded",
+    "revert-required": "blocked"
+  }
+}

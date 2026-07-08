@@ -6,13 +6,17 @@ isolated role must dispatch it in its protocol.
 ## Dispatch contract
 
 1. Use the plugin-namespaced agent type `kapelle:<agent>`.
-2. Pass the feature slug, task id when applicable, required artifact paths, and the expected typed
+2. Resolve the role's provider-neutral execution profile from `dispatcher/role-profiles.json`.
+   Apply a concrete model or effort only when the project config binds it
+   (`providers.<provider>.roles.<agent>` / `providers.<provider>.stages.<stage>`); otherwise
+   inherit the session default. Core definitions never pin a provider model.
+3. Pass the feature slug, task id when applicable, required artifact paths, and the expected typed
    result. Let the agent read files directly; do not paste entire artifacts into its prompt.
-3. Keep read-only analysis agents in fresh context.
-4. If the named agent is unavailable, dispatch a general-purpose subagent with the same role,
+4. Keep read-only analysis agents in fresh context.
+5. If the named agent is unavailable, dispatch a general-purpose subagent with the same role,
    constraints, and output contract.
-5. If subagents are unavailable, run the role inline and record `execution: inline-fallback`.
-6. Never treat a custom `agents:` field in `SKILL.md` frontmatter as executable orchestration.
+6. If subagents are unavailable, run the role inline and record `execution: inline-fallback`.
+7. Never treat a custom `agents:` field in `SKILL.md` frontmatter as executable orchestration.
 
 ## Core roles
 

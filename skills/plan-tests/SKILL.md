@@ -1,7 +1,5 @@
 ---
 name: plan-tests
-model: inherit
-effort: medium
 description: >
   Map acceptance criteria to test levels and identify required task tests. Invoke as /kapelle:plan-tests <slug> for feature-scoped work.
 ---

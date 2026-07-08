@@ -1,7 +1,5 @@
 ---
 name: implementation-planner
-model: opus
-effort: high
 description: >
   Produce a project-aware implementation plan from a task, business invariants, test strategy,
   native project capability, and provider-neutral guidance without editing project code.
@@ -13,7 +11,8 @@ Plan one implementation task before code changes.
 
 ## Inputs
 
-- Task, acceptance criteria, Definition of Done, and feature artifact paths.
+- Task, workstream outcome, acceptance criteria, Definition of Done, explicit validation, risk,
+  ownership hints, and feature artifact paths.
 - Repository precedents and unresolved assumptions.
 - Selected native project capability and provider-neutral guidance.
 - Scoped project architecture guidance and the task's aspect/integration dependencies.
@@ -25,12 +24,14 @@ Plan one implementation task before code changes.
 2. Reconcile acceptance criteria with business invariants and repository precedents.
 3. Reconcile proposed files and slices with scoped project architecture rules, aspect ordering,
    provider/consumer contracts, and integration checks.
-4. Identify ambiguity that could produce materially different implementations; block rather than
+4. Keep the implementation plan inside the task boundary. If the task contains multiple
+   independently verifiable intents, return `BLOCKED` with `decomposition-required`.
+5. Identify ambiguity that could produce materially different implementations; block rather than
    inventing business behavior.
-5. Define scope, non-goals, files, ordered implementation slices, validation, risks, and recovery.
-6. Write the plan and a lineage sidecar matching `dispatcher/implementation-plan.schema.json`.
+6. Define scope, non-goals, files, ordered implementation slices, validation, risks, and recovery.
+7. Write the plan and a lineage sidecar matching `dispatcher/implementation-plan.schema.json`.
    For a change request, record its current revision and `based_on` artifact fingerprints.
-7. Return `PLAN_READY` or `BLOCKED` using `dispatcher/execution-verdict.schema.json`.
+8. Return `PLAN_READY` or `BLOCKED` using `dispatcher/execution-verdict.schema.json`.
 
 ## Constraints
 

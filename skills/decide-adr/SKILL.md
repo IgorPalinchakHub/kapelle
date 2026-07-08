@@ -1,7 +1,5 @@
 ---
 name: decide-adr
-model: opus
-effort: high
 description: >
   Write or update an ADR for an architectural decision. Invoke as /kapelle:decide-adr <slug> for feature-scoped work.
 ---
@@ -36,7 +34,7 @@ Write or update an ADR for an architectural decision.
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `tasks`.
+- Handoff points to `decompose`.
 
 ## Anti-patterns
 

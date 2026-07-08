@@ -10,10 +10,42 @@
     "max_agent_runs_per_task": 8,
     "telemetry": true
   },
+  "validation": {
+    "//": "ask shows the exact test/PHPStan/linter batch; use allow to run automatically or skip to defer during development.",
+    "development_policy": "ask"
+  },
   "modules": [
     {
       "id": "root",
       "path": "."
     }
-  ]
+  ],
+  "providers": {
+    "claude": {
+      "//": "Example adapter: maps provider-neutral role profiles to concrete Claude models. Omit a binding to inherit the session default.",
+      "roles": {
+        "explorer": { "model": "haiku", "effort": "low" },
+        "critic": { "model": "opus", "effort": "high" },
+        "devils-advocate": { "model": "opus", "effort": "high" },
+        "implementation-planner": { "model": "opus", "effort": "high" },
+        "change-reconciler": { "model": "opus", "effort": "high" },
+        "test-author": { "model": "sonnet", "effort": "medium" },
+        "implementer": { "model": "sonnet", "effort": "medium" },
+        "reviewer": { "model": "opus", "effort": "high" }
+      },
+      "stages": {
+        "specify": { "model": "opus", "effort": "high" },
+        "clarify": { "model": "opus", "effort": "high" },
+        "design": { "model": "opus", "effort": "high" },
+        "change": { "model": "opus", "effort": "high" },
+        "fix": { "model": "opus", "effort": "high" },
+        "resume-change": { "model": "opus", "effort": "high" },
+        "feature-review": { "model": "opus", "effort": "high" },
+        "decide-adr": { "model": "opus", "effort": "high" },
+        "implement": { "effort": "high" },
+        "classify-size": { "model": "haiku", "effort": "low" },
+        "glossary": { "model": "haiku", "effort": "low" }
+      }
+    }
+  }
 }

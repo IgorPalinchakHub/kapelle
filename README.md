@@ -2,9 +2,15 @@
 
 Kapelle is a provider-neutral, spec-driven SDLC plugin for Claude Code.
 
+For practical setup, workflows, worktree usage, approvals, examples, and troubleshooting, see
+[Using Kapelle](docs/USAGE.md).
+
+Детальний український порядок виконання кожної команди, її вхідні дані, внутрішні кроки та
+результати: [Команди Kapelle](docs/COMMAND_EXECUTION_UK.md).
+
 ```text
 survey -> specify -> clarify -> design -> sequences -> data-model
-       -> contracts -> tasks -> plan-tests -> implement -> review -> ship
+       -> contracts -> decompose -> plan-tests -> implement -> feature-review -> ship
 ```
 
 ## Core boundary
@@ -14,6 +20,7 @@ Kapelle owns:
 - lifecycle stages and artifact gates;
 - durable state under `docs/features/<slug>/`;
 - task dependency ordering;
+- architecture-aligned workstreams, bounded task contracts, and executable task-plan validation;
 - explicit backend, frontend, data, and other aspect coordination through `surface-plan.json`;
 - explicit generic subagent orchestration;
 - adaptive execution depth that avoids duplicate agent analysis for small, low-risk work;
@@ -77,8 +84,16 @@ validates its provider-neutral result before design and before each implementati
 other project-defined slices; provider/consumer contracts; dependency order; and cross-aspect
 integration checks. It contains no capability routing.
 
+`decompose` converts the design into architecture-aligned workstreams and bounded tasks. M/L/XL
+decomposition receives one fresh independent critique and one correction pass at most.
+`scripts/validate_task_plan.py` enforces graph, acceptance-criteria, contract, integration, and safe
+parallel-ownership invariants before implementation.
+
 Kapelle's bundled agents are generic SDLC execution roles. Skills dispatch them explicitly using
 plugin-namespaced agent types such as `kapelle:reviewer`; an `agents:` frontmatter list is not used.
+Roles and stages declare provider-neutral execution profiles in `dispatcher/role-profiles.json`;
+a concrete model or effort comes only from the optional `providers` adapter section of project
+config, never from core definitions.
 
 ## Implementation modes
 
@@ -94,6 +109,12 @@ Testing is adaptive: bug fixes and isolated behavior normally use strict TDD; le
 characterization; complex business logic uses scenario-first invariant coverage; external
 boundaries use contract-first; migrations and configuration use validation-first.
 
+Project validation execution is separately controlled. `validation.development_policy` defaults to
+`ask`: Kapelle shows the exact tests, PHPStan/static-analysis, lint, build, and other commands as
+one batch. The user may run all, run selected commands, skip, or cancel a running command.
+`--validation=allow|skip|ask` overrides the policy for one `implement` invocation. Required skipped
+or cancelled checks become `validation-deferred` and block final `PASS`/ship readiness.
+
 Execution depth is also adaptive. Small, low-risk stages reuse upstream evidence and run routine
 checks inline. Larger, ambiguous, cross-aspect, security-sensitive, or contract-changing work
 dispatches the full independent role set. Every stage remains separately invocable; Kapelle does
@@ -108,23 +129,29 @@ overlapping ownership remains sequential. Kapelle does not create worktrees or u
 ## Commands
 
 ```text
-/kapelle:survey
-/kapelle:specify <slug>
+/kapelle:survey [<slug>]
+/kapelle:survey --refresh-baseline
+/kapelle:specify <slug> ["<feature idea>"]
 /kapelle:clarify <slug>
 /kapelle:design <slug>
 /kapelle:sequences <slug>
 /kapelle:data-model <slug>
 /kapelle:contracts <slug>
-/kapelle:tasks <slug>
+/kapelle:decompose <slug>
 /kapelle:plan-tests <slug>
-/kapelle:implement <slug>
-/kapelle:review <slug>
+/kapelle:implement <slug> [--validation=ask|allow|skip]
+/kapelle:feature-review <slug>
 /kapelle:ship <slug>
 /kapelle:change <slug> [--mode=bugfix|enhancement|refactor] "<description>"
 /kapelle:change <slug> --change=<id> --revise "<amendment>"
-/kapelle:resume <slug> --change=<id>
+/kapelle:resume-change <slug> --change=<id>
 /kapelle:fix <slug> "<bug description>"
 ```
+
+`docs/architecture-map.md` is a shared bootstrap baseline. Kapelle does not rewrite it when a
+feature worktree has a divergent HEAD. Use `/kapelle:survey <slug>` for a worktree-safe scoped
+overlay under `docs/features/<slug>/_context/architecture.md`. Refresh the shared baseline only
+through the explicit `--refresh-baseline` maintenance action.
 
 ## Changing an existing feature
 
@@ -177,7 +204,7 @@ keep | revalidate | rework | supersede | revert-required
 After stale artifacts are regenerated and the revised route is approved:
 
 ```text
-/kapelle:resume billing --change=partial-cancel
+/kapelle:resume-change billing --change=partial-cancel
 ```
 
 Resume recomputes fingerprints, verifies complete reconciliation, and refuses stale plans. Kapelle
@@ -199,6 +226,9 @@ never performs an automatic git revert; `revert-required` produces an explicit c
     "max_task_attempts": 3,
     "max_agent_runs_per_task": 8,
     "telemetry": true
+  },
+  "validation": {
+    "development_policy": "ask"
   },
   "modules": [
     {

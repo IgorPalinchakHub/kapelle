@@ -1,7 +1,5 @@
 ---
 name: explorer
-model: haiku
-effort: low
 description: >
   Map repository structure, conventions, and candidate files without writing code.
 ---

@@ -1,0 +1,149 @@
+{
+  "slug": "example-feature",
+  "decomposition_depth": "standard",
+  "architecture_guidance_path": "_audit/architecture-guidance/tasks.json",
+  "workstreams": [
+    {
+      "id": "WS-PROVIDER",
+      "title": "Establish provider behavior",
+      "intent": "Implement the backend contract and its observable behavior.",
+      "aspects": ["backend"],
+      "depends_on": [],
+      "completion_task_id": "T2",
+      "completion_signal": "The provider contract passes its focused validation."
+    },
+    {
+      "id": "WS-CONSUMER",
+      "title": "Integrate the consumer",
+      "intent": "Consume the stable backend contract from the frontend.",
+      "aspects": ["frontend"],
+      "depends_on": ["WS-PROVIDER"],
+      "completion_task_id": "T3",
+      "completion_signal": "The frontend behavior passes focused validation."
+    },
+    {
+      "id": "WS-INTEGRATION",
+      "title": "Validate the complete flow",
+      "intent": "Verify the provider and consumer work together.",
+      "aspects": ["backend", "frontend"],
+      "depends_on": ["WS-PROVIDER", "WS-CONSUMER"],
+      "completion_task_id": "T4",
+      "completion_signal": "The declared cross-aspect integration check passes."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Establish provider contract",
+      "intent": "Define the stable contract consumed by the frontend.",
+      "workstream_id": "WS-PROVIDER",
+      "deps": [],
+      "acs": ["AC-01"],
+      "dod": "The provider contract is explicit and its validation passes.",
+      "module_hint": "api",
+      "primary_aspect": "backend",
+      "aspects": ["backend"],
+      "entrypoint_hint": "http",
+      "provides_contracts": ["feature-api"],
+      "consumes_contracts": [],
+      "integration_checks": [],
+      "validation": [
+        {
+          "kind": "automated",
+          "procedure": "Run the project-defined contract validation.",
+          "expected": "The contract is valid and stable for consumers."
+        }
+      ],
+      "risk": "medium",
+      "parallel_candidate": false,
+      "ownership_status": "known",
+      "files_hint": ["src/api/provider"],
+      "status": "pending"
+    },
+    {
+      "id": "T2",
+      "title": "Implement provider behavior",
+      "intent": "Implement the configured feature behavior behind the stable contract.",
+      "workstream_id": "WS-PROVIDER",
+      "deps": ["T1"],
+      "acs": ["AC-01"],
+      "dod": "Provider behavior passes focused validation.",
+      "module_hint": "api",
+      "primary_aspect": "backend",
+      "aspects": ["backend"],
+      "entrypoint_hint": "http",
+      "provides_contracts": [],
+      "consumes_contracts": [],
+      "integration_checks": [],
+      "validation": [
+        {
+          "kind": "automated",
+          "procedure": "Run the project-defined provider behavior check.",
+          "expected": "The provider implements the configured behavior."
+        }
+      ],
+      "risk": "medium",
+      "parallel_candidate": false,
+      "ownership_status": "known",
+      "files_hint": ["src/api/behavior"],
+      "status": "pending"
+    },
+    {
+      "id": "T3",
+      "title": "Consume provider contract",
+      "intent": "Render the configured feature behavior through the frontend.",
+      "workstream_id": "WS-CONSUMER",
+      "deps": ["T1", "T2"],
+      "acs": ["AC-02"],
+      "dod": "Frontend behavior passes its focused consumer validation.",
+      "module_hint": "web",
+      "primary_aspect": "frontend",
+      "aspects": ["frontend"],
+      "entrypoint_hint": "browser",
+      "provides_contracts": [],
+      "consumes_contracts": ["feature-api"],
+      "integration_checks": [],
+      "validation": [
+        {
+          "kind": "automated",
+          "procedure": "Run the project-defined frontend consumer check.",
+          "expected": "The frontend consumes the declared provider contract."
+        }
+      ],
+      "risk": "low",
+      "parallel_candidate": false,
+      "ownership_status": "known",
+      "files_hint": ["src/web/feature"],
+      "status": "pending"
+    },
+    {
+      "id": "T4",
+      "title": "Validate integrated feature flow",
+      "intent": "Verify the frontend and backend complete the feature flow together.",
+      "workstream_id": "WS-INTEGRATION",
+      "deps": ["T2", "T3"],
+      "acs": ["AC-02"],
+      "dod": "The declared feature round-trip check passes.",
+      "module_hint": null,
+      "primary_aspect": "frontend",
+      "aspects": ["backend", "frontend"],
+      "entrypoint_hint": "browser",
+      "provides_contracts": [],
+      "consumes_contracts": [],
+      "integration_checks": ["feature-round-trip"],
+      "validation": [
+        {
+          "kind": "automated",
+          "procedure": "Run the project-defined integrated feature check.",
+          "expected": "The UI and backend complete the configured feature round trip."
+        }
+      ],
+      "risk": "medium",
+      "parallel_candidate": false,
+      "ownership_status": "known",
+      "files_hint": ["tests/integration/feature-flow"],
+      "status": "pending"
+    }
+  ],
+  "split_recommendations": []
+}

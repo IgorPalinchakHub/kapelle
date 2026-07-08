@@ -1,7 +1,5 @@
 ---
 name: classify-size
-model: haiku
-effort: low
 description: >
   Classify feature size and write `.size`. Invoke as /kapelle:classify-size <slug> for feature-scoped work.
 ---

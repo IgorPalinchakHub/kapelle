@@ -8,7 +8,8 @@ through native discovery and their descriptions.
 
 For each pending task:
 
-1. Validate it against `task-context.schema.json`.
+1. Validate the enclosing plan against `task-plan.schema.json`, rerun
+   `scripts/validate_task_plan.py`, and validate the task against `task-context.schema.json`.
 2. Read the referenced feature artifacts and relevant repository context from disk.
 3. Validate `surface-plan.json`, the complete dependency graph, aspect dependencies, shared
    contract ordering, and integration-check ownership; compute dependency-ready batches.
@@ -33,13 +34,20 @@ For each pending task:
 11. Use sequential mode by default. Use an Agent Team only when configured, available, explicitly
     approved, and safe for the ready task batch.
 12. Enforce edit-attempt and agent-run caps. Stop and block rather than iterating without bound.
-13. Run the project capability's validation commands.
-14. Mark the task completed only when its Definition of Done, required review policy, and validation pass.
+13. Build the exact project validation batch and apply
+    `references/validation-execution.md`. Run, select, skip, or cancel commands only according to
+    the effective development validation policy and explicit user decision.
+14. Mark the task `completed` only when its Definition of Done, required review policy, and required
+    validation pass. Mark it `validation-deferred` when required validation was explicitly skipped
+    or cancelled; never translate that state to `PASS`.
+15. A dependent task may become development-ready from a `validation-deferred` dependency only
+    after the explicit skip/cancel decision is recorded. Propagate that risk into its plan; do not
+    accept final contract or integration evidence until the dependency passes.
 15. Append task, capability, architecture guidance, general guidance, strategy, plan, approval, implementation, review,
     validation, and actual available usage telemetry to feature audit files.
 16. If requirements, architecture, contracts, or constraints change during implementation, stop
     all change-related dispatch, checkpoint state, and enter the revision lifecycle. Do not resume
-    until `/kapelle:resume` passes fingerprint and reconciliation gates.
+    until `/kapelle:resume-change` passes fingerprint and reconciliation gates.
 
 ## Status lines
 

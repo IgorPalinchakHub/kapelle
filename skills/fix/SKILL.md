@@ -1,7 +1,5 @@
 ---
 name: fix
-model: opus
-effort: high
 description: >
   Backward-compatible bugfix shorthand for the existing-feature change lifecycle. Capture baseline,
   reproduce the defect, assess impact, and run the minimal approved route. Invoke as
@@ -40,7 +38,7 @@ Run the universal change lifecycle with `mode: bugfix`.
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `review`.
+- Handoff points to `feature-review`.
 - `/kapelle:fix` and `/kapelle:change --mode=bugfix` produce the same artifact model.
 
 ## Anti-patterns

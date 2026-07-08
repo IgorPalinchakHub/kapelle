@@ -1,7 +1,5 @@
 ---
 name: implement
-model: inherit
-effort: high
 description: >
   Plan and implement a feature's dependency-ordered tasks using adaptive test strategies,
   risk-based approval, bounded retries, native project capabilities, provider-neutral guidance,
@@ -27,12 +25,16 @@ Strict TDD is selected only when it fits the task.
 - Execution depth: [`../../references/execution-depth.md`](../../references/execution-depth.md).
 - Architecture guidance:
   [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
+- Validation execution:
+  [`../../references/validation-execution.md`](../../references/validation-execution.md).
+- Optional invocation override: `--validation=ask|allow|skip`.
 
 ## Protocol
 
-1. Refuse if `tasks.json` is missing; run `tasks` first.
-2. Validate `surface-plan.json` against `dispatcher/surface-plan.schema.json` and tasks against
-   `dispatcher/task-context.schema.json`.
+1. Refuse if `tasks.json` is missing; run `decompose` first.
+2. Validate `surface-plan.json` against `dispatcher/surface-plan.schema.json`, `tasks.json` against
+   `dispatcher/task-plan.schema.json`, each task against `dispatcher/task-context.schema.json`, and
+   rerun `scripts/validate_task_plan.py`.
    For a change request, also validate that `implement` is in its approved route and restrict tasks
    to the approved change delta.
 3. For a change request, refuse unless `active-state.state` is `running`. Before every task,
@@ -41,15 +43,19 @@ Strict TDD is selected only when it fits the task.
    stop all further implementation dispatch.
 4. Validate that dependencies exist, the graph is acyclic, every task aspect exists, provider
    contract tasks precede consumers, and integration checks have owner tasks. Compute
-   dependency-ready batches.
-5. Read implementation mode, approval policy, attempt and agent-run limits, and telemetry setting
-   from project config.
+   dependency-ready batches. For development only, a recorded `validation-deferred` dependency may
+   unlock its consumer, but the consumer plan must carry that inherited risk and cannot produce
+   final contract or integration evidence until the dependency passes.
+5. Read implementation mode, approval policy, attempt and agent-run limits, telemetry setting, and
+   `validation.development_policy` from project config. Apply `--validation=ask|allow|skip` only to
+   the current invocation.
 6. Select Agent Team mode only when every precondition in the orchestration contract passes.
    Otherwise report the failed precondition and use sequential mode.
 7. For every task, execute:
    `UNDERSTAND -> CLASSIFY -> SELECT-CAPABILITY -> GUIDANCE -> TEST-STRATEGY -> PLAN -> APPROVE
    -> IMPLEMENT -> REVIEW -> VALIDATE`.
-   - select execution depth from feature size and task risk;
+   - select task execution depth from the task's local risk, contract role, ambiguity, and
+     complexity; feature size controls decomposition depth and must not force every task to `full`;
    - select project skills and subagents semantically from native descriptions for every declared
      task aspect; encourage the selected project subagent to discover narrower project capabilities;
    - semantically discover and dispatch the project's architecture-rules subagent for the task's
@@ -64,8 +70,16 @@ Strict TDD is selected only when it fits the task.
      skip this dispatch for `validation-only`;
    - dispatch `kapelle:implementer` with the approved plan and strategy;
    - dispatch `kapelle:reviewer` in fresh read-only context for risk-triggered tasks. Low-risk
-     `lean` tasks may defer independent review to the mandatory feature-level `review` stage;
-   - run project validation and require `PASS`.
+     `lean` tasks may defer independent review to the mandatory feature-level `feature-review` stage;
+   - prepare one exact validation batch containing tests, static analysis such as PHPStan, linters,
+     builds, and other project checks selected for the task;
+   - under `ask`, show the commands, kinds, scopes, and required/optional status and require
+     `run-all`, `run-selected`, or `skip-all`; under `allow`, run the batch; under `skip`, run none;
+   - if the user cancels a running validation command, stop it when supported and do not retry it
+     without a new decision;
+   - validate and persist the decision using `dispatcher/validation-decision.schema.json`;
+   - require `PASS` to complete the task. Required skipped or cancelled checks set
+     `validation-deferred` and may not be reported as successful.
 8. Validate each role result against `dispatcher/execution-verdict.schema.json`.
 9. Stop edit retries at `implementation.max_task_attempts` and all agent dispatches at
    `implementation.max_agent_runs_per_task`.
@@ -74,12 +88,17 @@ Strict TDD is selected only when it fits the task.
    `docs/features/<slug>/_audit/implementation.jsonl`.
 11. When telemetry is enabled, append actual execution events to
     `_audit/implementation-telemetry.jsonl`; never estimate unavailable token or cost data.
-12. Update task status only after Definition of Done, review, and validation pass.
-13. Emit handoff to `/kapelle:review <slug>`.
+12. Before new implementation work, process `validation-deferred` tasks when the effective policy
+    permits commands. Update a task to `completed` only after Definition of Done, review, and all
+    required validation pass. Explicitly deferred validation does not consume an edit attempt.
+13. Emit handoff to `/kapelle:feature-review <slug>`.
 
 ## Definition of Done
 
 - Every completed task has capability-selection and validation evidence.
+- Every `validation-deferred` task has an explicit skip/cancel decision and remains visibly
+  unvalidated.
+- The semantic task-plan validator passed before dispatch.
 - Every task has scoped architecture-rule evidence, a validated strategy, a durable plan, approval
   evidence when required, and a recorded review policy. Risk-triggered tasks have a per-task
   independent review verdict; all tasks remain subject to the feature-level review.
@@ -99,6 +118,9 @@ Strict TDD is selected only when it fits the task.
 - Continuing after a requirement or architecture amendment without creating a revision.
 - Running a task whose plan revision or fingerprints are stale.
 - Treating silence as approval.
+- Running tests, PHPStan, linters, builds, or other project validation under `ask` without an
+  explicit command-batch decision.
+- Treating skipped or cancelled validation as `PASS`.
 - Continuing edits after the configured attempt limit.
 - Estimating tokens or monetary cost when the host did not report usage.
 - Treating `agents:` frontmatter as orchestration.

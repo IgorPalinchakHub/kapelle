@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/validation-decision.schema.json",
+  "title": "Kapelle development validation decision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["task_id", "policy", "decision", "commands"],
+  "properties": {
+    "task_id": { "type": "string", "minLength": 1 },
+    "policy": {
+      "type": "string",
+      "enum": ["ask", "allow", "skip"]
+    },
+    "decision": {
+      "type": "string",
+      "enum": ["run-all", "run-selected", "skip-all", "cancelled"]
+    },
+    "commands": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["command", "kind", "scope", "required", "status"],
+        "properties": {
+          "command": { "type": "string", "minLength": 1 },
+          "kind": {
+            "type": "string",
+            "enum": ["tests", "static-analysis", "lint", "build", "other"]
+          },
+          "scope": { "type": "string", "minLength": 1 },
+          "required": { "type": "boolean" },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "skipped", "cancelled"]
+          },
+          "reason": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

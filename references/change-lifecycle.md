@@ -150,15 +150,15 @@ Silence is not approval. Rejection sets state to `blocked`.
 
 ## Resume
 
-`/kapelle:resume <slug> --change=<id>` must:
+`/kapelle:resume-change <slug> --change=<id>` must:
 
 1. require state `resumable`;
 2. recompute fingerprints and block on unexplained drift;
 3. require no unresolved `stale` upstream artifacts;
 4. verify reconciliation covers every existing task;
 5. regenerate plans/test strategies for `needs-rework` tasks;
-6. run validation for `revalidate` tasks;
-7. resume from the first pending or rework task under the current revision;
+6. run validation for `stale` tasks;
+7. resume from the first `pending` or `needs-rework` task under the current revision;
 8. set state to `running` and continue through the adaptive execution contract.
 
 Before every task, verify that its plan records the current revision and current `based_on`

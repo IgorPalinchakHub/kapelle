@@ -3,6 +3,10 @@
 Kapelle uses a plan-first lifecycle. Testing is selected from task risk and evidence; strict TDD is
 one strategy, not a global requirement.
 
+Project validation execution follows
+[`../references/validation-execution.md`](../references/validation-execution.md). Development may
+defer commands after an explicit decision, but deferred validation is never reported as `PASS`.
+
 ```text
 UNDERSTAND -> CLASSIFY -> SELECT-CAPABILITY -> GUIDANCE
 -> TEST-STRATEGY -> PLAN -> APPROVE
@@ -20,8 +24,9 @@ subagents for those aspects, then dispatch the project's architecture-rules suba
 specific modules, entrypoints, and candidate paths. Architecture evidence is mandatory and must
 match `architecture-guidance.schema.json`.
 
-Select execution depth using `references/execution-depth.md`. Depth controls role dispatch cost, not
-artifact or validation requirements.
+Select task execution depth using `references/execution-depth.md`. Use local task risk, ambiguity,
+contract role, and complexity; do not inherit `full` merely because the containing feature is L/XL.
+Depth controls role dispatch cost, not artifact or validation requirements.
 
 Classify the task:
 
@@ -44,6 +49,7 @@ low-risk task, the coordinator may execute this role inline and record
 `execution: inline-lean`; otherwise dispatch `kapelle:implementation-planner`. The plan must contain:
 
 - task scope and non-goals;
+- workstream outcome, primary aspect, contract role, and dependency boundary;
 - business invariants and scenario matrix;
 - selected project capability and applicable guidance;
 - scoped architecture rules and aspect/contract dependencies;
@@ -83,7 +89,16 @@ inspectable evidence tied to acceptance criteria.
 
 Dispatch `kapelle:reviewer` in fresh read-only context for every risk-triggered task. For a
 low-risk `lean` task, record `review: deferred-to-feature-review` and run focused project
-validation; `/kapelle:review` remains mandatory before ship. Then run project validation commands.
+validation; `/kapelle:feature-review` remains mandatory before ship. Then prepare the exact project
+validation batch and apply the effective `validation.development_policy` or invocation override.
+
+With `ask`, require one explicit `run-all`, `run-selected`, or `skip-all` decision. With `allow`,
+run the batch. With `skip`, run no project validation commands. If the user cancels a running
+command, stop it when supported and do not retry without a new decision.
+
+Record the result against `validation-decision.schema.json`. Required skipped or cancelled checks
+set the task to `validation-deferred`; they do not consume an edit attempt and do not count as
+`PASS`. A later validation-enabled implementation run handles deferred tasks before new work.
 
 An attempt is one implementation or corrective edit cycle followed by focused validation.
 `implementation.max_task_attempts` is a hard cap. Do not count read-only planning or review as edit
@@ -95,6 +110,7 @@ attempts. When the cap is reached:
 4. ask the user to revise the plan, acceptance criteria, or constraints.
 
 Never weaken tests, invariants, security, or acceptance criteria to fit the attempt limit.
+Never mark deferred validation as successful to finish a task.
 
 ## 5. Execution modes
 

@@ -1,7 +1,5 @@
 ---
 name: design
-model: opus
-effort: high
 description: >
   Write `sad.md`, `surface-plan.json`, and ADRs using scoped project architecture rules. Invoke as
   /kapelle:design <slug> for feature-scoped work.
@@ -14,7 +12,8 @@ Write `sad.md`, `surface-plan.json`, and ADRs.
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `spec.md + CONTEXT.md optional + architecture-map.md`.
+- Reads: `spec.md + CONTEXT.md optional + feature-local architecture context optional + shared
+  architecture baseline optional`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 - Execution depth: [`../../references/execution-depth.md`](../../references/execution-depth.md).
@@ -25,8 +24,10 @@ Write `sad.md`, `surface-plan.json`, and ADRs.
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Select and record execution depth. Use the architecture map when present; dispatch
-   `kapelle:explorer` only for missing affected-scope precedents.
+3. Select and record execution depth. Prefer
+   `docs/features/<slug>/_context/architecture.md`, then use `docs/architecture-map.md` as a shared
+   baseline. Never refresh the shared baseline from this stage. Dispatch `kapelle:explorer` only for
+   missing affected-scope precedents and keep that evidence feature-local.
 4. Identify the tentative aspects, modules, entrypoints, and paths. Semantically discover and
    dispatch the project's architecture-rules subagent for exactly that scope. Validate its output
    against `dispatcher/architecture-guidance.schema.json`; refuse on a missing capability or

@@ -1,14 +1,12 @@
 ---
-name: resume
-model: opus
-effort: high
+name: resume-change
 description: >
   Resume a paused Kapelle existing-feature change after requirement or architecture revision.
   Verify fingerprints, stale-artifact resolution, task reconciliation, and current implementation
-  plans before continuing. Invoke as /kapelle:resume <slug> --change=<change-id>.
+  plans before continuing. Invoke as /kapelle:resume-change <slug> --change=<change-id>.
 ---
 
-# Skill: resume
+# Skill: resume-change
 
 Resume implementation only from a reconciled and approved immutable change revision.
 
@@ -31,7 +29,7 @@ Resume implementation only from a reconciled and approved immutable change revis
    - retain `keep`;
    - run validation for `revalidate`;
    - regenerate plan and strategy for `rework`;
-   - skip `superseded`;
+   - skip `supersede`;
    - require an approved corrective task for `revert-required`.
 7. Before each runnable task, verify its plan uses the current revision and current `based_on`
    fingerprints.

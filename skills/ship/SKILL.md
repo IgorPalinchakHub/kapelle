@@ -1,7 +1,5 @@
 ---
 name: ship
-model: inherit
-effort: medium
 description: >
   Verify readiness and write ship notes; do not run git actions. Invoke as /kapelle:ship <slug> for feature-scoped work.
 ---
@@ -15,16 +13,21 @@ Verify readiness and write ship notes; do not run git actions.
 - `<slug>` for feature-scoped work.
 - Reads: `PASS review`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Validation execution:
+  [`../../references/validation-execution.md`](../../references/validation-execution.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `ship.md`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+3. Refuse with `Status: REFUSED-validation-incomplete` if any task is `validation-deferred` or any
+   required test, static-analysis, lint, build, other validation command, or integration check is
+   missing, failed, skipped, or cancelled. Development policy cannot override this final gate.
+4. Perform this stage's work without re-running prior stages.
+5. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
+6. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
+7. Write outputs: `ship.md`.
+8. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

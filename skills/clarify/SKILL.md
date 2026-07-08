@@ -1,7 +1,5 @@
 ---
 name: clarify
-model: opus
-effort: high
 description: >
   Tighten `spec.md` by finding ambiguities, gaps, and unresolved decisions. Invoke as /kapelle:clarify <slug> for feature-scoped work.
 ---

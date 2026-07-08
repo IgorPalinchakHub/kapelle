@@ -1,7 +1,5 @@
 ---
 name: glossary
-model: haiku
-effort: low
 description: >
   Capture or reconcile domain terms in `CONTEXT.md`. Invoke as /kapelle:glossary <slug> for feature-scoped work.
 ---

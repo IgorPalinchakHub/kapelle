@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/task-plan.schema.json",
+  "title": "Kapelle structured feature task plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "slug",
+    "decomposition_depth",
+    "architecture_guidance_path",
+    "workstreams",
+    "tasks"
+  ],
+  "properties": {
+    "slug": { "type": "string", "minLength": 1 },
+    "decomposition_depth": {
+      "type": "string",
+      "enum": ["compact", "standard", "hierarchical"]
+    },
+    "architecture_guidance_path": { "type": "string", "minLength": 1 },
+    "workstreams": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "intent",
+          "aspects",
+          "depends_on",
+          "completion_task_id",
+          "completion_signal"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Z][A-Z0-9-]*$"
+          },
+          "title": { "type": "string", "minLength": 1 },
+          "intent": { "type": "string", "minLength": 1 },
+          "aspects": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "depends_on": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "uniqueItems": true
+          },
+          "completion_task_id": { "type": "string", "minLength": 1 },
+          "completion_signal": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "task-context.schema.json" }
+    },
+    "split_recommendations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "default": []
+    }
+  }
+}

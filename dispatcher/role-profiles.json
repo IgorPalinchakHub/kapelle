@@ -1,0 +1,36 @@
+{
+  "//": "Provider-neutral execution profiles for Kapelle roles and stages. Core declares required reasoning and cost intent only; a provider adapter maps a profile to a concrete model or effort through project config (providers.<provider>.roles / providers.<provider>.stages). When no adapter binding exists, the role inherits the session default.",
+  "reasoning_levels": ["low", "medium", "high"],
+  "cost_tiers": ["economical", "balanced", "premium"],
+  "agents": {
+    "explorer": { "reasoning": "low", "cost": "economical" },
+    "critic": { "reasoning": "high", "cost": "premium" },
+    "devils-advocate": { "reasoning": "high", "cost": "premium" },
+    "implementation-planner": { "reasoning": "high", "cost": "premium" },
+    "change-reconciler": { "reasoning": "high", "cost": "premium" },
+    "test-author": { "reasoning": "medium", "cost": "balanced" },
+    "implementer": { "reasoning": "medium", "cost": "balanced" },
+    "reviewer": { "reasoning": "high", "cost": "premium" }
+  },
+  "stages": {
+    "survey": { "reasoning": "medium", "cost": "balanced" },
+    "specify": { "reasoning": "high", "cost": "premium" },
+    "clarify": { "reasoning": "high", "cost": "premium" },
+    "design": { "reasoning": "high", "cost": "premium" },
+    "sequences": { "reasoning": "medium", "cost": "balanced" },
+    "data-model": { "reasoning": "medium", "cost": "balanced" },
+    "contracts": { "reasoning": "medium", "cost": "balanced" },
+    "decompose": { "reasoning": "medium", "cost": "balanced" },
+    "plan-tests": { "reasoning": "medium", "cost": "balanced" },
+    "implement": { "reasoning": "high", "cost": "balanced" },
+    "feature-review": { "reasoning": "high", "cost": "premium" },
+    "ship": { "reasoning": "medium", "cost": "balanced" },
+    "change": { "reasoning": "high", "cost": "premium" },
+    "fix": { "reasoning": "high", "cost": "premium" },
+    "resume-change": { "reasoning": "high", "cost": "premium" },
+    "decide-adr": { "reasoning": "high", "cost": "premium" },
+    "roadmap": { "reasoning": "medium", "cost": "balanced" },
+    "classify-size": { "reasoning": "low", "cost": "economical" },
+    "glossary": { "reasoning": "low", "cost": "economical" }
+  }
+}

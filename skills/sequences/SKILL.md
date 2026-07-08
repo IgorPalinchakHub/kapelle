@@ -1,7 +1,5 @@
 ---
 name: sequences
-model: inherit
-effort: medium
 description: >
   Write runtime and cross-aspect flows to `sequences.md`. Invoke as /kapelle:sequences <slug> for
   feature-scoped work.

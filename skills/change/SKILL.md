@@ -1,7 +1,5 @@
 ---
 name: change
-model: opus
-effort: high
 description: >
   Safely modify an existing feature as a bugfix, enhancement, or behavior-preserving refactor.
   Capture immutable revisions, pause active implementation for amendments, invalidate dependent
@@ -48,7 +46,7 @@ Coordinate a traceable change to an existing feature without rerunning the full 
 10. On approval, execute only route stages through their existing contracts. Pass
     `--change=<change-id>` and current revision; append outcomes to `progress.jsonl`.
 11. When all stale upstream artifacts are resolved, set state `resumable` and hand off to
-    `/kapelle:resume <slug> --change=<change-id>`.
+    `/kapelle:resume-change <slug> --change=<change-id>`.
 12. Emit the stage-handoff block with the current revision, artifacts to review, and exact resume
     command.
 

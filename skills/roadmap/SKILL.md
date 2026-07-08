@@ -1,7 +1,5 @@
 ---
 name: roadmap
-model: inherit
-effort: medium
 description: >
   Maintain roadmap state across Now/Next/Later/Shipped. Invoke as /kapelle:roadmap <slug> for feature-scoped work.
 ---

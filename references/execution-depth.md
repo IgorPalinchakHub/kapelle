@@ -22,6 +22,15 @@ existing contract may remain `standard`.
 Record the selected depth and reason in the stage output or feature audit. A later stage may escalate
 depth from new evidence, but must not silently reduce it.
 
+Feature size controls stage and decomposition depth. It does not automatically control every
+implementation task. After decomposition, task execution depth is selected independently:
+
+| Task evidence | Execution depth |
+|---|---|
+| Low risk, established pattern, bounded files, no public contract | `lean` |
+| Medium risk, contract consumer/provider, or moderate coordination | `standard` |
+| High risk, security, destructive data, ambiguous invariant, or new public contract | `full` |
+
 ## Dispatch budget
 
 - `lean`: reuse cited upstream analysis; perform routine checks inline; dispatch a subagent only for
@@ -32,6 +41,9 @@ depth from new evidence, but must not silently reduce it.
 
 Specific rules:
 
+- `specify` input preflight is always bounded, regardless of depth. Until authoritative slug, work
+  context, and raw idea are resolved, it performs no source/commit search and dispatches no
+  subagent.
 - `specify` and `clarify` must not repeat the same adversarial review. At `lean`, `specify` performs
   one inline acceptance-criteria check and `clarify` runs only a delta ambiguity sweep.
 - `design` always dispatches the project's architecture-rules capability. It dispatches
@@ -39,7 +51,7 @@ Specific rules:
 - `data-model` dispatches `kapelle:explorer` only when persistence is affected and cited precedents
   are missing.
 - `implement` always persists a plan. At `lean`, a low-risk task may execute the planner role inline
-  and defer independent review to the feature-level `review` stage. Risk-triggered tasks always use
+  and defer independent review to the feature-level `feature-review` stage. Risk-triggered tasks always use
   a fresh `kapelle:implementation-planner` and per-task `kapelle:reviewer`.
 - `test-author` execute mode is skipped for `validation-only` work that creates no test artifact.
 

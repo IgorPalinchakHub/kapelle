@@ -1,7 +1,5 @@
 ---
 name: devils-advocate
-model: opus
-effort: high
 description: >
   Find ambiguity, failure modes, missing branches, and risky assumptions.
 ---
