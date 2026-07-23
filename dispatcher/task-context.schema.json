@@ -116,10 +116,12 @@
         "in-progress",
         "blocked",
         "completed",
+        "implemented-unverified",
         "validation-deferred",
         "stale",
         "needs-rework",
-        "superseded"
+        "superseded",
+        "unknown"
       ]
     }
   }

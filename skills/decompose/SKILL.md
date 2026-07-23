@@ -2,7 +2,6 @@
 name: decompose
 description: >
   Decompose a feature into architecture-aligned workstreams and bounded, dependency-ordered tasks.
-  Invoke as /kapelle:decompose <slug>.
 ---
 
 # Skill: decompose
@@ -11,20 +10,20 @@ description: >
 
 ## Inputs
 
-- Gate: `docs/features/<slug>/spec.md` and `docs/features/<slug>/sad.md`.
-- Require `docs/features/<slug>/surface-plan.json`.
-- Read `data-model.md`, `contracts/*`, `sequences.md`, ADRs, and test plan when present.
+- Gate: `docs/features/<slug>/spec.md` and `docs/features/<slug>/design.md`.
+- Require `docs/features/<slug>/_kapelle/surface-plan.json`.
+- Read `contracts/*`, optional `sequences.md`, ADRs, and test plan when present.
 - Require current design architecture-guidance evidence, or refresh it for the decomposition scope.
 - Contract: [`../../references/task-decomposition.md`](../../references/task-decomposition.md).
 - With `--change=<change-id>`, read its approved impact matrix and create only delta tasks.
 
 ## Protocol
 
-1. Refuse if `spec.md` or `sad.md` is missing.
-2. Validate `surface-plan.json` against `dispatcher/surface-plan.schema.json` and reject unknown
+1. Refuse if `spec.md` or `design.md` is missing.
+2. Validate `_kapelle/surface-plan.json` against `dispatcher/surface-plan.schema.json` and reject unknown
    aspect dependencies, contract participants, or integration-check participants.
 3. Require architecture-guidance evidence covering all planned aspects/modules and write
-   `_audit/architecture-guidance/tasks.json`. Reuse current design evidence without another agent
+   `_kapelle/architecture-guidance/tasks.json`. Reuse current design evidence without another agent
    run when its scope is sufficient. If it is missing or narrower than the decomposition scope,
    semantically dispatch the project's architecture-rules subagent. Refuse on blocking gaps.
 4. Select decomposition depth:
@@ -36,7 +35,8 @@ description: >
    `Status: BLOCKED-split-required` and propose feature slugs instead of creating a monolithic plan.
 6. Define architecture-aligned workstreams with outcomes, aspect ownership, dependencies, one
    completion task, and observable completion signals. Even `compact` uses one workstream for a
-   stable output shape.
+   stable output shape. For an M feature, prefer 3–7 workstreams and 7–15 tasks; exceeding this is a
+   review signal, not permission to weaken AC or architecture coverage.
 7. Within each workstream, create bounded tasks following
    `references/task-decomposition.md`. For a change request, preserve unaffected canonical tasks
    and their evidence without replanning them; add or modify only the approved delta.
@@ -47,13 +47,13 @@ description: >
    expected result, risk, contract references, aspect ids, and file/module/entrypoint hints.
    Parallel candidates require known, pairwise-disjoint file ownership.
 10. Do not add routing labels, skill names, agent names, provider names, rule queries, or gate names.
-11. Write the draft `tasks.json`, validate it against `dispatcher/task-plan.schema.json` and each
+11. Write the draft `_kapelle/task-plan.json`, validate it against `dispatcher/task-plan.schema.json` and each
     task against `dispatcher/task-context.schema.json`, then run:
 
     ```text
     scripts/validate_task_plan.py \
-      --tasks docs/features/<slug>/tasks.json \
-      --surface-plan docs/features/<slug>/surface-plan.json \
+      --tasks docs/features/<slug>/_kapelle/task-plan.json \
+      --surface-plan docs/features/<slug>/_kapelle/surface-plan.json \
       --spec docs/features/<slug>/spec.md
     ```
 
@@ -65,11 +65,11 @@ description: >
    During revision reconciliation, preserve existing task ids and evidence; apply `keep`,
    `revalidate`, `rework`, and `supersede` dispositions instead of silently replacing tasks.
 14. Write:
-    - final `docs/features/<slug>/tasks.json`;
-    - semantic evidence to `_audit/task-plan-validation.txt`;
-    - M/L/XL review to `_audit/decomposition-review.json`;
-    - optional human-readable `tasks/*.md`.
-15. Emit handoff to `/kapelle:plan-tests <slug>`.
+    - compact `docs/features/<slug>/tasks.md`;
+    - final `docs/features/<slug>/_kapelle/task-plan.json`;
+    - semantic evidence to `_kapelle/task-plan-validation.txt`;
+    - M/L/XL review to `_kapelle/reviews/decomposition.json`.
+15. Refresh `STATUS.md` and emit handoff to `/kapelle:plan-tests <slug>`.
 
 ## Output Contract
 
@@ -77,7 +77,7 @@ description: >
 {
   "slug": "<slug>",
   "decomposition_depth": "standard",
-  "architecture_guidance_path": "_audit/architecture-guidance/tasks.json",
+  "architecture_guidance_path": "_kapelle/architecture-guidance/tasks.json",
   "workstreams": [
     {
       "id": "WS-PROVIDER",

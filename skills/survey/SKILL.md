@@ -2,8 +2,7 @@
 name: survey
 description: >
   Bootstrap the shared repository architecture baseline or write a worktree-safe feature-local
-  architecture overlay. Invoke as /kapelle:survey [<slug>] or explicitly
-  /kapelle:survey --refresh-baseline.
+  architecture overlay, with explicit shared-baseline refresh.
 ---
 
 # Skill: survey

@@ -2,8 +2,7 @@
 name: fix
 description: >
   Backward-compatible bugfix shorthand for the existing-feature change lifecycle. Capture baseline,
-  reproduce the defect, assess impact, and run the minimal approved route. Invoke as
-  /kapelle:fix <slug> "<bug description>".
+  reproduce the defect, assess impact, and run the minimal approved route for a feature.
 ---
 
 # Skill: fix
@@ -30,7 +29,7 @@ Run the universal change lifecycle with `mode: bugfix`.
 
 ## Output
 
-- `changes/<change-id>/change.json`, baseline, progress, code and tests.
+- `_kapelle/changes/<change-id>/change.json`, baseline, progress, code and tests.
 - `Status: DONE | stage: fix | produced: <paths>`.
 
 ## Definition of Done

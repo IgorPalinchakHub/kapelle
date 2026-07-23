@@ -3,7 +3,7 @@ name: resume-change
 description: >
   Resume a paused Kapelle existing-feature change after requirement or architecture revision.
   Verify fingerprints, stale-artifact resolution, task reconciliation, and current implementation
-  plans before continuing. Invoke as /kapelle:resume-change <slug> --change=<change-id>.
+  plans before continuing an identified feature change.
 ---
 
 # Skill: resume-change
@@ -13,7 +13,7 @@ Resume implementation only from a reconciled and approved immutable change revis
 ## Inputs
 
 - Feature slug and required `--change=<change-id>`.
-- `change.json`, `active-state.json`, current revision, artifact sidecars, reconciliation, tasks,
+- `_kapelle/changes/<change-id>/change.json`, `state.json`, current revision, artifact sidecars, reconciliation, tasks,
   implementation plans, and audit evidence.
 - Contract: [`../../references/change-lifecycle.md`](../../references/change-lifecycle.md).
 

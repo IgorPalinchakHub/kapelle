@@ -1,7 +1,7 @@
 ---
 name: roadmap
 description: >
-  Maintain roadmap state across Now/Next/Later/Shipped. Invoke as /kapelle:roadmap <slug> for feature-scoped work.
+  Maintain feature roadmap state across Now, Next, Later, and Shipped.
 ---
 
 # Skill: roadmap

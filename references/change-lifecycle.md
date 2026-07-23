@@ -6,10 +6,9 @@ or architecture changes discovered during implementation.
 ## Storage
 
 ```text
-docs/features/<slug>/changes/<change-id>/
+docs/features/<slug>/_kapelle/changes/<change-id>/
   change.json
-  change.md
-  active-state.json
+  state.json
   artifact-state/
   revisions/
     r001/
@@ -26,8 +25,8 @@ docs/features/<slug>/changes/<change-id>/
   progress.jsonl
 ```
 
-Revisions are immutable after approval. `change.json` points to `current_revision`;
-`active-state.json` owns runtime state.
+Revisions are immutable after approval. `change.json` points to `current_revision`; `state.json`
+owns runtime state. Human-facing scope and decisions are reflected in proposal/spec/design/ADR.
 
 ## New change
 
@@ -59,7 +58,7 @@ Accept either an explicit command or a requirement/architecture amendment expres
 Stop all new implementation edits for the change. Finish only the currently running atomic tool
 operation, then:
 
-1. set `active-state.state` to `paused`;
+1. set `state.state` to `paused`;
 2. record active task, changed-file evidence, completed validations, and unresolved work;
 3. set current in-progress task to `blocked` with reason `revision-pending`;
 4. do not dispatch more implementation agents, including Agent Team lanes.
@@ -90,12 +89,12 @@ older revision.
 Read the canonical graph from `dispatcher/artifact-dependencies.json`. Its effective structure is:
 
 ```text
-spec.md -> sad.md -> surface-plan.json -> sequences.md
-spec.md + sad.md + surface-plan.json + sequences.md -> data-model.md
-spec.md + sad.md + surface-plan.json + sequences.md + data-model.md -> contracts
-all design artifacts -> tasks.json
-spec.md + surface-plan.json + data-model.md + contracts + tasks.json -> test-plan.md
-all upstream artifacts -> implementation-plans -> validation
+proposal.md -> spec.md -> design.md -> _kapelle/surface-plan.json
+spec.md + design.md + _kapelle/surface-plan.json -> contracts
+all design artifacts + contracts -> tasks.md -> _kapelle/task-plan.json
+spec.md + _kapelle/surface-plan.json + contracts + _kapelle/task-plan.json -> test-plan.md
+all upstream artifacts -> _kapelle/task-runs -> _kapelle/validation
+all docs + validation -> documentation-convergence -> feature-review -> STATUS.md
 ```
 
 For each artifact, store a sidecar matching `dispatcher/artifact-state.schema.json` with its

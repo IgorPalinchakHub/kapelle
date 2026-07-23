@@ -1,7 +1,7 @@
 ---
 name: data-model
 description: >
-  Determine data/schema impact and stage migrations or explicit no-schema-change skip. Invoke as /kapelle:data-model <slug> for feature-scoped work.
+  Determine data/schema impact and stage migrations or an explicit no-schema-change result.
 ---
 
 # Skill: data-model
@@ -11,7 +11,7 @@ Determine data/schema impact and stage migrations or explicit no-schema-change s
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `spec.md + sad.md + surface-plan.json + sequences.md`.
+- Reads: `spec.md + design.md + _kapelle/surface-plan.json + optional sequences.md`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 
@@ -24,13 +24,14 @@ Determine data/schema impact and stage migrations or explicit no-schema-change s
    precedent.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. Before staging migrations, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Keep one shared logical model across all producer and consumer aspects. Write `data-model.md`
-   and staged migrations, or an explicit `Status: SKIPPED-confirmed` artifact.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+6. Keep one shared logical model across all producer and consumer aspects. Update the data/schema
+   section of `design.md`, stage project migrations when required, and write deterministic evidence
+   to `_kapelle/data-model.json`. A no-schema-change result is explicit in both places.
+7. Refresh `STATUS.md` and emit the chat handoff.
 
 ## Output
 
-- `data-model.md and staged migrations or skip note`.
+- Updated `design.md`, `_kapelle/data-model.json`, and staged migrations when applicable.
 - `Status: DONE | stage: data-model | produced: <paths>`.
 
 ## Definition of Done

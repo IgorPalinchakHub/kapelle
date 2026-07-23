@@ -11,7 +11,7 @@ For each pending task:
 1. Validate the enclosing plan against `task-plan.schema.json`, rerun
    `scripts/validate_task_plan.py`, and validate the task against `task-context.schema.json`.
 2. Read the referenced feature artifacts and relevant repository context from disk.
-3. Validate `surface-plan.json`, the complete dependency graph, aspect dependencies, shared
+3. Validate `_kapelle/surface-plan.json`, the complete dependency graph, aspect dependencies, shared
    contract ordering, and integration-check ownership; compute dependency-ready batches.
 4. Present the task intent, acceptance criteria, hints, and artifact paths to native project capabilities.
 5. Let Claude Code select applicable project skills and subagents semantically for the task's
@@ -43,9 +43,10 @@ For each pending task:
 15. A dependent task may become development-ready from a `validation-deferred` dependency only
     after the explicit skip/cancel decision is recorded. Propagate that risk into its plan; do not
     accept final contract or integration evidence until the dependency passes.
-15. Append task, capability, architecture guidance, general guidance, strategy, plan, approval, implementation, review,
-    validation, and actual available usage telemetry to feature audit files.
-16. If requirements, architecture, contracts, or constraints change during implementation, stop
+16. Persist task, capability, architecture guidance, strategy, plan, approval, implementation,
+    review, and validation in `_kapelle/task-runs/<task-id>.json`; append only actual available usage
+    telemetry to `_kapelle/telemetry/execution.jsonl`.
+17. If requirements, architecture, contracts, or constraints change during implementation, stop
     all change-related dispatch, checkpoint state, and enter the revision lifecycle. Do not resume
     until `/kapelle:resume-change` passes fingerprint and reconciliation gates.
 
@@ -81,5 +82,6 @@ For each pending task:
   resume.
 - **Safe concurrency** — unknown or overlapping file ownership remains sequential.
 - **Official mechanisms only** — no generated or assumed `Workflow` tool.
-- **Artifact is state** — tasks and handoffs remain durable on disk.
+- **Readable artifact state** — human documents remain durable; execution evidence stays under
+  `_kapelle/`.
 - **No git ownership** — Kapelle never runs git operations.

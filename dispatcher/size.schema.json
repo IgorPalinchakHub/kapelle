@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/size.schema.json",
+  "title": "Kapelle feature size and execution depth",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["size", "execution_depth", "reason"],
+  "properties": {
+    "size": {
+      "type": "string",
+      "enum": ["XS", "S", "M", "L", "XL", "unknown"]
+    },
+    "execution_depth": {
+      "type": ["string", "null"],
+      "enum": ["lean", "standard", "full", null]
+    },
+    "reason": { "type": "string", "minLength": 1 },
+    "legacy_text_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    }
+  }
+}
+

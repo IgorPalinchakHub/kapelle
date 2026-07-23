@@ -1,0 +1,49 @@
+{
+  "commands": [
+    {
+      "command": "python3 scripts/validate_plugin.py",
+      "kind": "tests",
+      "required": true,
+      "scope": "plugin contracts and full deterministic test suite",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/validate_task_plan.py --tasks docs/features/human-readable-artifacts-refactor/_kapelle/task-plan.json --surface-plan docs/features/human-readable-artifacts-refactor/_kapelle/surface-plan.json --spec docs/features/human-readable-artifacts-refactor/spec.md",
+      "kind": "other",
+      "required": true,
+      "scope": "self-hosted semantic task graph",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "kind": "lint",
+      "required": true,
+      "scope": "working tree patch hygiene",
+      "status": "passed"
+    }
+  ],
+  "decision": "run-all",
+  "implementation_fingerprints": {
+    "dispatcher/documentation-convergence.schema.json": "8f551cfb9df56c5e7c9b368dad4b9ed951b711b94e1ac7dd96622e46f3b21e7f",
+    "dispatcher/feature-manifest.schema.json": "7e9180496bf06a34b9760670c3120ee0344f217eb4ca6fa6549d82d7c39b4f58",
+    "dispatcher/feature-review.schema.json": "0959e3172b5c7b55429a52daf9d149f73d4389d11f6623fce2dd74bc68f32ac0",
+    "dispatcher/feature-state.schema.json": "82a8ad6fc31ac0c475e92ca6848311f1350ba97687966b35d704cc4d285ac8e7",
+    "dispatcher/recovery-report.schema.json": "a35439783d47565c3c2738f9615b15c1dc04c532e32a67ce21937b7320863367",
+    "dispatcher/size.schema.json": "98bd237073cdb8cf172c7ad6d7a106c6a982c3281d3c99388486dcab45923496",
+    "dispatcher/task-context.schema.json": "cd7373a5563489ef2bfe270616804a46329029babd062eedbfbf4f5f0a13f083",
+    "dispatcher/task-plan.schema.json": "e02d697b5d26fab24c132bf1c84765e1ed451900fa952591c342f892545571c6",
+    "dispatcher/validation-decision.schema.json": "e075dde3cbf675381dd25b59a306942673181e3c5b68ec25b69b5dcf56653182",
+    "dispatcher/vocabulary.json": "48449a5f190ad02c5c9b5d9f607f17b83c1f1fe04400498ccde55259a71de314"
+  },
+  "input_fingerprints": {
+    "_kapelle/surface-plan.json": "0273f0bd866a3226bbddc910fe91bfc5aef250105fa374c4c19fca27d90ab3ff",
+    "_kapelle/task-plan.json#structural": "863c94b66679ff7f6b96f20b3f93efc9e2a27d7466797d5b84fa23e1015d0ce7",
+    "design.md": "612ef09c2111f594be19612235f5365538d18c7705911085815041ff9a4c8da9",
+    "proposal.md": "ba3938d6ad08402d9f48d7b48fe9f89dd2e011d8c7c67755e1c965cd186c7159",
+    "spec.md": "5b15e70e74f245943bf8e99f77b58c5abec9405a5c99add9e40b3860b9e9bdda",
+    "tasks.md": "715247a022f9cdb3ec93ba86e20a33835e7a0c0ffcfc230e1890316a3fd081d0",
+    "test-plan.md": "1c1400f5a12e0c57e6d25968745bf007ff6f2ec10d8e940d41033e74a90555ec"
+  },
+  "policy": "allow",
+  "task_id": "T02"
+}

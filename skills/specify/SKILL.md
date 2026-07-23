@@ -1,13 +1,12 @@
 ---
 name: specify
 description: >
-  Turn a raw feature idea into `spec.md` with acceptance criteria. Invoke as
-  /kapelle:specify <slug> ["<feature idea>"] for feature-scoped work.
+  Turn a raw feature idea into `proposal.md` and `spec.md` with acceptance criteria.
 ---
 
 # Skill: specify
 
-Turn a raw feature idea into `spec.md` with acceptance criteria.
+Turn a raw feature idea into a short proposal and an observable product specification.
 
 ## Inputs
 
@@ -45,8 +44,9 @@ Turn a raw feature idea into `spec.md` with acceptance criteria.
    criterion cannot be grounded from the idea and existing context; record the exact unresolved
    question first. Broad code mapping, implementation archaeology, and detailed technical design
    belong to `survey` and `design`.
-7. Draft goals, non-goals, actors, user stories, measurable acceptance criteria, NFRs, and open
-   questions without introducing implementation routing.
+7. Draft `proposal.md` with the problem, goal, scope, non-goals, impact, risks, and unresolved
+   product decisions. Draft `spec.md` with actors, user stories, measurable acceptance criteria,
+   NFRs, edge cases, compatibility, and open questions. Do not introduce implementation routing.
 8. Use native project capabilities only after input completeness, when project-specific product
    behavior is genuinely needed:
    [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
@@ -55,12 +55,16 @@ Turn a raw feature idea into `spec.md` with acceptance criteria.
 10. Resolve or explicitly defer every blocking finding.
 11. Dispatch `kapelle:critic` only at `full` depth or when requirements conflict with repository
    constraints. Otherwise leave the independent ambiguity delta pass to `clarify`.
-12. Write outputs: `docs/features/<slug>/spec.md and .size`, including the execution-depth reason.
-13. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+12. Write `proposal.md`, `spec.md`, and `_kapelle/size.json`. Keep execution-depth metadata in
+    `_kapelle/size.json`, not in the human documents.
+13. Run `scripts/build_feature_status.py docs/features/<slug> --initialize` on first creation (or
+    the normal refresh when a manifest already exists) and emit the chat handoff per
+    [`../../references/handoff.md`](../../references/handoff.md). The handoff is not appended to a
+    human artifact.
 
 ## Output
 
-- `docs/features/<slug>/spec.md and .size`.
+- `docs/features/<slug>/proposal.md`, `spec.md`, and `_kapelle/size.json`.
 - `Status: DONE | stage: specify | produced: <paths>`.
 
 ## Definition of Done

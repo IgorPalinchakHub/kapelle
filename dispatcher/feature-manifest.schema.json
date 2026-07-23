@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/feature-manifest.schema.json",
+  "title": "Kapelle feature layout manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout_version",
+    "schema_version",
+    "slug",
+    "human_artifacts",
+    "recovery",
+    "state_built_at"
+  ],
+  "properties": {
+    "layout_version": { "const": 2 },
+    "schema_version": { "const": "1.0" },
+    "slug": { "type": "string", "minLength": 1 },
+    "human_artifacts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "exists", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "exists": { "type": "boolean" },
+          "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+        }
+      }
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "evidence_loss"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["native", "recovered", "migrated"] },
+        "evidence_loss": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "state_built_at": { "type": "string", "format": "date-time" }
+  }
+}
+

@@ -6,7 +6,7 @@ artifacts, architecture guidance, acceptance-criteria coverage, or validation.
 
 ## Selection
 
-Read `docs/features/<slug>/.size` when present:
+Read `docs/features/<slug>/_kapelle/size.json` when present:
 
 | Evidence | Depth |
 |---|---|
@@ -19,8 +19,8 @@ data changes, ambiguous business invariants, a new architectural pattern, or cro
 an unestablished shared contract or unclear ownership. A routine backend/frontend change over an
 existing contract may remain `standard`.
 
-Record the selected depth and reason in the stage output or feature audit. A later stage may escalate
-depth from new evidence, but must not silently reduce it.
+Record the selected depth and reason under `_kapelle/`. A later stage may escalate depth from new
+evidence, but must not silently reduce it.
 
 Feature size controls stage and decomposition depth. It does not automatically control every
 implementation task. After decomposition, task execution depth is selected independently:
@@ -57,6 +57,5 @@ Specific rules:
 
 ## Explicit skips
 
-An inapplicable stage writes its normal artifact containing a short `Status: SKIPPED-confirmed`
-record with the evidence for the skip. Downstream stages therefore retain a stable file contract and
-never infer a skip from a missing file.
+An inapplicable optional stage records `Status: SKIPPED-confirmed` and evidence in
+`_kapelle/state.json`. Downstream stages never infer a skip from silence.

@@ -1,0 +1,37 @@
+{
+  "human_artifacts": {
+    "design.md": {
+      "exists": true,
+      "path": "design.md",
+      "sha256": "612ef09c2111f594be19612235f5365538d18c7705911085815041ff9a4c8da9"
+    },
+    "proposal.md": {
+      "exists": true,
+      "path": "proposal.md",
+      "sha256": "ba3938d6ad08402d9f48d7b48fe9f89dd2e011d8c7c67755e1c965cd186c7159"
+    },
+    "spec.md": {
+      "exists": true,
+      "path": "spec.md",
+      "sha256": "5b15e70e74f245943bf8e99f77b58c5abec9405a5c99add9e40b3860b9e9bdda"
+    },
+    "tasks.md": {
+      "exists": true,
+      "path": "tasks.md",
+      "sha256": "715247a022f9cdb3ec93ba86e20a33835e7a0c0ffcfc230e1890316a3fd081d0"
+    },
+    "test-plan.md": {
+      "exists": true,
+      "path": "test-plan.md",
+      "sha256": "1c1400f5a12e0c57e6d25968745bf007ff6f2ec10d8e940d41033e74a90555ec"
+    }
+  },
+  "layout_version": 2,
+  "recovery": {
+    "evidence_loss": [],
+    "mode": "native"
+  },
+  "schema_version": "1.0",
+  "slug": "human-readable-artifacts-refactor",
+  "state_built_at": "2026-07-23T17:03:39Z"
+}

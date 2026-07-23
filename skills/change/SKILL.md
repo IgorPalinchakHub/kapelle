@@ -4,8 +4,7 @@ description: >
   Safely modify an existing feature as a bugfix, enhancement, or behavior-preserving refactor.
   Capture immutable revisions, pause active implementation for amendments, invalidate dependent
   artifacts, reconcile existing work, obtain route approval, and execute only necessary Kapelle
-  stages. Invoke as /kapelle:change <slug> [--mode=bugfix|enhancement|refactor] "<description>" or
-  /kapelle:change <slug> --change=<id> --revise "<amendment>".
+  stages. Use for a feature-scoped bugfix, enhancement, refactor, or active revision amendment.
 ---
 
 # Skill: change
@@ -26,7 +25,8 @@ Coordinate a traceable change to an existing feature without rerunning the full 
 1. Require a feature slug and description/amendment.
 2. If `--revise` is present:
    - require an existing change and state `running`, `paused`, or `blocked`;
-   - stop all implementation dispatch and write a safe checkpoint to `active-state.json`;
+   - stop all implementation dispatch and write a safe checkpoint to
+     `_kapelle/changes/<change-id>/state.json`;
    - increment the revision and create immutable `revisions/rNNN/`;
    - continue at step 4 with the amendment as the delta.
 3. Otherwise infer mode, initialize revision `r001`, and permit an imported baseline only when
@@ -37,15 +37,16 @@ Coordinate a traceable change to an existing feature without rerunning the full 
 6. Dispatch `kapelle:critic` against classification, amendment, stale set, and minimal route.
 7. For revision 2+, dispatch `kapelle:change-reconciler`; validate
    `reconciliation.json` against `dispatcher/reconciliation.schema.json`.
-8. Write or update `change.json`, `change.md`, `active-state.json`, revision data, artifact
-   sidecars, and snapshots. Validate the root request against
+8. Write or update `_kapelle/changes/<change-id>/change.json`, `state.json`, revision data, artifact
+   sidecars, and snapshots. Reflect user-relevant scope/decision deltas in proposal, spec, design,
+   or ADR. Validate the root request against
    `dispatcher/change-request.schema.json` and all revision artifacts against their matching
    schemas.
 9. Show amendment, stale artifacts, task dispositions, risks, and route. Require `approve`,
    `request changes`, or `abort`.
 10. On approval, execute only route stages through their existing contracts. Pass
     `--change=<change-id>` and current revision; append outcomes to `progress.jsonl`.
-11. When all stale upstream artifacts are resolved, set state `resumable` and hand off to
+11. When all stale upstream artifacts are resolved, set state `resumable`, refresh `STATUS.md`, and hand off to
     `/kapelle:resume-change <slug> --change=<change-id>`.
 12. Emit the stage-handoff block with the current revision, artifacts to review, and exact resume
     command.

@@ -11,13 +11,12 @@ repository precedents:
 
 ```text
 spec.md
-sad.md
-surface-plan.json
-sequences.md
-data-model.md
+design.md
+_kapelle/surface-plan.json
+sequences.md (optional)
 contracts/
 adr/
-_audit/architecture-guidance/design.json
+_kapelle/architecture-guidance/design.json
 ```
 
 Do not rescan the repository broadly. Refresh architecture guidance only when the design evidence
@@ -80,14 +79,15 @@ Task boundaries and dependency direction must be checked against scoped project 
 Write the evidence to:
 
 ```text
-docs/features/<slug>/_audit/architecture-guidance/tasks.json
+docs/features/<slug>/_kapelle/architecture-guidance/tasks.json
 ```
 
 When current design evidence already covers every planned aspect/module/path, reuse it and write a
 task-scoped evidence record without another subagent run. Dispatch the project architecture-rules
 subagent only for uncovered scope or blocking uncertainty.
 
-Kapelle does not put rule codes, skill names, agent names, or routing labels in `tasks.json`.
+Kapelle does not put rule codes, skill names, agent names, or routing labels in
+`_kapelle/task-plan.json`.
 
 ## Efficient review protocol
 
@@ -102,7 +102,7 @@ The critic checks missing outcomes, oversized tasks, architecture violations, co
 acceptance-criteria coverage, integration ownership, unsafe parallel claims, and unnecessary task
 fragmentation.
 
-For an existing-feature change, `tasks.json` remains the complete canonical plan. Preserve
+For an existing-feature change, `_kapelle/task-plan.json` remains the complete canonical plan. Preserve
 unaffected tasks and evidence; only the approved delta is decomposed or changed. This keeps global
 acceptance-criteria, contract, and integration validation meaningful.
 
@@ -115,3 +115,7 @@ unknown file ownership honestly; do not invent precision to make validation pass
 Feature size controls decomposition depth only. During implementation, each task receives its own
 execution depth from local risk and complexity. A large feature may contain many `lean` mechanical
 tasks; it must not force every task through full-cost execution.
+
+Write a compact human projection to `tasks.md`. It contains workstreams, task ids/outcomes,
+meaningful dependencies, AC coverage, blockers, and validation state. Full graph topology,
+`files_hint`, contract ownership, and integration ownership remain in `_kapelle/task-plan.json`.

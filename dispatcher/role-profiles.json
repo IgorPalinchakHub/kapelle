@@ -31,6 +31,7 @@
     "decide-adr": { "reasoning": "high", "cost": "premium" },
     "roadmap": { "reasoning": "medium", "cost": "balanced" },
     "classify-size": { "reasoning": "low", "cost": "economical" },
-    "glossary": { "reasoning": "low", "cost": "economical" }
+    "glossary": { "reasoning": "low", "cost": "economical" },
+    "status": { "reasoning": "low", "cost": "economical" }
   }
 }

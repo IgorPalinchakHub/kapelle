@@ -4,7 +4,8 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 
 ## Invariants
 
-1. Artifact is state. Read stage inputs from disk; write durable state under `docs/features/<slug>/`.
+1. Human-readable feature artifacts are durable state. Derived execution state and evidence live
+   under `docs/features/<slug>/_kapelle/` and may be rebuilt without fabricating lost evidence.
 2. Missing inputs cause refusal, not guessing. Emit `Status: REFUSED-missing-input` and name the prior stage.
 3. Stage -> native project capability -> guidance/tools/code is one-way. Project skills never invoke stages.
 4. Code-writing goes through the dispatcher and native project skill/subagent discovery. Selected
@@ -27,7 +28,7 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 13. Skips are explicit and confirmed.
 14. No git operations are performed by the harness.
 15. Project-specific behavior belongs in native project capabilities, not in core stages.
-16. Multi-aspect features use `surface-plan.json` for dependencies, shared contracts, and integration
+16. Multi-aspect features use `_kapelle/surface-plan.json` for dependencies, shared contracts, and integration
     checks; it contains no skill or agent routing.
 17. Execution depth reduces duplicate subagent runs but never weakens artifacts, architecture rules,
     acceptance-criteria coverage, or validation.
@@ -36,10 +37,14 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 19. Development validation commands use an explicit `ask | allow | skip` policy. Skipped or
     cancelled required checks become `validation-deferred`; they are never reported as `PASS` and
     block ship readiness.
+20. `STATUS.md` is the generated human entry point. Every backbone stage refreshes it; missing or
+    invalid `_kapelle/` state triggers recovery and the minimal safe next route.
+21. Product `spec.md` and technical `design.md` must converge with the as-built implementation
+    before feature review and ship.
 
 ## Handoff
 
-Every backbone stage ends with:
+Every backbone stage refreshes `STATUS.md` and ends its chat response with:
 
 ```md
 ## <stage> — <slug>

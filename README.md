@@ -1,6 +1,6 @@
 # Kapelle
 
-Kapelle is a provider-neutral, spec-driven SDLC plugin for Claude Code.
+Kapelle is a provider-neutral, spec-driven SDLC plugin for Claude Code and Codex.
 
 For practical setup, workflows, worktree usage, approvals, examples, and troubleshooting, see
 [Using Kapelle](docs/USAGE.md).
@@ -9,8 +9,8 @@ For practical setup, workflows, worktree usage, approvals, examples, and trouble
 результати: [Команди Kapelle](docs/COMMAND_EXECUTION_UK.md).
 
 ```text
-survey -> specify -> clarify -> design -> sequences -> data-model
-       -> contracts -> decompose -> plan-tests -> implement -> feature-review -> ship
+survey -> specify -> clarify -> design -> contracts? -> decompose
+       -> plan-tests -> implement -> feature-review -> ship
 ```
 
 ## Core boundary
@@ -18,10 +18,11 @@ survey -> specify -> clarify -> design -> sequences -> data-model
 Kapelle owns:
 
 - lifecycle stages and artifact gates;
-- durable state under `docs/features/<slug>/`;
+- durable human state under `docs/features/<slug>/` and recoverable execution state under
+  `_kapelle/`;
 - task dependency ordering;
 - architecture-aligned workstreams, bounded task contracts, and executable task-plan validation;
-- explicit backend, frontend, data, and other aspect coordination through `surface-plan.json`;
+- explicit backend, frontend, data, and other aspect coordination through `_kapelle/surface-plan.json`;
 - explicit generic subagent orchestration;
 - adaptive execution depth that avoids duplicate agent analysis for small, low-risk work;
 - sequential plan-first implementation and adaptive test strategies;
@@ -80,11 +81,11 @@ Each project must expose a native subagent, under any project-defined name, that
 the architecture rules applicable to supplied aspects, modules, entrypoints, and paths. Kapelle
 validates its provider-neutral result before design and before each implementation task.
 
-`design` writes `surface-plan.json`. It describes aspects such as backend, frontend, database, or
-other project-defined slices; provider/consumer contracts; dependency order; and cross-aspect
-integration checks. It contains no capability routing.
+`design` writes the human `design.md` and internal `_kapelle/surface-plan.json`. The latter describes
+backend, frontend, database, or other project-defined slices; provider/consumer contracts;
+dependency order; and cross-aspect integration checks. It contains no capability routing.
 
-`decompose` converts the design into architecture-aligned workstreams and bounded tasks. M/L/XL
+`decompose` writes compact human `tasks.md` plus the validated `_kapelle/task-plan.json`. M/L/XL
 decomposition receives one fresh independent critique and one correction pass at most.
 `scripts/validate_task_plan.py` enforces graph, acceptance-criteria, contract, integration, and safe
 parallel-ownership invariants before implementation.
@@ -126,11 +127,35 @@ approves team creation, and dependency-ready tasks declare non-overlapping `file
 overlapping ownership remains sequential. Kapelle does not create worktrees or use an unofficial
 `Workflow` tool.
 
+## Human-readable feature state
+
+```text
+docs/features/<slug>/
+  STATUS.md
+  proposal.md
+  spec.md
+  design.md
+  tasks.md
+  test-plan.md
+  contracts/
+  adr/
+  _kapelle/
+```
+
+Open `STATUS.md` first. Machine-only plans, validation, reviews, revisions, and telemetry live under
+`_kapelle/`.
+
+If `_kapelle/` is removed, run `/kapelle:status <slug>`. Kapelle rebuilds derived state from the
+human documents and current project evidence, reports evidence that cannot be reconstructed, and
+chooses the minimal next stage. Checked tasks without current validation become
+`implemented-unverified`; recovery never recreates approvals or validation results.
+
 ## Commands
 
 ```text
 /kapelle:survey [<slug>]
 /kapelle:survey --refresh-baseline
+/kapelle:status <slug>
 /kapelle:specify <slug> ["<feature idea>"]
 /kapelle:clarify <slug>
 /kapelle:design <slug>
@@ -164,10 +189,9 @@ Use one entrypoint for fixes, additions, and refactors:
 Kapelle records:
 
 ```text
-docs/features/billing/changes/<change-id>/
+docs/features/billing/_kapelle/changes/<change-id>/
   change.json
-  change.md
-  active-state.json
+  state.json
   artifact-state/
   revisions/r001/
   reconciliation.json

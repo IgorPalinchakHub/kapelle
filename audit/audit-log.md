@@ -39,10 +39,10 @@ Those semantics belong to the provider.
 
 ## Location
 
-Append records to:
+Persist each task record at:
 
 ```text
-docs/features/<slug>/_audit/implementation.jsonl
+docs/features/<slug>/_kapelle/task-runs/<task-id>.json
 ```
 
 ## Assertions

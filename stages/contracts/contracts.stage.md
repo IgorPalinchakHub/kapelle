@@ -5,8 +5,8 @@ It owns lifecycle gates and drift detection, not project-specific generation beh
 
 ## Protocol
 
-1. Read `sad.md`, `surface-plan.json`, `data-model.md`, `sequences.md`, and existing contracts from
-   disk.
+1. Read `design.md`, `_kapelle/surface-plan.json`, optional `sequences.md`, and existing contracts
+   from disk. The design must declare data/schema impact.
 2. Describe each required contract by intent, interface constraints, and expected output location.
 3. Let Claude Code select applicable native project skills, agents, and tools semantically.
 4. Allow the selected project capability to obtain guidance through any provider available in its

@@ -45,6 +45,14 @@ If the user cancels a running command, stop it when the host supports cancellati
 automatically retry it. Record every command as `passed`, `failed`, `skipped`, or `cancelled` using
 `dispatcher/validation-decision.schema.json`.
 
+Evidence includes exact current input fingerprints for the human package and coordination graphs,
+plus fingerprints of the implementation files actually validated. Task-plan status fields are
+excluded from its structural fingerprint so recording a validation result does not invalidate
+itself. `files_hint` must enumerate the task's complete actual implementation inventory; a broad
+directory is acceptable only when the recorded fingerprints enumerate every changed descendant.
+Documentation convergence must equal the union of all completed-task implementation inventories.
+Any changed input or implementation file makes the result stale.
+
 Any required `skipped` or `cancelled` command makes the task `validation-deferred`. This state:
 
 - permits continued development of dependency-ready tasks after explicit user choice;

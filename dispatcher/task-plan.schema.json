@@ -65,6 +65,15 @@
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
       "default": []
+    },
+    "recovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "requires_architecture_refresh"],
+      "properties": {
+        "status": { "const": "recovered-with-gaps" },
+        "requires_architecture_refresh": { "const": true }
+      }
     }
   }
 }

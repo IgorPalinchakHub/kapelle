@@ -19,7 +19,7 @@ Read the task, acceptance criteria, feature artifacts, project instructions, app
 and repository precedents. Extract business invariants and unresolved assumptions before choosing a
 test strategy.
 
-Read `surface-plan.json` and the task's aspect ids. Semantically discover project skills and
+Read `_kapelle/surface-plan.json` and the task's aspect ids. Semantically discover project skills and
 subagents for those aspects, then dispatch the project's architecture-rules subagent for the
 specific modules, entrypoints, and candidate paths. Architecture evidence is mandatory and must
 match `architecture-guidance.schema.json`.
@@ -58,7 +58,8 @@ low-risk task, the coordinator may execute this role inline and record
 - test strategy and validation commands;
 - risks, rollback or recovery notes, and unresolved questions.
 
-Write the plan to `docs/features/<slug>/_audit/plans/<task-id>.md`.
+Persist the plan and related per-task evidence in
+`docs/features/<slug>/_kapelle/task-runs/<task-id>.json`.
 
 Apply `implementation.approval_policy`:
 
@@ -125,7 +126,7 @@ scripts.
 
 Validate role results against `execution-verdict.schema.json`. Append execution events matching
 `execution-telemetry.schema.json` to
-`docs/features/<slug>/_audit/implementation-telemetry.jsonl`.
+`docs/features/<slug>/_kapelle/telemetry/execution.jsonl`.
 
 Record actual host-provided token usage when available. Never estimate token usage or monetary cost.
 Enforce `max_agent_runs_per_task` as a cost guard regardless of whether usage metadata is available.

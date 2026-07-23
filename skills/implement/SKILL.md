@@ -3,7 +3,7 @@ name: implement
 description: >
   Plan and implement a feature's dependency-ordered tasks using adaptive test strategies,
   risk-based approval, bounded retries, native project capabilities, provider-neutral guidance,
-  independent review, and project validation. Invoke as /kapelle:implement <slug>.
+  independent review, and project validation for a feature slug.
 ---
 
 # Skill: implement
@@ -13,9 +13,9 @@ Strict TDD is selected only when it fits the task.
 
 ## Inputs
 
-- Gate: `docs/features/<slug>/tasks.json`.
-- Required coordination input: `docs/features/<slug>/surface-plan.json`.
-- Optional change context: `docs/features/<slug>/changes/<change-id>/change.json` when invoked with
+- Gate: `docs/features/<slug>/_kapelle/task-plan.json`.
+- Required coordination input: `docs/features/<slug>/_kapelle/surface-plan.json`.
+- Optional change context: `docs/features/<slug>/_kapelle/changes/<change-id>/change.json` when invoked with
   `--change=<change-id>`.
 - Feature artifacts under `docs/features/<slug>/`.
 - Project instructions and native `.claude/skills`, `.claude/agents`, `.claude/rules`.
@@ -31,13 +31,17 @@ Strict TDD is selected only when it fits the task.
 
 ## Protocol
 
-1. Refuse if `tasks.json` is missing; run `decompose` first.
-2. Validate `surface-plan.json` against `dispatcher/surface-plan.schema.json`, `tasks.json` against
+1. Refuse if `_kapelle/task-plan.json` is missing; run `decompose` first.
+2. Validate `_kapelle/surface-plan.json` against `dispatcher/surface-plan.schema.json`, `_kapelle/task-plan.json` against
    `dispatcher/task-plan.schema.json`, each task against `dispatcher/task-context.schema.json`, and
    rerun `scripts/validate_task_plan.py`.
+   If the task plan has `recovery.requires_architecture_refresh: true`, refuse all code-writing:
+   dispatch scoped architecture guidance and run `decompose` to replace the provisional graph first.
+   Validation-only work for already checked `implemented-unverified` tasks remains allowed, but the
+   provisional flag still blocks feature review and ship routing until the graph is replaced.
    For a change request, also validate that `implement` is in its approved route and restrict tasks
    to the approved change delta.
-3. For a change request, refuse unless `active-state.state` is `running`. Before every task,
+3. For a change request, refuse unless `_kapelle/changes/<change-id>/state.json.state` is `running`. Before every task,
    recompute its plan's `based_on` fingerprints and require the current revision. A requirement or
    architecture amendment expressed during implementation triggers the safe-pause revision path;
    stop all further implementation dispatch.
@@ -83,15 +87,18 @@ Strict TDD is selected only when it fits the task.
 8. Validate each role result against `dispatcher/execution-verdict.schema.json`.
 9. Stop edit retries at `implementation.max_task_attempts` and all agent dispatches at
    `implementation.max_agent_runs_per_task`.
-10. Append capability, architecture guidance, general guidance, strategy, plan, approval,
-    implementation, review policy, and validation to
-   `docs/features/<slug>/_audit/implementation.jsonl`.
+10. Persist capability, architecture guidance, strategy, plan, approval, implementation, review,
+    and validation in `_kapelle/task-runs/<task-id>.json`; write task validation evidence to
+    `_kapelle/validation/<task-id>.json`.
 11. When telemetry is enabled, append actual execution events to
-    `_audit/implementation-telemetry.jsonl`; never estimate unavailable token or cost data.
+    `_kapelle/telemetry/execution.jsonl`; never estimate unavailable token or cost data.
 12. Before new implementation work, process `validation-deferred` tasks when the effective policy
     permits commands. Update a task to `completed` only after Definition of Done, review, and all
     required validation pass. Explicitly deferred validation does not consume an edit attempt.
-13. Emit handoff to `/kapelle:feature-review <slug>`.
+13. Synchronize runtime task status in `_kapelle/task-plan.json`. Update a `tasks.md` checkbox only
+    when implementation of that human-visible task is actually present; a checked box is never
+    validation evidence. Refresh `STATUS.md`, and emit handoff to
+    `/kapelle:feature-review <slug>`.
 
 ## Definition of Done
 

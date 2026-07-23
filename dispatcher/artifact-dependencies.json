@@ -1,34 +1,44 @@
 {
-  "spec.md": [],
-  "sad.md": ["spec.md"],
-  "surface-plan.json": ["spec.md", "sad.md"],
-  "sequences.md": ["spec.md", "sad.md", "surface-plan.json"],
-  "data-model.md": ["spec.md", "sad.md", "surface-plan.json", "sequences.md"],
-  "contracts": ["spec.md", "sad.md", "surface-plan.json", "sequences.md", "data-model.md"],
-  "tasks.json": [
+  "proposal.md": [],
+  "spec.md": ["proposal.md"],
+  "design.md": ["proposal.md", "spec.md"],
+  "_kapelle/surface-plan.json": ["spec.md", "design.md"],
+  "contracts": ["spec.md", "design.md", "_kapelle/surface-plan.json"],
+  "tasks.md": ["spec.md", "design.md", "contracts"],
+  "_kapelle/task-plan.json": [
     "spec.md",
-    "sad.md",
-    "surface-plan.json",
-    "sequences.md",
-    "data-model.md",
-    "contracts"
+    "design.md",
+    "_kapelle/surface-plan.json",
+    "contracts",
+    "tasks.md"
   ],
   "test-plan.md": [
     "spec.md",
-    "surface-plan.json",
-    "data-model.md",
+    "_kapelle/surface-plan.json",
     "contracts",
-    "tasks.json"
+    "_kapelle/task-plan.json"
   ],
-  "implementation-plans": [
+  "_kapelle/task-runs": [
     "spec.md",
-    "sad.md",
-    "surface-plan.json",
-    "sequences.md",
-    "data-model.md",
+    "design.md",
+    "_kapelle/surface-plan.json",
     "contracts",
-    "tasks.json",
+    "_kapelle/task-plan.json",
     "test-plan.md"
   ],
-  "validation": ["implementation-plans"]
+  "_kapelle/validation": ["_kapelle/task-runs"],
+  "_kapelle/reviews/documentation-convergence.json": [
+    "proposal.md",
+    "spec.md",
+    "design.md",
+    "contracts",
+    "tasks.md",
+    "test-plan.md",
+    "_kapelle/validation"
+  ],
+  "_kapelle/reviews/feature-review.json": [
+    "_kapelle/reviews/documentation-convergence.json"
+  ],
+  "_kapelle/state.json": [],
+  "STATUS.md": ["_kapelle/state.json"]
 }

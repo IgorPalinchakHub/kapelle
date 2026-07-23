@@ -4,7 +4,14 @@
   "title": "Kapelle development validation decision",
   "type": "object",
   "additionalProperties": false,
-  "required": ["task_id", "policy", "decision", "commands"],
+  "required": [
+    "task_id",
+    "policy",
+    "decision",
+    "commands",
+    "input_fingerprints",
+    "implementation_fingerprints"
+  ],
   "properties": {
     "task_id": { "type": "string", "minLength": 1 },
     "policy": {
@@ -36,6 +43,22 @@
           },
           "reason": { "type": "string", "minLength": 1 }
         }
+      }
+    },
+    "input_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "implementation_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
       }
     }
   }

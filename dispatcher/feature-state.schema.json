@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/feature-state.schema.json",
+  "title": "Kapelle derived feature state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout_version",
+    "slug",
+    "feature_state",
+    "current_stage",
+    "task_counts",
+    "tasks",
+    "blockers",
+    "deferred_validation",
+    "evidence_gaps",
+    "review_ready",
+    "ship_ready",
+    "documentation_convergence",
+    "feature_review",
+    "next_command",
+    "document_fingerprints",
+    "recovery_status"
+  ],
+  "properties": {
+    "layout_version": { "const": 2 },
+    "slug": { "type": "string", "minLength": 1 },
+    "feature_state": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "implementation",
+        "validation-deferred",
+        "review-ready",
+        "ship-ready",
+        "recovered",
+        "recovered-with-gaps",
+        "external-development",
+        "externally-implemented-unverified",
+        "blocked",
+        "shipped"
+      ]
+    },
+    "current_stage": { "type": "string", "minLength": 1 },
+    "active_change": { "type": ["string", "null"] },
+    "revision": { "type": ["string", "null"] },
+    "task_counts": {
+      "type": "object",
+      "additionalProperties": { "type": "integer", "minimum": 0 }
+    },
+    "tasks": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "in-progress",
+          "blocked",
+          "completed",
+          "implemented-unverified",
+          "validation-deferred",
+          "stale",
+          "needs-rework",
+          "superseded",
+          "unknown"
+        ]
+      }
+    },
+    "blockers": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "deferred_validation": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "evidence_gaps": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "review_ready": { "type": "boolean" },
+    "ship_ready": { "type": "boolean" },
+    "documentation_convergence": {
+      "type": "string",
+      "enum": ["current-pass", "missing-or-stale"]
+    },
+    "feature_review": {
+      "type": "string",
+      "enum": ["current-pass", "missing-or-stale"]
+    },
+    "next_command": { "type": "string", "minLength": 1 },
+    "document_fingerprints": {
+      "type": "object",
+      "additionalProperties": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+    },
+    "recovery_status": {
+      "type": "string",
+      "enum": ["native", "recovered", "recovered-with-gaps", "migrated"]
+    }
+  }
+}

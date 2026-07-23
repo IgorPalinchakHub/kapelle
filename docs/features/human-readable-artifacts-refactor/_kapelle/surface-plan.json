@@ -1,0 +1,55 @@
+{
+  "slug": "human-readable-artifacts-refactor",
+  "aspects": [
+    {
+      "id": "contracts",
+      "intent": "Define the layout, schemas, vocabulary, and deterministic invariants",
+      "modules": ["references", "dispatcher"],
+      "entrypoints": ["feature artifact contract"],
+      "depends_on": []
+    },
+    {
+      "id": "runtime",
+      "intent": "Build, recover, validate, and migrate feature state",
+      "modules": ["scripts"],
+      "entrypoints": ["command-line utilities"],
+      "depends_on": ["contracts"]
+    },
+    {
+      "id": "stages",
+      "intent": "Adopt layout-v2 across the Kapelle SDLC lifecycle",
+      "modules": ["skills", "dispatcher"],
+      "entrypoints": ["Kapelle commands"],
+      "depends_on": ["contracts", "runtime"]
+    },
+    {
+      "id": "documentation",
+      "intent": "Explain the human workflow and compatibility boundary",
+      "modules": ["README.md", "docs", "examples"],
+      "entrypoints": ["user guides"],
+      "depends_on": ["stages"]
+    }
+  ],
+  "contracts": [],
+  "integration_checks": [
+    {
+      "id": "IC-STATE",
+      "aspects": ["contracts", "runtime"],
+      "intent": "Runtime output validates against the layout-v2 state schemas",
+      "validation": "Run feature-state unit tests and schema assertions"
+    },
+    {
+      "id": "IC-STAGES",
+      "aspects": ["contracts", "runtime", "stages"],
+      "intent": "Every backbone stage reads and writes only declared layout-v2 paths",
+      "validation": "Run scripts/validate_plugin.py"
+    },
+    {
+      "id": "IC-DOCS",
+      "aspects": ["contracts", "runtime", "stages", "documentation"],
+      "intent": "Documentation, examples, and runtime commands describe the same layout",
+      "validation": "Run documentation assertions in scripts/validate_plugin.py"
+    }
+  ]
+}
+

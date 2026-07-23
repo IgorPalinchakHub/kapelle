@@ -1,12 +1,12 @@
 ---
 name: classify-size
 description: >
-  Classify feature size and write `.size`. Invoke as /kapelle:classify-size <slug> for feature-scoped work.
+  Classify feature size and write `_kapelle/size.json` for a feature slug.
 ---
 
 # Skill: classify-size
 
-Classify feature size and write `.size`.
+Classify feature size and write `_kapelle/size.json`.
 
 ## Inputs
 
@@ -21,12 +21,14 @@ Classify feature size and write `.size`.
 3. Perform this stage's work without re-running prior stages.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `.size`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+6. Write `_kapelle/size.json` as `{ "size": "XS|S|M|L|XL", "execution_depth": "...",
+   "reason": "..." }`.
+7. Refresh `STATUS.md` and emit the chat handoff per
+   [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
-- `.size`.
+- `_kapelle/size.json`.
 - `Status: DONE | stage: classify-size | produced: <paths>`.
 
 ## Definition of Done

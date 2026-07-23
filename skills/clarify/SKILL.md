@@ -1,7 +1,7 @@
 ---
 name: clarify
 description: >
-  Tighten `spec.md` by finding ambiguities, gaps, and unresolved decisions. Invoke as /kapelle:clarify <slug> for feature-scoped work.
+  Tighten `spec.md` by finding ambiguities, gaps, and unresolved decisions for a feature slug.
 ---
 
 # Skill: clarify

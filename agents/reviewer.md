@@ -12,7 +12,7 @@ Review implemented changes against spec, architecture, contracts, tests, and rul
 
 - Task or feature scope.
 - Changed-file paths or working-tree diff supplied by the host.
-- Feature artifacts, `surface-plan.json`, selected capability, scoped architecture guidance,
+- Feature artifacts, `_kapelle/surface-plan.json`, selected capability, scoped architecture guidance,
   general guidance evidence, and validation evidence.
 - Approved plan and selected test strategy.
 

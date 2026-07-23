@@ -1,7 +1,7 @@
 ---
 name: plan-tests
 description: >
-  Map acceptance criteria to test levels and identify required task tests. Invoke as /kapelle:plan-tests <slug> for feature-scoped work.
+  Map feature acceptance criteria to test levels and identify required task tests.
 ---
 
 # Skill: plan-tests
@@ -11,7 +11,7 @@ Map acceptance criteria to test levels and identify required task tests.
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `spec.md + surface-plan.json + tasks.json`.
+- Reads: `spec.md + _kapelle/surface-plan.json + _kapelle/task-plan.json`.
 - With `--change=<change-id>`, cover only impacted acceptance criteria and regression risk from its
   baseline.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
@@ -20,12 +20,13 @@ Map acceptance criteria to test levels and identify required task tests.
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Map every acceptance criterion and every `surface-plan.json` integration check to an executable
+3. Map every acceptance criterion and every `_kapelle/surface-plan.json` integration check to an executable
    or inspectable validation owned by a task.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `test-plan.md`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+6. Write the compact human `test-plan.md`; keep run results under `_kapelle/validation/`.
+7. Refresh `STATUS.md` and emit the chat handoff per
+   [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 

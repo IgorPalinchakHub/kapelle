@@ -1,7 +1,7 @@
 {
   "slug": "example-feature",
   "decomposition_depth": "standard",
-  "architecture_guidance_path": "_audit/architecture-guidance/tasks.json",
+  "architecture_guidance_path": "_kapelle/architecture-guidance/tasks.json",
   "workstreams": [
     {
       "id": "WS-PROVIDER",

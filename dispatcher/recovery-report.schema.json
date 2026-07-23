@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/recovery-report.schema.json",
+  "title": "Kapelle feature-state recovery report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layout_version",
+    "slug",
+    "status",
+    "recovered",
+    "evidence_unavailable",
+    "task_dispositions",
+    "next_command"
+  ],
+  "properties": {
+    "layout_version": { "const": 2 },
+    "slug": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["recovered", "recovered-with-gaps"] },
+    "recovered": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "evidence_unavailable": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "task_dispositions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string",
+        "enum": [
+          "not-started",
+          "implemented-unverified",
+          "validated",
+          "needs-rework",
+          "superseded",
+          "unknown"
+        ]
+      }
+    },
+    "next_command": { "type": "string", "minLength": 1 }
+  }
+}
+

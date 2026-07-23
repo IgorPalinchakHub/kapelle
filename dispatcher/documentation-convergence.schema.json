@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/documentation-convergence.schema.json",
+  "title": "Kapelle as-built documentation convergence verdict",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "revision",
+    "input_fingerprints",
+    "implementation_fingerprints",
+    "requirement_mismatches",
+    "design_mismatches",
+    "contract_mismatches",
+    "undocumented_decisions",
+    "unresolved_deferrals"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "CHANGES_REQUIRED", "BLOCKED"]
+    },
+    "revision": { "type": ["string", "null"] },
+    "input_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "implementation_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "requirement_mismatches": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "design_mismatches": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "contract_mismatches": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "undocumented_decisions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "unresolved_deferrals": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "PASS" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "requirement_mismatches": { "maxItems": 0 },
+          "design_mismatches": { "maxItems": 0 },
+          "contract_mismatches": { "maxItems": 0 },
+          "undocumented_decisions": { "maxItems": 0 },
+          "unresolved_deferrals": { "maxItems": 0 }
+        }
+      }
+    }
+  ]
+}

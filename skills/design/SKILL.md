@@ -1,18 +1,17 @@
 ---
 name: design
 description: >
-  Write `sad.md`, `surface-plan.json`, and ADRs using scoped project architecture rules. Invoke as
-  /kapelle:design <slug> for feature-scoped work.
+  Write `design.md`, `_kapelle/surface-plan.json`, and ADRs using scoped project architecture rules.
 ---
 
 # Skill: design
 
-Write `sad.md`, `surface-plan.json`, and ADRs.
+Write the developer-facing technical specification, machine coordination plan, and ADRs.
 
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `spec.md + CONTEXT.md optional + feature-local architecture context optional + shared
+- Reads: `proposal.md + spec.md + CONTEXT.md optional + feature-local architecture context optional + shared
   architecture baseline optional`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
@@ -34,20 +33,24 @@ Write `sad.md`, `surface-plan.json`, and ADRs.
    blocking gaps.
 5. Let the selected project subagent discover any narrower project skills/subagents needed to
    evaluate the design. Record selections as evidence, not routing configuration.
-6. Draft `sad.md` from the specification, cited precedents, and scoped architecture rules.
-7. Write `surface-plan.json` with aspect dependencies, shared contracts, and cross-aspect
+6. Draft `design.md` from the specification, cited precedents, and scoped architecture rules.
+   Include affected components, backend/frontend/data responsibilities, runtime/failure flows,
+   data/schema impact, contracts, security, compatibility, validation, and known deviations. Use a
+   separate `sequences.md` only for unusually complex flows.
+7. Write `_kapelle/surface-plan.json` with aspect dependencies, shared contracts, and cross-aspect
    integration checks. Validate it against `dispatcher/surface-plan.schema.json`. A single-aspect
    feature still has one small aspect entry.
 8. At `standard` or `full` depth, or for a risk trigger, dispatch `kapelle:critic` in fresh context
-   against `spec.md`, `sad.md`, `surface-plan.json`, rules evidence, and ADRs. At `lean`, perform a
+   against `spec.md`, `design.md`, `_kapelle/surface-plan.json`, rules evidence, and ADRs. At `lean`, perform a
    focused inline consistency check. Resolve or explicitly defer every blocking finding.
-9. Write outputs: `sad.md`, `surface-plan.json`, `adr/*.md`, and
-   `_audit/architecture-guidance/design.json`.
-10. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+9. Write outputs: `design.md`, `_kapelle/surface-plan.json`, `adr/*.md`, and
+   `_kapelle/architecture-guidance/design.json`.
+10. Run `scripts/build_feature_status.py docs/features/<slug>` and emit the chat handoff per
+    [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
-- `sad.md`, `surface-plan.json`, `adr/*.md`, and architecture-guidance evidence.
+- `design.md`, `_kapelle/surface-plan.json`, `adr/*.md`, and architecture-guidance evidence.
 - `Status: DONE | stage: design | produced: <paths>`.
 
 ## Definition of Done
@@ -57,7 +60,7 @@ Write `sad.md`, `surface-plan.json`, and ADRs.
 - Every aspect and cross-aspect dependency is explicit and validated.
 - Design decisions cite scoped project architecture rules.
 - Skips are explicit.
-- Handoff points to `sequences`.
+- Handoff points to `contracts` when interfaces exist, otherwise `decompose`.
 
 ## Anti-patterns
 

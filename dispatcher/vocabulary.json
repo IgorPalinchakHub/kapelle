@@ -5,8 +5,6 @@
     "specify",
     "clarify",
     "design",
-    "sequences",
-    "data-model",
     "contracts",
     "decompose",
     "plan-tests",
@@ -33,10 +31,33 @@
     "in-progress",
     "blocked",
     "completed",
+    "implemented-unverified",
     "validation-deferred",
     "stale",
     "needs-rework",
-    "superseded"
+    "superseded",
+    "unknown"
+  ],
+  "feature_states": [
+    "planning",
+    "implementation",
+    "validation-deferred",
+    "review-ready",
+    "ship-ready",
+    "recovered",
+    "recovered-with-gaps",
+    "external-development",
+    "externally-implemented-unverified",
+    "blocked",
+    "shipped"
+  ],
+  "recovery_task_dispositions": [
+    "not-started",
+    "implemented-unverified",
+    "validated",
+    "needs-rework",
+    "superseded",
+    "unknown"
   ],
   "artifact_states": [
     "current",

@@ -1,7 +1,7 @@
 ---
 name: decide-adr
 description: >
-  Write or update an ADR for an architectural decision. Invoke as /kapelle:decide-adr <slug> for feature-scoped work.
+  Write or update an ADR for an architectural decision within a feature.
 ---
 
 # Skill: decide-adr

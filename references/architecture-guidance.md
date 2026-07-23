@@ -28,8 +28,8 @@ a specific agent name or provider.
 Write evidence to:
 
 ```text
-docs/features/<slug>/_audit/architecture-guidance/design.json
-docs/features/<slug>/_audit/architecture-guidance/<task-id>.json
+docs/features/<slug>/_kapelle/architecture-guidance/design.json
+docs/features/<slug>/_kapelle/architecture-guidance/<task-id>.json
 ```
 
 Missing capability:

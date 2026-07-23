@@ -1,0 +1,40 @@
+{
+  "commands": [
+    {
+      "command": "python3 scripts/validate_plugin.py",
+      "kind": "tests",
+      "required": true,
+      "scope": "plugin contracts and full deterministic test suite",
+      "status": "passed"
+    },
+    {
+      "command": "python3 scripts/validate_task_plan.py --tasks docs/features/human-readable-artifacts-refactor/_kapelle/task-plan.json --surface-plan docs/features/human-readable-artifacts-refactor/_kapelle/surface-plan.json --spec docs/features/human-readable-artifacts-refactor/spec.md",
+      "kind": "other",
+      "required": true,
+      "scope": "self-hosted semantic task graph",
+      "status": "passed"
+    },
+    {
+      "command": "git diff --check",
+      "kind": "lint",
+      "required": true,
+      "scope": "working tree patch hygiene",
+      "status": "passed"
+    }
+  ],
+  "decision": "run-all",
+  "implementation_fingerprints": {
+    "scripts/validate_feature_state.py": "9e19a3df4fcda4bd68a050fcba2f1426c34a9e4c7ba607e2d298008a03a36d17"
+  },
+  "input_fingerprints": {
+    "_kapelle/surface-plan.json": "0273f0bd866a3226bbddc910fe91bfc5aef250105fa374c4c19fca27d90ab3ff",
+    "_kapelle/task-plan.json#structural": "863c94b66679ff7f6b96f20b3f93efc9e2a27d7466797d5b84fa23e1015d0ce7",
+    "design.md": "612ef09c2111f594be19612235f5365538d18c7705911085815041ff9a4c8da9",
+    "proposal.md": "ba3938d6ad08402d9f48d7b48fe9f89dd2e011d8c7c67755e1c965cd186c7159",
+    "spec.md": "5b15e70e74f245943bf8e99f77b58c5abec9405a5c99add9e40b3860b9e9bdda",
+    "tasks.md": "715247a022f9cdb3ec93ba86e20a33835e7a0c0ffcfc230e1890316a3fd081d0",
+    "test-plan.md": "1c1400f5a12e0c57e6d25968745bf007ff6f2ec10d8e940d41033e74a90555ec"
+  },
+  "policy": "allow",
+  "task_id": "T04"
+}

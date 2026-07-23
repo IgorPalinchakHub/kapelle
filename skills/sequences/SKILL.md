@@ -1,34 +1,34 @@
 ---
 name: sequences
 description: >
-  Write runtime and cross-aspect flows to `sequences.md`. Invoke as /kapelle:sequences <slug> for
-  feature-scoped work.
+  Enrich `design.md` with runtime and cross-aspect flows; create `sequences.md` only for genuinely
+  complex feature flows.
 ---
 
 # Skill: sequences
 
-Write runtime flows and failure branches to a dedicated artifact.
+Enrich the technical specification with runtime flows and failure branches.
 
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `sad.md + surface-plan.json`.
+- Reads: `design.md + _kapelle/surface-plan.json`.
 - Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
 
 ## Protocol
 
 1. Validate required inputs. If missing, refuse with the named producing stage.
 2. Read artifacts directly from disk.
-3. Validate `surface-plan.json` and cover every declared cross-aspect handoff and failure branch.
+3. Validate `_kapelle/surface-plan.json` and cover every declared cross-aspect handoff and failure branch.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write `sequences.md`. If no runtime flow exists, write an explicit
-   `Status: SKIPPED-confirmed` artifact with the evidence.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+6. Update the runtime-flow section of `design.md`. Create `sequences.md` only when the flow cannot
+   remain readable in the design; record the skip/selection in `_kapelle/state.json`.
+7. Refresh `STATUS.md` and emit the chat handoff.
 
 ## Output
 
-- `sequences.md`.
+- Updated `design.md`; optional `sequences.md`.
 - `Status: DONE | stage: sequences | produced: <paths>`.
 
 ## Definition of Done

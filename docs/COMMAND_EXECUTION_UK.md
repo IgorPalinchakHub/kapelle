@@ -1,293 +1,112 @@
 # Детальний порядок виконання команд Kapelle
 
-Цей документ пояснює:
+Цей документ описує порядок команд, необхідний input, внутрішні кроки, результати та важливі gates.
 
-- у якому порядку запускати команди;
-- що користувач передає на вході;
-- які файли Kapelle читає;
-- що відбувається всередині stage;
-- які рішення може знадобитися підтвердити;
-- які артефакти з’являються після завершення;
-- яку команду запускати наступною.
+## 1. Загальна модель
 
-## 1. Загальна модель використання
-
-Kapelle працює поетапно. Кожна команда є окремим gated stage:
+Основний короткий flow:
 
 ```text
-survey → specify → clarify → design → sequences → data-model
-       → contracts → decompose → plan-tests → implement → feature-review → ship
+survey → specify → clarify → design → contracts? → decompose
+       → plan-tests → implement → feature-review → ship
 ```
 
-Після кожного stage:
+`sequences` і `data-model` — optional design enrichers, а не обов’язкові порожні stages.
 
-1. Перегляньте створений артефакт.
-2. Перевірте відкриті питання, припущення та explicit skips.
-3. Виконайте `/clear`.
-4. Запустіть точну наступну команду з handoff.
+Після кожного backbone stage:
 
-Виняток: якщо stage явно говорить не очищати контекст для короткого review/fix loop.
+1. відкрийте `docs/features/<slug>/STATUS.md`;
+2. перегляньте вказані людські документи;
+3. виконайте `/clear`;
+4. запустіть exact next command із handoff або `STATUS.md`.
 
-Kapelle отримує вхідні дані з чотирьох джерел:
+Стан не залежить від історії чату. Human-readable документи є durable state, а `_kapelle/`
+містить derived execution state та evidence.
 
-| Джерело | Приклад |
-|---|---|
-| Аргументи команди | `<slug>`, `--mode`, `--change`, `--revise` |
-| Поточне повідомлення користувача | опис фічі, expected behavior, обмеження |
-| Артефакти на диску | `spec.md`, `sad.md`, `tasks.json` |
-| Native project capabilities | project skills, subagents, rules, validation commands |
-
-Conversation history не є durable state. Після `/clear` наступний stage відновлює контекст із файлів.
-
-## 2. Як обрати початковий сценарій
-
-### Нова фіча або нова поведінка в існуючому коді
-
-Якщо `docs/features/<slug>/` ще не містить канонічних Kapelle-артефактів:
+## 2. Структура фічі
 
 ```text
-/kapelle:survey <slug>
-/clear
-/kapelle:specify <slug> ["<feature idea>"]
+docs/features/<slug>/
+  STATUS.md
+  proposal.md
+  spec.md
+  design.md
+  tasks.md
+  test-plan.md
+  contracts/
+  adr/
+  _context/
+  _kapelle/
 ```
 
-Далі проходьте backbone stages за handoff.
-
-Наявність старого application code не означає, що потрібно використовувати `change`. `change`
-використовується, коли існує попередньо описана Kapelle-фіча.
-
-### Зміна вже описаної фічі
-
-Якщо існують `docs/features/<slug>/spec.md`, design і task artifacts:
-
-```text
-/kapelle:change <slug> --mode=enhancement "<опис>"
-```
-
-Для bugfix або refactor оберіть відповідний mode.
-
-### Зміна вимог під час активної реалізації
-
-```text
-/kapelle:change <slug> --change=<change-id> --revise "<нова вимога>"
-```
-
-Не редагуйте старий implementation plan і не продовжуйте реалізацію вручну.
+Користувач зазвичай читає лише перші шість документів, contracts та ADR. JSON, JSONL, fingerprints,
+agent plans, reviews і telemetry знаходяться тільки в `_kapelle/`.
 
 ---
 
-# Backbone нової фічі
-
-## 3. `/kapelle:survey`
-
-Команда має три режими.
-
-### 3.1 Bootstrap shared baseline
-
-```text
-/kapelle:survey
-```
+## 3. `/kapelle:survey [<slug>]`
 
 ### Що задати на вході
 
-Нічого, крім команди. Запускайте поза feature worktree, бажано на integration branch.
-
-### Що команда читає
-
-- структуру репозиторію;
-- project instructions;
-- native project skills і subagents;
-- test/build manifests;
-- наявний `docs/architecture-map.md`.
+- без slug: bootstrap shared repository baseline;
+- зі slug: стабільний kebab-case slug і коротка affected area;
+- `--refresh-baseline`: explicit maintenance intent та подальше підтвердження.
 
 ### Що відбувається
 
-Якщо baseline відсутній, `kapelle:explorer` досліджує:
-
-- stack;
-- module boundaries;
-- wiring;
-- persistence;
-- test і validation commands;
-- representative implementation patterns;
-- project capabilities;
-- наявність project architecture-rules subagent.
-
-Якщо `docs/architecture-map.md` уже існує, команда не порівнює HEAD для автоматичного refresh і
-повертає `BASELINE-READY`.
-
-`reflects_commit` є provenance, а не freshness gate.
-
-### Що отримуємо
-
-При першому bootstrap:
-
-```text
-docs/architecture-map.md
-```
-
-Якщо baseline вже існує — жодного запису.
-
-### Важливо
-
-Feature branch divergence не дозволяє переписувати shared map.
-
-### Наступна команда
-
-```text
-/kapelle:specify <slug>
-```
-
-Але для feature worktree краще спочатку виконати feature-scoped survey.
-
-### 3.2 Feature-scoped survey
-
-```text
-/kapelle:survey <slug>
-```
-
-### Що задати на вході
-
-- стабільний kebab-case slug;
-- у поточному повідомленні або попередньому контексті — короткий опис фічі та ймовірно affected
-  area.
-
-Приклад:
-
-```text
-/kapelle:survey configurable-invoice-status-in-pipe
-
-Фіча дозволяє конфігурувати статус invoice, який використовується у processing pipe.
-```
-
-### Що відбувається
-
-- shared `architecture-map.md` читається як baseline;
-- explorer перевіряє тільки current-branch scope, релевантний фічі;
-- знаходяться affected modules, aspects, entrypoints і current precedents;
-- перевіряється наявність project architecture-rules subagent;
-- глобальна карта не створюється і не змінюється.
+- без slug і без baseline: `kapelle:explorer` мапить stack, boundaries, persistence, validation,
+  project skills/subagents і architecture-rules capability;
+- зі slug: аналізується лише current-branch scope фічі;
+- `reflects_commit` використовується як provenance, не як freshness gate;
+- worktree divergence не переписує shared map.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/_context/architecture.md
+docs/architecture-map.md                         # bootstrap
+docs/features/<slug>/_context/architecture.md   # feature scope
 ```
-
-### Важливо
-
-Якщо shared baseline відсутній, feature-scoped survey все одно пише лише feature-local overlay.
 
 ### Наступна команда
 
 ```text
 /clear
-/kapelle:specify <slug>
-```
-
-### 3.3 Explicit baseline refresh
-
-```text
-/kapelle:survey --refresh-baseline
-```
-
-### Що задати на вході
-
-- explicit maintenance intent;
-- після аналізу — підтвердження запропонованих змін.
-
-### Що відбувається
-
-- Kapelle показує секції baseline, які потребують оновлення;
-- очікує explicit approval;
-- тільки після approval запускає повний refresh.
-
-Не комбінуйте `--refresh-baseline` зі slug.
-
-### Що отримуємо
-
-Оновлений:
-
-```text
-docs/architecture-map.md
+/kapelle:specify <slug> "<problem and desired outcome>"
 ```
 
 ---
 
-## 4. `/kapelle:specify <slug>`
-
-```text
-/kapelle:specify configurable-invoice-status-in-pipe \
-  "Allow the invoice status used in the processing pipe to be configured while preserving the current default"
-```
+## 4. `/kapelle:specify <slug> ["<idea>"]`
 
 ### Що задати на вході
-
-Опишіть продуктову поведінку, не реалізацію:
-
-- проблему;
-- користувача або caller;
-- expected outcome;
-- success criteria;
-- відомі обмеження;
-- що точно не входить у scope.
-
-Мінімально обов’язкові дані:
 
 - authoritative slug/ticket;
-- чи це нова specification або formalization відомої in-flight роботи, якщо це неоднозначно;
-- problem і desired observable outcome.
+- problem;
+- desired observable outcome;
+- actor/caller;
+- scope/non-goals;
+- відомі business/compatibility constraints.
 
-Приклад input:
-
-```text
-Потрібно дозволити конфігурувати invoice status, який pipe встановлює після успішної обробки.
-Поточний status повинен залишитися default для backward compatibility.
-Не змінювати поведінку інших invoice transitions.
-```
-
-### Що команда читає
-
-- спочатку лише факт існування feature directory та feature-local context;
-- branch/ticket metadata, тільки якщо host або feature context уже її надав;
-- feature idea з команди або поточного повідомлення;
-- `docs/features/<slug>/_context/architecture.md`, якщо є;
-- `docs/architecture-map.md`, якщо є;
-- project context, необхідний для перевірки constraints.
+Якщо supplied slug конфліктує лише з branch metadata, Kapelle ставить одне consolidated питання,
+а не запускає ticket/scope/idea wizard.
 
 ### Що відбувається
 
-- до повного input заборонені source search, commit inspection, git/shell discovery, читання
-  unrelated specs як templates і запуск subagents;
-- якщо ticket, scope та idea не визначені, агент запитує всі unresolved fields одним consolidated
-  prompt, а не послідовним wizard;
-- до узгодження authoritative slug feature directory не створюється;
-- при зміні slug використовується тільки corrected slug;
-- визначаються goals і non-goals;
-- фіксуються actors і user stories;
-- створюються measurable acceptance criteria;
-- додаються NFR та open questions;
-- визначається `.size` і execution depth;
-- для standard/full depth може запускатися devil’s advocate;
-- critic запускається лише для full depth або реального конфлікту з repository constraints.
-
-На цьому stage не визначаються конкретні project skills або implementation routing.
-Broad code mapping і implementation archaeology залишаються для `survey` та `design`.
+- bounded preflight до source exploration;
+- формуються proposal, actors, requirements, ACs, edge cases, NFR і open questions;
+- size/execution depth записується internal;
+- для M/L/XL виконується bounded adversarial requirements review.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/spec.md
-docs/features/<slug>/.size
+proposal.md
+spec.md
+_kapelle/size.json
+STATUS.md
 ```
 
-### Що перевірити
-
-- expected behavior сформульовано спостережувано;
-- default/backward-compatible behavior зафіксовано;
-- кожен важливий branch має acceptance criterion;
-- implementation details не підміняють requirements;
-- open questions мають owner або explicit deferral.
+`proposal.md` пояснює «навіщо/який scope», `spec.md` — observable behavior для PM/QA.
 
 ### Наступна команда
 
@@ -300,45 +119,19 @@ docs/features/<slug>/.size
 
 ## 5. `/kapelle:clarify <slug>`
 
-```text
-/kapelle:clarify configurable-invoice-status-in-pipe
-```
-
 ### Що задати на вході
 
-Зазвичай достатньо slug. Якщо після `specify` ви вже знаєте відповіді на open questions, додайте їх
-у повідомленні.
-
-### Що команда читає
-
-```text
-docs/features/<slug>/spec.md
-```
+Slug. Додатково — відповіді лише на реально blocking ambiguities.
 
 ### Що відбувається
 
-- шукаються тільки unresolved або нові ambiguity;
-- перевіряються vague terms, missing actors, NFR, conflicts і edge cases;
-- на lean depth аналіз виконується inline;
-- на standard/full depth subagent запускається лише для невирішених branches;
-- уже закриті findings не аналізуються повторно.
-
-Агент може поставити короткі уточнювальні питання. Якщо відповідь змінює observable behavior,
-оновлюється spec.
+- delta sweep, без повторення specify;
+- перевіряються vague terms, actors, failure outcomes, measurable NFR, AC conflicts;
+- кожен blocking finding resolve або explicit defer.
 
 ### Що отримуємо
 
-Оновлений:
-
-```text
-docs/features/<slug>/spec.md
-```
-
-### Що перевірити
-
-- немає blocking ambiguity;
-- deferred питання не впливають на поточний implementation route;
-- acceptance criteria не суперечать одне одному.
+Оновлений `spec.md` і `STATUS.md`.
 
 ### Наступна команда
 
@@ -351,245 +144,113 @@ docs/features/<slug>/spec.md
 
 ## 6. `/kapelle:design <slug>`
 
-```text
-/kapelle:design configurable-invoice-status-in-pipe
-```
-
 ### Що задати на вході
 
-Зазвичай slug. Додайте тільки constraints, які ще не записані у spec або project rules:
-
-- deployment limitation;
-- compatibility requirement;
-- заборонений dependency;
-- approved external contract.
-
-Не вказуйте вручну project skill або subagent, якщо це не explicit project requirement.
-
-### Що команда читає
-
-- `spec.md`;
-- optional `CONTEXT.md`;
-- feature-local architecture overlay;
-- shared architecture baseline;
-- project skill/subagent descriptions.
+- slug;
+- architecture constraints, якщо вони не закодовані в project rules;
+- відомі rollout/security/compatibility requirements.
 
 ### Що відбувається
 
-1. Визначаються tentative aspects, modules, entrypoints і paths.
-2. Семантично знаходиться project architecture-rules subagent.
-3. Subagent повертає scoped architecture rules.
-4. Результат перевіряється за `architecture-guidance.schema.json`.
-5. При missing capability або blocking gaps stage відмовляється.
-6. Project subagent може знайти додаткові вузькі project skills/subagents.
-7. Створюється architecture design.
-8. Будується aspect dependency graph.
-9. Для ризикового або складного design запускається independent critic.
+- читається feature `_context`, потім shared architecture baseline;
+- визначаються backend/frontend/data/other aspects, modules, entrypoints;
+- семантично знаходиться project architecture-rules subagent;
+- project subagent може знайти narrower native skills/subagents;
+- правила й precedents перевіряються перед technical decisions;
+- описуються boundaries, runtime/failure flows, data/schema impact, authorization, contracts,
+  observability, compatibility, rollout і alternatives;
+- створюється aspect dependency/contract/integration graph.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/sad.md
-docs/features/<slug>/surface-plan.json
-docs/features/<slug>/adr/*.md
-docs/features/<slug>/_audit/architecture-guidance/design.json
-```
-
-`surface-plan.json` описує:
-
-- backend/frontend/database/інші project-defined aspects;
-- dependencies;
-- entrypoints;
-- provider/consumer contracts;
-- cross-aspect integration checks.
-
-Він не містить mapping на skills або agents.
-
-### Що може вимагати втручання
-
-- відсутній architecture-rules subagent;
-- правила суперечать запропонованому design;
-- кілька materially different architecture options;
-- irreversible або high-blast-radius decision.
-
-### Що перевірити
-
-- кожен design decision має rule або precedent evidence;
-- frontend не залежить від backend internals;
-- shared contracts мають provider і consumers;
-- data/backend/frontend ordering зрозумілий;
-- ADR створені для суттєвих рішень.
-
-### Наступна команда
-
-```text
-/clear
-/kapelle:sequences <slug>
-```
-
----
-
-## 7. `/kapelle:sequences <slug>`
-
-```text
-/kapelle:sequences <slug>
-```
-
-### Що задати на вході
-
-Slug. Додатково можна вказати важливий runtime scenario, якщо його ще немає у spec.
-
-### Що команда читає
-
-```text
-spec.md
-sad.md
-surface-plan.json
-```
-
-### Що відбувається
-
-- описуються runtime flows;
-- покриваються cross-aspect handoffs;
-- додаються failure, retry та rejection branches;
-- перевіряється відповідність aspect dependency graph.
-
-Якщо runtime flow не застосовується, stage все одно створює artifact зі
-`Status: SKIPPED-confirmed` і причиною.
-
-### Що отримуємо
-
-```text
-docs/features/<slug>/sequences.md
+design.md
+adr/*.md
+_kapelle/surface-plan.json
+_kapelle/architecture-guidance/design.json
+STATUS.md
 ```
 
 ### Що перевірити
 
-- happy path;
-- validation/rejection branches;
-- provider/consumer interaction;
-- failure recovery;
-- відповідність acceptance criteria.
+- responsibilities backend/frontend/data не змішані;
+- contract providers/consumers explicit;
+- design містить schema change або explicit no-schema-change;
+- runtime failure branches і security boundaries не пропущені;
+- ADR описують важливі alternatives/consequences.
 
 ### Наступна команда
 
-```text
-/clear
-/kapelle:data-model <slug>
-```
-
----
-
-## 8. `/kapelle:data-model <slug>`
-
-```text
-/kapelle:data-model <slug>
-```
-
-### Що задати на вході
-
-Slug. Якщо є зовнішні schema constraints або migration limitations, переконайтеся, що вони вже
-записані у spec/design або додайте їх у повідомленні.
-
-### Що команда читає
-
-```text
-spec.md
-sad.md
-surface-plan.json
-sequences.md
-architecture guidance
-repository precedents
-```
-
-### Що відбувається
-
-- визначається data і persistence impact;
-- підтримується один shared logical model для всіх aspects;
-- explorer запускається тільки якщо persistence змінюється, а precedent evidence недостатньо;
-- project capabilities визначають правильний migration/schema mechanism;
-- міграції не вигадуються без project rules.
-
-### Що отримуємо
-
-```text
-docs/features/<slug>/data-model.md
-```
-
-Також можуть з’явитися staged migration artifacts у project-defined format.
-
-Якщо schema change не потрібний, `data-model.md` містить:
-
-```text
-Status: SKIPPED-confirmed
-```
-
-разом із доказом no-schema-change.
-
-### Що перевірити
-
-- field types і invariants;
-- ownership даних;
-- compatibility;
-- migration/rollback implications;
-- узгодженість з усіма consumer aspects.
-
-### Наступна команда
+Якщо потрібні contract artifacts:
 
 ```text
 /clear
 /kapelle:contracts <slug>
 ```
+
+Інакше:
+
+```text
+/clear
+/kapelle:decompose <slug>
+```
+
+---
+
+## 7. Optional `/kapelle:sequences <slug>`
+
+Використовуйте лише для складних runtime/cross-aspect flows.
+
+### Вхід
+
+`design.md`, `_kapelle/surface-plan.json`, slug.
+
+### Результат
+
+- runtime-flow section у `design.md`;
+- optional `sequences.md`, якщо inline flow став би нечитабельним;
+- skip/evidence у `_kapelle/state.json`.
+
+---
+
+## 8. Optional `/kapelle:data-model <slug>`
+
+Використовуйте для складного persistence/schema/migration design.
+
+### Вхід
+
+`spec.md`, `design.md`, `_kapelle/surface-plan.json`, scoped project rules.
+
+### Результат
+
+- оновлений data/schema section `design.md`;
+- `_kapelle/data-model.json`;
+- staged project migrations, якщо потрібні.
+
+No-schema-change також записується явно.
 
 ---
 
 ## 9. `/kapelle:contracts <slug>`
 
-```text
-/kapelle:contracts <slug>
-```
-
 ### Що задати на вході
 
-Slug. Якщо external API contract уже затверджений, передайте його location або переконайтеся, що
-він записаний у design.
-
-### Що команда читає
-
-```text
-sad.md
-surface-plan.json
-sequences.md
-data-model.md
-existing contracts
-project capabilities
-project architecture guidance
-```
+Slug і project-specific constraints, яких немає в design/rules.
 
 ### Що відбувається
 
-- для кожного declared entrypoint визначається потрібний contract artifact;
-- native discovery знаходить project capability, яка вміє створити цей contract;
-- contract зв’язується з provider aspect і consumer aspects;
-- виконується project-defined validation;
-- generic drift gate порівнює contract зі shared data model і sequences.
-
-Stage не hardcode-ить OpenAPI, GraphQL, events, CLI чи інший contract kind.
+- читаються `design.md` і `_kapelle/surface-plan.json`;
+- native discovery знаходить capability для потрібного contract kind;
+- contract зв’язується з provider/consumer aspects;
+- виконується project-defined validation і generic drift check.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/contracts/
+contracts/*.md
+_kapelle/validation/contracts.json
+STATUS.md
 ```
-
-Якщо capability для contract kind відсутня, записується explicit unsupported result.
-
-### Blocking cases
-
-- contract field type суперечить shared model;
-- required field пропущений;
-- provider або consumer відсутній у `surface-plan.json`;
-- project validation не проходить.
 
 ### Наступна команда
 
@@ -602,111 +263,33 @@ docs/features/<slug>/contracts/
 
 ## 10. `/kapelle:decompose <slug>`
 
-```text
-/kapelle:decompose <slug>
-```
-
 ### Що задати на вході
 
-Slug. Додатковий input зазвичай не потрібний: planning context має бути в попередніх artifacts.
-
-### Що команда читає
-
-- `spec.md`;
-- `sad.md`;
-- `surface-plan.json`;
-- `sequences.md`;
-- `data-model.md`;
-- `contracts/*`;
-- ADR;
-- approved change impact, якщо використовується `--change`.
+Slug. Planning context уже має бути у spec/design/contracts/ADR.
 
 ### Що відбувається
 
-- перевіряється scoped architecture-guidance evidence для всіх planned aspects;
-- обирається decomposition depth: `compact`, `standard` або `hierarchical`;
-- L/XL feature розділяється на architecture-aligned workstreams;
-- якщо XL містить independently shippable outcomes, stage повертає
-  `BLOCKED-split-required` замість монолітного plan;
-- feature розбивається на bounded, independently verifiable tasks;
-- кожна task отримує acceptance criteria, Definition of Done і aspects;
-- кожна task має один primary aspect, explicit validation, risk, contract role і ownership status;
-- contract provider tasks ставляться перед consumer tasks;
-- integration checks отримують owner tasks;
-- будується dependency DAG;
-- перевіряється відсутність cycles;
-- перевіряється coverage acceptance criteria та integration checks.
-- запускається `scripts/validate_task_plan.py`;
-- для M/L/XL виконується один fresh-context critic pass і максимум один correction pass.
-
-Tasks не містять skill names, agent names, provider names або routing labels.
+- scoped architecture guidance покриває всі planned aspects;
+- size визначає `compact | standard | hierarchical`;
+- створюються architecture-aligned workstreams;
+- tasks мають outcome, primary aspect, deps, ACs, DoD, validation, risk, contracts, integration
+  ownership і files hints;
+- M орієнтир: 3–7 workstreams та 7–15 tasks;
+- запускається deterministic graph/AC/contract/integration validator;
+- M/L/XL отримує один critic pass і максимум одну correction.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/tasks.json
-docs/features/<slug>/tasks/*.md   # optional
-docs/features/<slug>/_audit/task-plan-validation.txt
-docs/features/<slug>/_audit/decomposition-review.json   # M/L/XL
+tasks.md
+_kapelle/task-plan.json
+_kapelle/architecture-guidance/tasks.json
+_kapelle/task-plan-validation.txt
+_kapelle/reviews/decomposition.json
+STATUS.md
 ```
 
-`tasks.json` має стабільну верхньорівневу структуру:
-
-```json
-{
-  "slug": "example-feature",
-  "decomposition_depth": "standard",
-  "architecture_guidance_path": "_audit/architecture-guidance/tasks.json",
-  "workstreams": [
-    {
-      "id": "WS-PROVIDER",
-      "intent": "...",
-      "aspects": ["backend"],
-      "depends_on": [],
-      "completion_task_id": "T1",
-      "completion_signal": "..."
-    }
-  ],
-  "tasks": [
-    {
-      "id": "T1",
-      "workstream_id": "WS-PROVIDER",
-      "intent": "Establish the stable invoice contract",
-      "deps": [],
-      "acs": ["AC-01"],
-      "dod": "...",
-      "primary_aspect": "backend",
-      "aspects": ["backend"],
-      "provides_contracts": ["invoice-api"],
-      "consumes_contracts": [],
-      "integration_checks": [],
-      "validation": [
-        {
-          "kind": "automated",
-          "procedure": "...",
-          "expected": "..."
-        }
-      ],
-      "risk": "medium",
-      "parallel_candidate": false,
-      "ownership_status": "known",
-      "files_hint": [],
-      "status": "pending"
-    }
-  ]
-}
-```
-
-### Що перевірити
-
-- tasks не надто широкі;
-- workstreams мають coherent outcome і completion signal;
-- кожен workstream має completion task, яка залежить від усіх його tasks;
-- dependency order відповідає contracts і aspects;
-- усі AC покриті;
-- integration validation не загублена;
-- `files_hint` достатньо точні для можливого parallel execution.
-- semantic validator і decomposition review мають PASS.
+`tasks.md` — компактний checklist. Повний graph і `files_hint` залишаються internal.
 
 ### Наступна команда
 
@@ -719,46 +302,24 @@ docs/features/<slug>/_audit/decomposition-review.json   # M/L/XL
 
 ## 11. `/kapelle:plan-tests <slug>`
 
-```text
-/kapelle:plan-tests <slug>
-```
-
 ### Що задати на вході
 
-Slug. Якщо існують обов’язкові manual, compliance або environment checks, додайте їх у повідомленні
-або попередні artifacts.
-
-### Що команда читає
-
-```text
-spec.md
-surface-plan.json
-tasks.json
-data-model.md
-contracts/
-```
-
-Для active change покриваються лише impacted AC і regression risks.
+Slug та обов’язкові manual/compliance/environment checks, якщо їх не знає project capability.
 
 ### Що відбувається
 
-- кожен AC зв’язується з test level або inspectable validation;
-- cross-aspect integration checks отримують executable owner;
-- враховуються project test capabilities;
-- не нав’язується strict TDD для всіх типів задач.
+- кожен AC та integration check отримує executable/inspectable validation;
+- required/optional checks розділяються явно;
+- test strategy відповідає task class, а strict TDD не є universal.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/test-plan.md
+test-plan.md
+STATUS.md
 ```
 
-### Що перевірити
-
-- немає AC без validation;
-- test boundary стабільний;
-- contract та integration checks покриті;
-- manual checks мають чітку процедуру й очікуваний результат.
+Run results пізніше зберігаються у `_kapelle/validation/`.
 
 ### Наступна команда
 
@@ -769,130 +330,60 @@ docs/features/<slug>/test-plan.md
 
 ---
 
-## 12. `/kapelle:implement <slug>`
-
-```text
-/kapelle:implement <slug>
-```
-
-Для approved existing-feature change:
-
-```text
-/kapelle:implement <slug> --change=<change-id>
-```
-
-Політика запуску tests, PHPStan/static analysis, linters, build та інших project checks:
-
-```text
-/kapelle:implement <slug> --validation=ask
-/kapelle:implement <slug> --validation=allow
-/kapelle:implement <slug> --validation=skip
-```
+## 12. `/kapelle:implement <slug> [--validation=ask|allow|skip]`
 
 ### Що задати на вході
 
 - slug;
-- `--change=<id>`, якщо виконується approved change route;
-- optional `--validation=ask|allow|skip` для цього invocation;
-- відповіді на approval prompts;
-- environment access, необхідний для project validation.
+- `--change=<id>` для approved change route;
+- optional validation policy override;
+- відповіді на plan approval;
+- environment access для project checks.
 
-Не потрібно вручну називати implementation skill або subagent. Kapelle має знайти їх через native
-descriptions.
-
-### Що команда читає
-
-- `tasks.json`;
-- `surface-plan.json`;
-- усі upstream feature artifacts;
-- project instructions;
-- project skills/subagents;
-- current change revision і fingerprints, якщо це change.
-
-### Що відбувається перед code-writing
-
-Для кожної dependency-ready task:
-
-1. Перевіряється task graph і aspect ordering.
-2. Визначається execution depth і task class.
-3. Семантично знаходяться project skills/subagents для task aspects.
-4. Project architecture-rules subagent повертає scoped rules.
-5. Збирається optional general project guidance.
-6. Обирається test strategy:
-   - `strict-tdd`;
-   - `characterization`;
-   - `scenario-first`;
-   - `contract-first`;
-   - `validation-first`;
-   - `validation-only`.
-7. Створюється durable implementation plan.
-8. Застосовується approval policy.
-
-### Approval
-
-Якщо approval потрібний, відповідайте:
+### Що відбувається для кожної dependency-ready task
 
 ```text
-approve
-request changes: <конкретний feedback>
-reject
+UNDERSTAND → CLASSIFY → SELECT-CAPABILITY → GUIDANCE
+→ TEST-STRATEGY → PLAN → APPROVE → IMPLEMENT → REVIEW → VALIDATE
 ```
 
-Мовчання не є approval.
+- project skills/subagents вибираються за native descriptions;
+- architecture-rules subagent повертає scoped rules;
+- strategy: strict-tdd, characterization, scenario-first, contract-first, validation-first або
+  validation-only;
+- plan durable і revisions/fingerprints перевіряються;
+- retry/agent-run loops bounded;
+- sequential mode default;
+- Agent Teams лише з runtime support, explicit approval і disjoint file ownership.
 
-### Що відбувається після approval
+### Validation policy
 
-- test-author готує tests/fixtures, якщо strategy цього потребує;
-- implementer виконує plan невеликими validated slices;
-- risk-triggered tasks отримують fresh-context per-task review;
-- lean low-risk task може відкласти independent review до mandatory feature-level review;
-- формується один validation batch з точними командами, kind, scope і required/optional status;
-- `ask` вимагає `run-all`, `run-selected` або `skip-all`;
-- `allow` запускає batch без додаткового prompt;
-- `skip` не запускає project validation під час development;
-- зупинена користувачем команда записується як `cancelled` і автоматично не повторюється;
-- task стає completed тільки після Definition of Done і потрібних gates.
+- `ask`: показати exact batch і чекати `run-all | run-selected | skip-all`;
+- `allow`: виконати batch;
+- `skip`: нічого не запускати під час development.
 
-Якщо required validation пропущена або скасована, task отримує
-`validation-deferred`. Це дозволяє продовжити development, але не означає `PASS`. Повторний
-`/kapelle:implement <slug> --validation=allow` спочатку виконає відкладені перевірки.
-
-### Retry limits
-
-Kapelle обмежує:
-
-- edit attempts;
-- загальну кількість agent runs на task.
-
-При досягненні limit task стає `BLOCKED`, а evidence зберігається.
+Cancelled або skipped required checks дають `validation-deferred`, ніколи не `PASS`.
 
 ### Що отримуємо
 
-- application code і tests у project-defined locations;
-- оновлені task statuses;
-- implementation plans;
-- architecture-guidance evidence;
-- strategy, approval, review і validation records.
-
 ```text
-docs/features/<slug>/_audit/plans/
-docs/features/<slug>/_audit/architecture-guidance/
-docs/features/<slug>/_audit/implementation.jsonl
-docs/features/<slug>/_audit/implementation-telemetry.jsonl
+application code/tests
+tasks.md                              # readable progress
+_kapelle/task-plan.json              # exact states/graph
+_kapelle/task-runs/<task-id>.json
+_kapelle/validation/<task-id>.json
+_kapelle/telemetry/execution.jsonl
+STATUS.md
 ```
 
-Kapelle не виконує git operations.
+### Коли implementation зупиняється
 
-### Коли implementation зупиниться
-
-- змінилися requirements або architecture;
-- plan fingerprint більше не current;
-- architecture rules мають blocking gaps;
-- validation не проходить після дозволеної кількості attempts;
-- validation явно пропущена або скасована — code-writing може продовжитися, але final review/ship
-  залишаються заблокованими;
-- required approval не отриманий;
-- Agent Team ownership небезпечний або неоднозначний.
+- requirement/architecture amendment;
+- stale plan fingerprints;
+- missing architecture-rules capability;
+- required approval відсутній;
+- attempt limit;
+- unsafe Agent Team ownership.
 
 ### Наступна команда
 
@@ -905,61 +396,36 @@ Kapelle не виконує git operations.
 
 ## 13. `/kapelle:feature-review <slug>`
 
-```text
-/kapelle:feature-review <slug>
-```
-
-Для change route:
-
-```text
-/kapelle:feature-review <slug> --change=<change-id>
-```
-
 ### Що задати на вході
 
-- slug;
-- change id, якщо застосовується;
-- changed-file або diff evidence, якщо host не може визначити його сам.
-
-### Що команда читає
-
-- implementation diff/changed files;
-- spec, SAD, surface plan, sequences, model і contracts;
-- task plans і validation evidence;
-- scoped architecture guidance;
-- change baseline та approved impact matrix.
+Slug, optional change id і changed-file evidence, якщо host його не надає.
 
 ### Що відбувається
 
-Fresh-context `kapelle:reviewer` перевіряє:
+Спочатку as-built convergence:
 
-- acceptance criteria;
-- business invariants;
-- approved-plan compliance;
-- architecture rules;
-- provider/consumer contracts;
-- data-model consistency;
-- test strategy;
-- cross-aspect integration checks;
-- unapproved behavioral або artifact drift.
+```text
+proposal ↔ final scope
+spec ↔ observable implementation
+design ↔ technical implementation
+contracts ↔ providers/consumers
+tasks ↔ implemented work
+test-plan ↔ validation
+ADR ↔ actual decisions
+```
+
+Потім fresh read-only reviewer перевіряє ACs, architecture rules, contracts, tests, risks і
+cross-aspect integration. Required deferred validation блокує PASS.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/_review/review-<date>.md
+_kapelle/reviews/documentation-convergence.json
+_kapelle/reviews/feature-review.json
+STATUS.md
 ```
 
-Verdict:
-
-```text
-PASS
-CHANGES_REQUESTED
-BLOCKED
-```
-
-### Якщо `CHANGES_REQUESTED`
-
-Виконайте targeted correction через handoff. Не переходьте до ship.
+Verdict: `PASS | CHANGES_REQUESTED | BLOCKED`.
 
 ### Наступна команда при PASS
 
@@ -972,113 +438,107 @@ BLOCKED
 
 ## 14. `/kapelle:ship <slug>`
 
-```text
-/kapelle:ship <slug>
-```
-
 ### Що задати на вході
 
-Slug. Додатковий input потрібний лише для deployment або operational notes, яких немає в artifacts.
-
-### Що команда читає
-
-- останній PASS review;
-- feature artifacts;
-- validation evidence;
-- operational і migration notes.
+Slug і optional release/operational notes.
 
 ### Що відбувається
 
-- перевіряється readiness;
-- збираються відомості про validation, migrations, risks і follow-ups;
-- створюється handoff для ручного delivery.
+- перевіряються current convergence/review fingerprints;
+- required validation повинна мати PASS;
+- active change або stale docs блокують readiness;
+- оновлюється generated status.
 
 ### Що отримуємо
 
 ```text
-docs/features/<slug>/ship.md
+STATUS.md
+_kapelle/state.json
+release.md              # optional human release notes
+```
+
+Kapelle не робить commit, push, PR або merge.
+
+---
+
+## 15. `/kapelle:status <slug>`
+
+### Коли використовувати
+
+- хочете швидко зрозуміти стан;
+- повернулися до фічі пізніше;
+- development продовжувався поза Kapelle;
+- `_kapelle/` видалений/пошкоджений;
+- потрібно знайти minimal next stage.
+
+### Що задати на вході
+
+Існуючий slug. Feature directory має існувати.
+
+### Що відбувається
+
+- читаються human docs;
+- перевіряється manifest/state;
+- за потреби scoped agent аналізує current code/tests і architecture rules;
+- internal state rebuild/reconcile;
+- checked task без current validation стає `implemented-unverified`;
+- втрачені approvals/reviews/telemetry/command output/validation перелічуються як evidence gaps;
+- product requirements не переписуються під випадкову code behavior.
+
+### Що отримуємо
+
+```text
+STATUS.md
+_kapelle/manifest.json
+_kapelle/state.json
+_kapelle/recovery.json    # після recovery
 ```
 
 ### Важливо
 
-Kapelle не:
-
-- створює commit;
-- push-ить branch;
-- відкриває PR;
-- merge-ить зміни.
-
-Ці дії виконує developer.
+`status` не редагує implementation code, не запускає validation, не мігрує legacy layout без
+approval і не виконує git operations.
 
 ---
 
-# Existing-feature change lifecycle
+## 16. Legacy migration
 
-## 15. `/kapelle:change`
-
-### Enhancement
+### Dry run
 
 ```text
-/kapelle:change <slug> --mode=enhancement "<опис observable behavior change>"
+python3 scripts/migrate_feature_layout.py docs/features/<slug> --dry-run
 ```
 
-### Bugfix
+Показує actions/collisions і нічого не змінює.
+
+### Apply
 
 ```text
-/kapelle:change <slug> --mode=bugfix "<опис порушеної існуючої поведінки>"
+python3 scripts/migrate_feature_layout.py docs/features/<slug> --apply
 ```
 
-### Refactor
+Потребує explicit decision користувача. Migration:
+
+- `sad.md` → `design.md`;
+- root task/surface JSON → `_kapelle/`;
+- створює readable proposal/tasks, якщо вони відсутні;
+- зберігає legacy evidence в `_kapelle/history/legacy/`;
+- rebuild-ить state/status;
+- є idempotent.
+
+---
+
+## 17. `/kapelle:change`, `/kapelle:fix`, `/kapelle:resume-change`
+
+### New change
 
 ```text
-/kapelle:change <slug> --mode=refactor "<опис internal change>"
+/kapelle:change <slug> --mode=enhancement "<observable change>"
+/kapelle:change <slug> --mode=bugfix "<accepted behavior to restore>"
+/kapelle:change <slug> --mode=refactor "<behavior-preserving change>"
 ```
 
-### Що задати на вході
-
-- slug існуючої Kapelle-фічі;
-- explicit mode або достатньо точний опис для classification;
-- current behavior;
-- desired behavior;
-- відомий ticket/reference;
-- compatibility constraints.
-
-### Що команда читає
-
-- canonical feature artifacts;
-- current source і tests;
-- contracts і schema;
-- previous change records;
-- repository precedents.
-
-### Що відбувається
-
-1. Explorer фіксує baseline поточної поведінки.
-2. Створюється immutable revision `r001`.
-3. Визначаються impacted acceptance criteria.
-4. Обчислюються artifact impacts і transitive invalidation.
-5. Critic перевіряє mode, hidden behavior changes і minimal route.
-6. Створюється change state.
-7. Користувачу показуються route, risks і planned artifact changes.
-8. Очікується explicit approval.
-
-### Що отримуємо
-
-```text
-docs/features/<slug>/changes/<change-id>/
-  change.json
-  change.md
-  active-state.json
-  artifact-state/
-  revisions/r001/
-    revision.json
-    request.md
-    impact.json
-    baseline/
-  progress.jsonl
-```
-
-### Що відповісти
+Kapelle capture-ить baseline, AC/artifact impact, minimal route і чекає:
 
 ```text
 approve
@@ -1086,266 +546,84 @@ request changes: <feedback>
 abort
 ```
 
-### Що запускати після approval
-
-Тільки stages із надрукованого route:
+Internal state:
 
 ```text
-/kapelle:<stage> <slug> --change=<change-id>
+_kapelle/changes/<change-id>/
+  change.json
+  state.json
+  revisions/
+  artifact-state/
+  reconciliation.json
+  progress.jsonl
 ```
 
-Зберігайте `--change=<change-id>` в кожному handoff.
+User-relevant scope/decision changes відображаються в proposal/spec/design/ADR.
 
----
-
-## 16. `/kapelle:fix`
+### Bug shorthand
 
 ```text
 /kapelle:fix <slug> "<bug description>"
 ```
 
-### Що задати на вході
+Якщо expected behavior не існує в accepted spec, потрібна reclassification to enhancement.
 
-- конкретний symptom;
-- expected і actual behavior;
-- reproduction, якщо відомий;
-- feature slug.
+### Mid-implementation amendment
 
-### Що відбувається
+```text
+/kapelle:change <slug> --change=<id> --revise "<amendment>"
+```
 
-- запускається той самий lifecycle, що `change --mode=bugfix`;
-- defect зв’язується з існуючим acceptance criterion;
-- якщо requirement відсутній або неправильний, bugfix зупиняється і пропонується enhancement;
-- виконується тільки approved minimal route.
+Implementation pause, immutable revision, transitive invalidation, task reconciliation і новий
+route approval є обов’язковими.
 
-### Що отримуємо
+### Resume
 
-Ту саму change artifact model, code/tests і progress evidence, що й для bugfix mode.
+```text
+/kapelle:resume-change <slug> --change=<id>
+```
+
+Resume відмовляє при unexplained fingerprint drift, stale upstream artifacts, incomplete
+reconciliation або old implementation plan.
 
 ---
 
-## 17. Зміна вимог: `--revise`
+## 18. Допоміжні команди
 
-```text
-/kapelle:change <slug> --change=<change-id> --revise "<amendment>"
-```
+### `/kapelle:classify-size <slug>`
 
-### Що задати на вході
+Вхід: slug і proposal/spec.  
+Результат: `_kapelle/size.json`.
 
-Нове формулювання requirement або architecture constraint. Воно повинно пояснювати, що саме
-змінилося, а не лише просити “переробити”.
+### `/kapelle:glossary <slug>`
 
-### Що відбувається
+Вхід: ambiguous domain term та desired definition.  
+Результат: human `CONTEXT.md`.
 
-- усі нові implementation dispatch зупиняються;
-- current task checkpoint-иться;
-- створюється immutable `rNNN`;
-- fingerprints порівнюються з попередньою revision;
-- downstream artifacts стають stale;
-- `change-reconciler` класифікує tasks:
-  `keep`, `revalidate`, `rework`, `supersede`, `revert-required`;
-- формується новий minimal route;
-- потрібний новий approval.
+### `/kapelle:decide-adr <slug>`
 
-### Що отримуємо
+Вхід: decision context, options, constraints.  
+Результат: `adr/NNNN-<decision>.md`.
 
-- нову revision directory;
-- оновлені artifact states;
-- `reconciliation.json`;
-- новий approved route після confirmation.
+### `/kapelle:roadmap <slug>`
+
+Вхід: priority/status change.  
+Результат: roadmap artifact, якщо project використовує його.
 
 ---
 
-## 18. `/kapelle:resume-change`
+## 19. Локальні deterministic checks
 
 ```text
-/kapelle:resume-change <slug> --change=<change-id>
+python3 scripts/validate_task_plan.py \
+  --tasks docs/features/<slug>/_kapelle/task-plan.json \
+  --surface-plan docs/features/<slug>/_kapelle/surface-plan.json \
+  --spec docs/features/<slug>/spec.md
+
+python3 scripts/validate_feature_state.py docs/features/<slug>
+python3 scripts/validate_plugin.py
+python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
-### Що задати на вході
+Ці plugin utilities не запускають project tests, PHPStan, linters, builds, network або git.
 
-Slug і exact change id. Активний state повинен бути `resumable`.
-
-### Що команда читає
-
-- current revision;
-- `active-state.json`;
-- artifact fingerprints;
-- `reconciliation.json`;
-- tasks;
-- implementation plans;
-- previous progress evidence.
-
-### Що відбувається
-
-- повторно обчислюються fingerprints;
-- перевіряється, що stale artifacts усунені;
-- перевіряється disposition кожної старої task;
-- rework tasks отримують нові plans і strategies;
-- revalidate tasks проходять validation;
-- stale implementation plans блокуються;
-- state переходить у `running`;
-- implementation продовжується з першої pending або needs-rework task.
-
-### Що отримуємо
-
-- resume record у `progress.jsonl`;
-- відновлений implementation lifecycle під current revision.
-
-### Blocking cases
-
-- unexplained file drift;
-- unresolved stale artifact;
-- incomplete reconciliation;
-- plan з old revision або old `based_on` fingerprints.
-
----
-
-# Допоміжні команди
-
-## 19. `/kapelle:classify-size <slug>`
-
-### Коли використовувати
-
-- потрібно окремо переглянути size;
-- scope суттєво змінився;
-- `.size` відсутній.
-
-### Вхід
-
-Slug і feature idea/spec.
-
-### Результат
-
-```text
-docs/features/<slug>/.size
-```
-
-Зазвичай `specify` вже створює `.size`, тому окремий запуск не обов’язковий.
-
----
-
-## 20. `/kapelle:glossary <slug>`
-
-### Коли використовувати
-
-Коли domain term має неоднозначне або project-specific значення.
-
-### Вхід
-
-- slug;
-- term;
-- definition або питання, яке потрібно узгодити.
-
-### Результат
-
-```text
-docs/features/<slug>/CONTEXT.md
-```
-
-Наступні design stages використовують узгоджену термінологію.
-
----
-
-## 21. `/kapelle:decide-adr <slug>`
-
-### Коли використовувати
-
-Коли виникло окреме значуще architecture decision, особливо під час design або change route.
-
-### Вхід
-
-- decision context;
-- options;
-- constraints;
-- consequences;
-- approval, якщо рішення irreversible.
-
-### Що відбувається
-
-Команда використовує native project capabilities і applicable guidance, але не створює code.
-
-### Результат
-
-```text
-docs/features/<slug>/adr/*.md
-```
-
----
-
-## 22. `/kapelle:roadmap <slug>`
-
-### Коли використовувати
-
-Для оновлення portfolio state фічі.
-
-### Вхід
-
-Slug і desired state/context: Now, Next, Later або Shipped.
-
-### Результат
-
-```text
-docs/roadmap.md
-```
-
-Команда не є обов’язковою частиною feature backbone.
-
----
-
-# Практичний сценарій: configurable-invoice-status-in-pipe
-
-## Якщо Kapelle-артефактів ще немає
-
-```text
-/kapelle:survey configurable-invoice-status-in-pipe
-/clear
-/kapelle:specify configurable-invoice-status-in-pipe \
-  "Allow the invoice status used in the processing pipe to be configured while preserving the current default"
-/clear
-/kapelle:clarify configurable-invoice-status-in-pipe
-/clear
-/kapelle:design configurable-invoice-status-in-pipe
-/clear
-/kapelle:sequences configurable-invoice-status-in-pipe
-/clear
-/kapelle:data-model configurable-invoice-status-in-pipe
-/clear
-/kapelle:contracts configurable-invoice-status-in-pipe
-/clear
-/kapelle:decompose configurable-invoice-status-in-pipe
-/clear
-/kapelle:plan-tests configurable-invoice-status-in-pipe
-/clear
-/kapelle:implement configurable-invoice-status-in-pipe
-/clear
-/kapelle:feature-review configurable-invoice-status-in-pipe
-/clear
-/kapelle:ship configurable-invoice-status-in-pipe
-```
-
-## Якщо це зміна вже описаної фічі
-
-```text
-/kapelle:change configurable-invoice-status-in-pipe \
-  --mode=enhancement \
-  "Allow invoice status in the processing pipe to be configured while preserving the current status as the default"
-```
-
-Після approval виконуйте тільки route, який повернув Kapelle.
-
----
-
-# Критичні правила
-
-1. Не створюйте placeholder artifact, щоб обійти missing-input gate.
-2. Не пропускайте `--change=<id>` у change route.
-3. Не продовжуйте implementation після requirement/architecture amendment без revision.
-4. Не змінюйте shared `docs/architecture-map.md` із feature worktree.
-5. Не називайте project skill/agent вручну, якщо native discovery може вибрати його за description.
-6. Не приймайте silence як approval.
-7. Не послаблюйте tests або acceptance criteria для проходження validation.
-8. Не трактуйте skipped/cancelled tests, PHPStan або linters як `PASS`.
-9. Не запускайте Agent Team без explicit approval і disjoint file ownership.
-10. Не очікуйте git commit, push або PR від Kapelle.
-11. Завжди використовуйте точний handoff, надрукований попереднім stage.

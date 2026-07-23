@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.9.0+codex.20260702150908",
-  "description": "Provider-neutral spec-driven SDLC harness with immutable change revisions, artifact invalidation, reconciliation, and plan-first adaptive implementation.",
+  "version": "0.9.0+codex.20260723170324",
+  "description": "Provider-neutral SDLC harness with readable feature docs, recoverable execution state, architecture guidance, and adaptive implementation.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Kapelle",
-    "shortDescription": "Provider-neutral spec-driven SDLC",
-    "longDescription": "A gated SDLC harness with immutable requirement and architecture revisions, artifact fingerprints, task reconciliation, resumable changes, and adaptive implementation.",
+    "shortDescription": "Readable, recoverable spec-driven SDLC",
+    "longDescription": "A gated SDLC harness with human-readable feature artifacts, recoverable internal state, scoped architecture guidance, immutable change revisions, deterministic task validation, and adaptive implementation.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
     "capabilities": [
@@ -19,6 +19,7 @@
     ],
     "defaultPrompt": [
       "Survey this repository with Kapelle.",
+      "Show or recover a feature status with Kapelle.",
       "Change an existing feature safely with Kapelle.",
       "Resume a reconciled Kapelle change."
     ]

@@ -1,0 +1,468 @@
+{
+  "architecture_guidance_path": "_kapelle/architecture-guidance/tasks.json",
+  "decomposition_depth": "standard",
+  "slug": "human-readable-artifacts-refactor",
+  "split_recommendations": [],
+  "tasks": [
+    {
+      "acs": [
+        "AC-01",
+        "AC-09"
+      ],
+      "aspects": [
+        "contracts"
+      ],
+      "consumes_contracts": [],
+      "deps": [],
+      "dod": "Feature layout and artifact presentation references define one physical path per artifact",
+      "entrypoint_hint": "feature artifact contract",
+      "files_hint": [
+        "references/feature-layout.md",
+        "references/artifact-presentation.md"
+      ],
+      "id": "T01",
+      "integration_checks": [],
+      "intent": "Declare the human/internal artifact boundary and generated document rules",
+      "module_hint": "references",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "contracts",
+      "provides_contracts": [],
+      "risk": "medium",
+      "status": "completed",
+      "title": "Define layout and presentation contracts",
+      "validation": [
+        {
+          "expected": "Every human and internal artifact is classified",
+          "kind": "inspection",
+          "procedure": "Review layout contract"
+        }
+      ],
+      "workstream_id": "WS-CONTRACTS"
+    },
+    {
+      "acs": [
+        "AC-07"
+      ],
+      "aspects": [
+        "contracts"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T01"
+      ],
+      "dod": "Schemas and vocabulary agree and plugin validation checks them",
+      "entrypoint_hint": "JSON schemas",
+      "files_hint": [
+        "dispatcher/documentation-convergence.schema.json",
+        "dispatcher/feature-manifest.schema.json",
+        "dispatcher/feature-review.schema.json",
+        "dispatcher/feature-state.schema.json",
+        "dispatcher/recovery-report.schema.json",
+        "dispatcher/size.schema.json",
+        "dispatcher/task-context.schema.json",
+        "dispatcher/task-plan.schema.json",
+        "dispatcher/validation-decision.schema.json",
+        "dispatcher/vocabulary.json"
+      ],
+      "id": "T02",
+      "integration_checks": [],
+      "intent": "Make recovery/readiness states machine-validatable",
+      "module_hint": "dispatcher",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "contracts",
+      "provides_contracts": [],
+      "risk": "medium",
+      "status": "completed",
+      "title": "Add manifest, state, recovery schemas and vocabulary",
+      "validation": [
+        {
+          "expected": "Schema and vocabulary checks pass",
+          "kind": "automated",
+          "procedure": "Run plugin validator"
+        }
+      ],
+      "workstream_id": "WS-CONTRACTS"
+    },
+    {
+      "acs": [
+        "AC-02",
+        "AC-03",
+        "AC-04",
+        "AC-05",
+        "AC-06"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T02"
+      ],
+      "dod": "Fresh and recovered feature fixtures produce stable manifest, state, report, and status",
+      "entrypoint_hint": "Python CLI",
+      "files_hint": [
+        "scripts/feature_state.py",
+        "scripts/build_feature_status.py",
+        "scripts/rebuild_feature_state.py"
+      ],
+      "id": "T03",
+      "integration_checks": [
+        "IC-STATE"
+      ],
+      "intent": "Derive stable state and status from durable documents without false evidence",
+      "module_hint": "scripts",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "runtime",
+      "provides_contracts": [],
+      "risk": "high",
+      "status": "completed",
+      "title": "Implement status and recovery state engine",
+      "validation": [
+        {
+          "expected": "Recovery assertions pass",
+          "kind": "automated",
+          "procedure": "Run feature-state unit tests"
+        }
+      ],
+      "workstream_id": "WS-RUNTIME"
+    },
+    {
+      "acs": [
+        "AC-07"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T03"
+      ],
+      "dod": "Validator rejects drift, false validation, and stale convergence fixtures",
+      "entrypoint_hint": "Python CLI",
+      "files_hint": [
+        "scripts/validate_feature_state.py"
+      ],
+      "id": "T04",
+      "integration_checks": [],
+      "intent": "Detect drift and impossible readiness deterministically",
+      "module_hint": "scripts",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "runtime",
+      "provides_contracts": [],
+      "risk": "high",
+      "status": "completed",
+      "title": "Implement feature-state validator",
+      "validation": [
+        {
+          "expected": "Invalid fixtures fail with actionable errors",
+          "kind": "automated",
+          "procedure": "Run validator tests"
+        }
+      ],
+      "workstream_id": "WS-RUNTIME"
+    },
+    {
+      "acs": [
+        "AC-10"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T03",
+        "T04"
+      ],
+      "dod": "Dry-run is non-mutating and apply is preserving and idempotent",
+      "entrypoint_hint": "Python CLI",
+      "files_hint": [
+        "scripts/migrate_feature_layout.py"
+      ],
+      "id": "T05",
+      "integration_checks": [],
+      "intent": "Plan or apply layout migration without losing legacy evidence",
+      "module_hint": "scripts",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "runtime",
+      "provides_contracts": [],
+      "risk": "high",
+      "status": "completed",
+      "title": "Implement safe legacy migration",
+      "validation": [
+        {
+          "expected": "Dry-run/apply/idempotency assertions pass",
+          "kind": "automated",
+          "procedure": "Run migration fixture tests"
+        }
+      ],
+      "workstream_id": "WS-RUNTIME"
+    },
+    {
+      "acs": [
+        "AC-08",
+        "AC-09"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T05"
+      ],
+      "dod": "Backbone and change skills use layout-v2 and no root machine-state paths remain",
+      "entrypoint_hint": "Kapelle commands",
+      "files_hint": [
+        "AGENTS.md",
+        "CLAUDE.md",
+        "agents/reviewer.md",
+        "audit/audit-log.md",
+        "dispatcher/artifact-dependencies.json",
+        "dispatcher/dispatcher.md",
+        "dispatcher/execution-contract.md",
+        "references/architecture-guidance.md",
+        "references/change-lifecycle.md",
+        "references/execution-depth.md",
+        "references/stage-contract.md",
+        "references/task-decomposition.md",
+        "references/validation-execution.md",
+        "skills/change/SKILL.md",
+        "skills/clarify/SKILL.md",
+        "skills/classify-size/SKILL.md",
+        "skills/contracts/SKILL.md",
+        "skills/data-model/SKILL.md",
+        "skills/decide-adr/SKILL.md",
+        "skills/decompose/SKILL.md",
+        "skills/design/SKILL.md",
+        "skills/fix/SKILL.md",
+        "skills/glossary/SKILL.md",
+        "skills/implement/SKILL.md",
+        "skills/plan-tests/SKILL.md",
+        "skills/resume-change/SKILL.md",
+        "skills/roadmap/SKILL.md",
+        "skills/sequences/SKILL.md",
+        "skills/specify/SKILL.md",
+        "skills/survey/SKILL.md",
+        "stages/contracts/contracts.stage.md",
+        "stages/contracts/drift-gate.md"
+      ],
+      "id": "T06",
+      "integration_checks": [],
+      "intent": "Use human documents and _kapelle internal paths throughout the lifecycle",
+      "module_hint": "skills",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "stages",
+      "provides_contracts": [],
+      "risk": "high",
+      "status": "completed",
+      "title": "Migrate backbone and change skills to layout-v2",
+      "validation": [
+        {
+          "expected": "Stage layout assertions pass",
+          "kind": "automated",
+          "procedure": "Run plugin validator"
+        }
+      ],
+      "workstream_id": "WS-STAGES"
+    },
+    {
+      "acs": [
+        "AC-02",
+        "AC-08"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T06"
+      ],
+      "dod": "Status, review, and ship protocols share current fingerprints and readiness rules",
+      "entrypoint_hint": "Kapelle commands",
+      "files_hint": [
+        "dispatcher/role-profiles.json",
+        "skills/status/SKILL.md",
+        "skills/feature-review/SKILL.md",
+        "skills/ship/SKILL.md"
+      ],
+      "id": "T07",
+      "integration_checks": [
+        "IC-STAGES"
+      ],
+      "intent": "Expose status command and block stale review or ship readiness",
+      "module_hint": "skills",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "stages",
+      "provides_contracts": [],
+      "risk": "high",
+      "status": "completed",
+      "title": "Add status skill and convergence gates",
+      "validation": [
+        {
+          "expected": "Status and convergence guards pass",
+          "kind": "automated",
+          "procedure": "Run plugin validator"
+        }
+      ],
+      "workstream_id": "WS-STAGES"
+    },
+    {
+      "acs": [
+        "AC-11"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages",
+        "documentation"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T07"
+      ],
+      "dod": "All unit and plugin validations pass",
+      "entrypoint_hint": "test suite",
+      "files_hint": [
+        "scripts/test_feature_state.py",
+        "scripts/validate_plugin.py"
+      ],
+      "id": "T08",
+      "integration_checks": [],
+      "intent": "Protect recovery, migration, and existing task semantics",
+      "module_hint": "scripts",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "runtime",
+      "provides_contracts": [],
+      "risk": "medium",
+      "status": "completed",
+      "title": "Add recovery/migration tests and plugin self-validation",
+      "validation": [
+        {
+          "expected": "All tests pass",
+          "kind": "automated",
+          "procedure": "Run all script tests"
+        }
+      ],
+      "workstream_id": "WS-DELIVERY"
+    },
+    {
+      "acs": [
+        "AC-12"
+      ],
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages",
+        "documentation"
+      ],
+      "consumes_contracts": [],
+      "deps": [
+        "T08"
+      ],
+      "dod": "README, usage, commands, and examples describe one consistent workflow",
+      "entrypoint_hint": "user guide",
+      "files_hint": [
+        "README.md",
+        "docs/USAGE.md",
+        "docs/COMMAND_EXECUTION_UK.md",
+        "examples/task-plan.json",
+        "examples/feature-layout-v2/README.md",
+        ".claude-plugin/plugin.json",
+        ".codex-plugin/plugin.json"
+      ],
+      "id": "T09",
+      "integration_checks": [
+        "IC-DOCS"
+      ],
+      "intent": "Make layout, recovery, migration, and evidence boundaries easy to follow",
+      "module_hint": "docs",
+      "ownership_status": "known",
+      "parallel_candidate": false,
+      "primary_aspect": "documentation",
+      "provides_contracts": [],
+      "risk": "medium",
+      "status": "completed",
+      "title": "Update examples and user documentation",
+      "validation": [
+        {
+          "expected": "Examples match layout-v2 behavior",
+          "kind": "inspection",
+          "procedure": "Review documented commands and paths"
+        }
+      ],
+      "workstream_id": "WS-DELIVERY"
+    }
+  ],
+  "workstreams": [
+    {
+      "aspects": [
+        "contracts"
+      ],
+      "completion_signal": "Layout and state schemas are internally consistent",
+      "completion_task_id": "T02",
+      "depends_on": [],
+      "id": "WS-CONTRACTS",
+      "intent": "Establish physical paths, schemas, vocabulary, and presentation invariants",
+      "title": "Contracts and state model"
+    },
+    {
+      "aspects": [
+        "contracts",
+        "runtime"
+      ],
+      "completion_signal": "Recovery and migration fixtures produce validated state",
+      "completion_task_id": "T05",
+      "depends_on": [
+        "WS-CONTRACTS"
+      ],
+      "id": "WS-RUNTIME",
+      "intent": "Build, recover, validate, and migrate feature state safely",
+      "title": "Deterministic status and recovery"
+    },
+    {
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages"
+      ],
+      "completion_signal": "All backbone stages use declared layout-v2 paths",
+      "completion_task_id": "T07",
+      "depends_on": [
+        "WS-RUNTIME"
+      ],
+      "id": "WS-STAGES",
+      "intent": "Migrate stage contracts and add status/convergence gates",
+      "title": "Stage protocol migration"
+    },
+    {
+      "aspects": [
+        "contracts",
+        "runtime",
+        "stages",
+        "documentation"
+      ],
+      "completion_signal": "Plugin validation and unit tests pass and the user guide matches runtime",
+      "completion_task_id": "T09",
+      "depends_on": [
+        "WS-STAGES"
+      ],
+      "id": "WS-DELIVERY",
+      "intent": "Protect behavior with tests and make the workflow understandable",
+      "title": "Verification and documentation"
+    }
+  ]
+}

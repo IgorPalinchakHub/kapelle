@@ -75,6 +75,12 @@ for rel in [
     'dispatcher/reconciliation.schema.json',
     'dispatcher/implementation-plan.schema.json',
     'dispatcher/artifact-dependencies.json',
+    'dispatcher/feature-manifest.schema.json',
+    'dispatcher/feature-state.schema.json',
+    'dispatcher/recovery-report.schema.json',
+    'dispatcher/documentation-convergence.schema.json',
+    'dispatcher/size.schema.json',
+    'dispatcher/feature-review.schema.json',
     'dispatcher/vocabulary.json',
     'dispatcher/role-profiles.json',
     'references/agent-orchestration.md',
@@ -83,12 +89,20 @@ for rel in [
     'references/execution-depth.md',
     'references/validation-execution.md',
     'references/task-decomposition.md',
+    'references/feature-layout.md',
+    'references/artifact-presentation.md',
     'references/repository-context.md',
     'config/shapes/architecture-rules-agent.shape.md',
     'references/change-lifecycle.md',
     'scripts/artifact_fingerprint.py',
     'scripts/validate_task_plan.py',
     'scripts/test_validate_task_plan.py',
+    'scripts/feature_state.py',
+    'scripts/build_feature_status.py',
+    'scripts/rebuild_feature_state.py',
+    'scripts/validate_feature_state.py',
+    'scripts/migrate_feature_layout.py',
+    'scripts/test_feature_state.py',
 ]:
     check((ROOT / rel).exists(), f"missing {rel}")
 
@@ -100,7 +114,10 @@ for skill in skills:
     check(txt.startswith('---'), f'{skill}: missing frontmatter')
     check(f'name: {name}' in txt, f'{skill}: frontmatter name mismatch')
     check('description:' in txt, f'{skill}: missing description')
-    check('stage-handoff block' in txt or name in {'decompose', 'implement', 'contracts'}, f'{skill}: missing handoff wording')
+    check(
+        'handoff' in txt.lower() or name in {'decompose', 'implement', 'contracts', 'status'},
+        f'{skill}: missing handoff wording',
+    )
     check(not re.search(r'^agents:', txt, re.M), f'{skill}: unsupported agents frontmatter')
 
 agent_names = {p.stem for p in (ROOT / 'agents').glob('*.md')}
@@ -142,6 +159,12 @@ for rel in [
     'dispatcher/task-plan.schema.json',
     'dispatcher/decomposition-review.schema.json',
     'dispatcher/validation-decision.schema.json',
+    'dispatcher/feature-manifest.schema.json',
+    'dispatcher/feature-state.schema.json',
+    'dispatcher/recovery-report.schema.json',
+    'dispatcher/documentation-convergence.schema.json',
+    'dispatcher/size.schema.json',
+    'dispatcher/feature-review.schema.json',
 ]:
     load_json(rel)
 
@@ -331,7 +354,16 @@ if task_plan_example:
     check(result.returncode == 0,
           f"task plan fixture failed semantic validation: {result.stdout}{result.stderr}")
     unit_result = subprocess.run(
-        [sys.executable, str(ROOT / 'scripts/test_validate_task_plan.py')],
+        [
+            sys.executable,
+            '-m',
+            'unittest',
+            'discover',
+            '-s',
+            str(ROOT / 'scripts'),
+            '-p',
+            'test_*.py',
+        ],
         capture_output=True,
         text=True,
         check=False,
@@ -341,9 +373,71 @@ if task_plan_example:
 
 dependencies = load_json('dispatcher/artifact-dependencies.json')
 if dependencies:
-    check('surface-plan.json' in dependencies, 'artifact graph: missing surface-plan.json')
-    check('sequences.md' in dependencies, 'artifact graph: missing sequences.md')
-    check('sequences' not in dependencies, 'artifact graph: stale logical sequences key')
+    for required in [
+        'proposal.md',
+        'spec.md',
+        'design.md',
+        '_kapelle/surface-plan.json',
+        'tasks.md',
+        '_kapelle/task-plan.json',
+        'test-plan.md',
+        '_kapelle/validation',
+        '_kapelle/reviews/documentation-convergence.json',
+        '_kapelle/reviews/feature-review.json',
+        '_kapelle/state.json',
+        'STATUS.md',
+    ]:
+        check(required in dependencies, f'artifact graph: missing {required}')
+    for legacy in ['sad.md', 'surface-plan.json', 'tasks.json', 'ship.md']:
+        check(legacy not in dependencies, f'artifact graph: legacy key {legacy}')
+
+feature_manifest_schema = load_json('dispatcher/feature-manifest.schema.json')
+feature_state_schema = load_json('dispatcher/feature-state.schema.json')
+recovery_schema = load_json('dispatcher/recovery-report.schema.json')
+convergence_schema = load_json('dispatcher/documentation-convergence.schema.json')
+if feature_manifest_schema:
+    check(feature_manifest_schema.get('properties', {}).get('layout_version', {}).get('const') == 2,
+          'feature manifest: layout_version must be 2')
+if feature_state_schema:
+    feature_state_enum = (
+        feature_state_schema.get('properties', {}).get('feature_state', {}).get('enum', [])
+    )
+    for required in [
+        'recovered',
+        'recovered-with-gaps',
+        'external-development',
+        'externally-implemented-unverified',
+    ]:
+        check(required in feature_state_enum, f'feature state: missing {required}')
+if recovery_schema:
+    dispositions = (
+        recovery_schema.get('properties', {})
+        .get('task_dispositions', {})
+        .get('additionalProperties', {})
+        .get('enum', [])
+    )
+    check('implemented-unverified' in dispositions,
+          'recovery report: missing implemented-unverified disposition')
+if convergence_schema:
+    statuses = convergence_schema.get('properties', {}).get('status', {}).get('enum', [])
+    check(statuses == ['PASS', 'CHANGES_REQUIRED', 'BLOCKED'],
+          'documentation convergence: invalid statuses')
+
+for required in [
+    'references/feature-layout.md',
+    'references/artifact-presentation.md',
+    'skills/status/SKILL.md',
+]:
+    check((ROOT / required).exists(), f'layout-v2: missing {required}')
+
+for skill in skills:
+    if skill.parent.name == 'status':
+        continue
+    text = skill.read_text()
+    check('_audit/' not in text and '_review/' not in text,
+          f'{skill.relative_to(ROOT)}: writes legacy internal path')
+    check('docs/features/<slug>/changes/' not in text,
+          f'{skill.relative_to(ROOT)}: writes legacy change path')
 
 design_skill = (ROOT / 'skills/design/SKILL.md').read_text()
 for required in [
@@ -413,7 +507,8 @@ for required in [
     '--mode=refactor',
     '--revise',
     '/kapelle:resume-change',
-    'surface-plan.json',
+    '_kapelle/surface-plan.json',
+    '/kapelle:status <slug>',
     'REFUSED-missing-project-capability',
 ]:
     check(required in usage, f'usage guide: missing workflow detail {required!r}')
@@ -439,6 +534,7 @@ for required in [
     '/kapelle:glossary <slug>',
     '/kapelle:decide-adr <slug>',
     '/kapelle:roadmap <slug>',
+    '/kapelle:status <slug>',
     'Що задати на вході',
     'Що отримуємо',
 ]:
@@ -454,6 +550,21 @@ if vocabulary:
     if task_schema:
         check(task_schema.get('properties', {}).get('status', {}).get('enum') == task_states,
               'vocabulary: task-context status enum drifted from task_states')
+    if feature_state_schema:
+        check(
+            feature_state_schema.get('properties', {}).get('feature_state', {}).get('enum')
+            == vocabulary.get('feature_states'),
+            'vocabulary: feature-state enum drifted from feature_states',
+        )
+    if recovery_schema:
+        check(
+            recovery_schema.get('properties', {})
+            .get('task_dispositions', {})
+            .get('additionalProperties', {})
+            .get('enum')
+            == vocabulary.get('recovery_task_dispositions'),
+            'vocabulary: recovery dispositions drifted from recovery_task_dispositions',
+        )
     artifact_state_schema = load_json('dispatcher/artifact-state.schema.json')
     if artifact_state_schema:
         check(artifact_state_schema.get('properties', {}).get('status', {}).get('enum')
