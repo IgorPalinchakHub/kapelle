@@ -1,275 +1,71 @@
-# Kapelle: коротка інструкція та послідовність команд
+# Kapelle: короткий порядок
 
-Це практичний порядок роботи без пояснення внутрішніх JSON-артефактів. Деталі кожної команди
-наведені в [COMMAND_EXECUTION_UK.md](COMMAND_EXECUTION_UK.md).
-
-## 1. Перед початком
-
-Проєкт повинен мати:
-
-- `AGENTS.md` або `CLAUDE.md` з проєктними правилами;
-- native skills/subagents для технологій проєкту;
-- subagent, який повертає архітектурні правила для заданої частини фічі;
-- відомі команди тестів, lint/static analysis і build.
-
-Оберіть стабільний slug у kebab-case:
+## Нова фіча
 
 ```text
-configurable-invoice-status-in-pipe
+/kapelle:start configurable-invoice-status-in-pipe \
+  "Allow invoice status in Pipe to be configured"
 ```
 
-Усі артефакти фічі будуть у:
+Default `--lane=auto --interview=auto`.
+
+Якщо задача XS/S і без risk triggers, Kapelle запропонує fast lane: `spec.md`, структурований
+`design.md` і `tasks.md` створюються за один виклик та мають одне planning approval.
 
 ```text
-docs/features/configurable-invoice-status-in-pipe/
+/kapelle:start <slug> --revise "<feedback>"
+/kapelle:start <slug> --approve
 ```
 
-## 2. Нова фіча: рекомендований порядок
-
-### Крок 0. Shared architecture baseline
-
-Виконується один раз для репозиторію, якщо `docs/architecture-map.md` ще відсутній:
+Для M/L/XL або ризикової задачі використовується standard lane:
 
 ```text
-/kapelle:survey
+/kapelle:spec <slug>
+/kapelle:spec <slug> --approve
+/kapelle:design <slug>
+/kapelle:design <slug> --detail
+/kapelle:design <slug> --approve
+/kapelle:plan <slug>
+/kapelle:plan <slug> --approve
 ```
 
-Результат: загальна карта архітектури, validation commands і доступних project capabilities.
-
-### Крок 1. Локальний контекст фічі
+Після planning обидва lanes мають однаковий процес:
 
 ```text
-/kapelle:survey configurable-invoice-status-in-pipe
+/kapelle:base-functional-tests <slug> --validation=ask
+/kapelle:implement <slug> --checkpoint=task --validation=ask
+/kapelle:unit-tests <slug> --validation=ask
+/kapelle:verify <slug> --validation=ask
 ```
 
-На вході: slug і, за потреби, коротко affected area.
-
-Результат:
+Після manual testing:
 
 ```text
-docs/features/configurable-invoice-status-in-pipe/_context/architecture.md
+/kapelle:finalize <slug> --version=1.0
 ```
 
-У worktree команда не переписує shared `docs/architecture-map.md`.
-
-### Крок 2. Вимоги
+Зміни вимог або дизайну:
 
 ```text
-/clear
-/kapelle:specify configurable-invoice-status-in-pipe "Allow invoice status in Pipe to be configured per applicable business rules"
+/kapelle:amend <slug> "<feedback>"
 ```
 
-На вході бажано вказати:
+## Існуюча legacy feature directory
 
-- проблему і бажану observable behavior;
-- actor/caller;
-- scope і non-goals;
-- compatibility/business constraints;
-- відомі edge cases.
-
-Перевірте:
+Старий pipeline не запускається. Спочатку:
 
 ```text
-proposal.md
-spec.md
+/kapelle:migrate <slug>
+/kapelle:migrate <slug> --apply --lane=standard
 ```
 
-### Крок 3. Уточнення
+Після міграції виконайте exact next command із `STATUS.md`.
+
+## Відновлення
 
 ```text
-/clear
-/kapelle:clarify configurable-invoice-status-in-pipe
+/kapelle:status <slug>
 ```
 
-Результат: blocking ambiguities вирішені або явно відкладені; acceptance criteria однозначні.
-
-### Крок 4. Технічний дизайн
-
-```text
-/clear
-/kapelle:design configurable-invoice-status-in-pipe
-```
-
-Kapelle знаходить project architecture-rules subagent, визначає backend/frontend/data/інші
-аспекти, контракти та integration checks.
-
-Перевірте:
-
-```text
-design.md
-adr/
-contracts/
-```
-
-За потреби складного runtime або data design:
-
-```text
-/kapelle:sequences configurable-invoice-status-in-pipe
-/kapelle:data-model configurable-invoice-status-in-pipe
-```
-
-Ці дві команди необов’язкові.
-
-### Крок 5. Контракти
-
-Якщо фіча змінює API, events, DTO, schema boundary або frontend/backend interface:
-
-```text
-/clear
-/kapelle:contracts configurable-invoice-status-in-pipe
-```
-
-Якщо окремі contract artifacts не потрібні, переходьте до decomposition.
-
-### Крок 6. Декомпозиція
-
-```text
-/clear
-/kapelle:decompose configurable-invoice-status-in-pipe
-```
-
-Перевірте `tasks.md`:
-
-- tasks описують результати, а не мікрокроки;
-- AC покриті;
-- backend/frontend/data робота узгоджена контрактами;
-- dependencies зрозумілі;
-- tasks не надмірно дрібні.
-
-Machine dependency graph зберігається в `_kapelle/task-plan.json`.
-
-### Крок 7. План тестування
-
-```text
-/clear
-/kapelle:plan-tests configurable-invoice-status-in-pipe
-```
-
-Перевірте `test-plan.md`: AC coverage, integration checks, required/optional commands і manual
-checks.
-
-### Крок 8. Реалізація
-
-Безпечний default:
-
-```text
-/clear
-/kapelle:implement configurable-invoice-status-in-pipe --validation=ask
-```
-
-Коли агент покаже validation batch:
-
-- `run-all` — виконати всі команди;
-- `run-selected` — виконати вибрані;
-- `skip-all` — відкласти validation.
-
-Інші режими:
-
-```text
-/kapelle:implement configurable-invoice-status-in-pipe --validation=allow
-/kapelle:implement configurable-invoice-status-in-pipe --validation=skip
-```
-
-`skip` не означає `PASS`: required checks отримають стан `validation-deferred` і заблокують ship.
-
-### Крок 9. Незалежний review
-
-```text
-/clear
-/kapelle:feature-review configurable-invoice-status-in-pipe
-```
-
-Review порівнює реалізацію зі spec, design, contracts, ADR, tasks, test plan та project
-architecture rules.
-
-### Крок 10. Готовність до передачі
-
-```text
-/clear
-/kapelle:ship configurable-invoice-status-in-pipe
-```
-
-Команда перевіряє readiness і не виконує `git commit`, `push`, merge або створення PR.
-
-## 3. Що робити після кожної команди
-
-1. Відкрийте `docs/features/<slug>/STATUS.md`.
-2. Перегляньте human-readable файл, створений поточним stage.
-3. Якщо результат неправильний — виправте вимоги/рішення до переходу далі.
-4. Виконайте `/clear`.
-5. Запустіть exact next command із `STATUS.md`.
-
-`/clear` безпечний: наступний stage читає стан із файлів, а не з історії чату.
-
-## 4. Продовження існуючої фічі
-
-Починайте не зі `specify`, а зі status:
-
-```text
-/kapelle:status configurable-invoice-status-in-pipe
-```
-
-Команда перевірить документи й `_kapelle/`, відновить derived state за потреби та покаже мінімальний
-наступний stage.
-
-Якщо `_kapelle/` видалено, Kapelle може відновити планувальний стан із human docs і поточного коду,
-але не вигадує втрачені approvals, validation output або review verdicts.
-
-## 5. Зміна вже задокументованої фічі
-
-Enhancement:
-
-```text
-/kapelle:change configurable-invoice-status-in-pipe --mode=enhancement "Add a fallback status for dealers without explicit configuration"
-```
-
-Bugfix:
-
-```text
-/kapelle:fix configurable-invoice-status-in-pipe "Configured invoice status is ignored for imported invoices"
-```
-
-Behavior-preserving refactor:
-
-```text
-/kapelle:change configurable-invoice-status-in-pipe --mode=refactor "Extract status resolution without changing observable behavior"
-```
-
-Якщо вимоги змінилися під час implementation:
-
-```text
-/kapelle:change configurable-invoice-status-in-pipe --change=<change-id> --revise "New requirement"
-```
-
-Після reconciliation та approval:
-
-```text
-/kapelle:resume-change configurable-invoice-status-in-pipe --change=<change-id>
-```
-
-## 6. Локальна перевірка плагіна
-
-Після змін у Kapelle:
-
-```bash
-python3 scripts/validate_plugin.py
-python3 -m unittest discover -s scripts -p 'test_*.py'
-git diff --check
-```
-
-Версії в manifests повинні мати однакову base semver:
-
-```text
-.claude-plugin/plugin.json  → 0.10.0
-.codex-plugin/plugin.json   → 0.10.0+codex.<cachebuster>
-```
-
-Для оновлення локального Codex dev-plugin:
-
-```bash
-python3 /Users/ihorpal/.codex/skills/.system/plugin-creator/scripts/update_plugin_cachebuster.py .
-python3 scripts/validate_plugin.py
-codex plugin add kapelle@kapelle-dev
-```
-
-Після перевстановлення почніть новий thread, щоб Codex завантажив оновлені skills.
+Якщо `_kapelle/` видалено, lane відновлюється з marker у `proposal.md`. Approvals і validation
+evidence не вигадуються.

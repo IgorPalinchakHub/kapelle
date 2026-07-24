@@ -65,7 +65,6 @@ for rel in [
     'dispatcher/architecture-guidance.schema.json',
     'dispatcher/execution-contract.md',
     'dispatcher/execution-verdict.schema.json',
-    'dispatcher/test-strategy.schema.json',
     'dispatcher/execution-telemetry.schema.json',
     'dispatcher/validation-decision.schema.json',
     'dispatcher/change-request.schema.json',
@@ -78,11 +77,15 @@ for rel in [
     'dispatcher/feature-manifest.schema.json',
     'dispatcher/feature-state.schema.json',
     'dispatcher/recovery-report.schema.json',
-    'dispatcher/documentation-convergence.schema.json',
     'dispatcher/size.schema.json',
-    'dispatcher/feature-review.schema.json',
     'dispatcher/vocabulary.json',
     'dispatcher/role-profiles.json',
+    'dispatcher/workflow-state.schema.json',
+    'dispatcher/review-gate.schema.json',
+    'dispatcher/base-functional-tests.schema.json',
+    'dispatcher/unit-test-run.schema.json',
+    'dispatcher/verification.schema.json',
+    'dispatcher/release.schema.json',
     'references/agent-orchestration.md',
     'references/project-capabilities.md',
     'references/architecture-guidance.md',
@@ -91,6 +94,11 @@ for rel in [
     'references/task-decomposition.md',
     'references/feature-layout.md',
     'references/artifact-presentation.md',
+    'references/human-control.md',
+    'references/fast-lane.md',
+    'references/interview-depth.md',
+    'references/design-template.md',
+    'references/deprecated-legacy-stages.md',
     'references/repository-context.md',
     'config/shapes/architecture-rules-agent.shape.md',
     'references/change-lifecycle.md',
@@ -103,6 +111,10 @@ for rel in [
     'scripts/validate_feature_state.py',
     'scripts/migrate_feature_layout.py',
     'scripts/test_feature_state.py',
+    'scripts/validate_design.py',
+    'scripts/test_validate_design.py',
+    'scripts/migrate_workflow.py',
+    'scripts/test_migrate_workflow.py',
 ]:
     check((ROOT / rel).exists(), f"missing {rel}")
 
@@ -115,7 +127,9 @@ for skill in skills:
     check(f'name: {name}' in txt, f'{skill}: frontmatter name mismatch')
     check('description:' in txt, f'{skill}: missing description')
     check(
-        'handoff' in txt.lower() or name in {'decompose', 'implement', 'contracts', 'status'},
+        'handoff' in txt.lower()
+        or '# Deprecated:' in txt
+        or name in {'decompose', 'implement', 'contracts', 'status'},
         f'{skill}: missing handoff wording',
     )
     check(not re.search(r'^agents:', txt, re.M), f'{skill}: unsupported agents frontmatter')
@@ -140,7 +154,6 @@ for rel in [
     'dispatcher/surface-plan.schema.json',
     'dispatcher/architecture-guidance.schema.json',
     'dispatcher/execution-verdict.schema.json',
-    'dispatcher/test-strategy.schema.json',
     'dispatcher/execution-telemetry.schema.json',
 ]:
     data = load_json(rel)
@@ -162,9 +175,13 @@ for rel in [
     'dispatcher/feature-manifest.schema.json',
     'dispatcher/feature-state.schema.json',
     'dispatcher/recovery-report.schema.json',
-    'dispatcher/documentation-convergence.schema.json',
     'dispatcher/size.schema.json',
-    'dispatcher/feature-review.schema.json',
+    'dispatcher/workflow-state.schema.json',
+    'dispatcher/review-gate.schema.json',
+    'dispatcher/base-functional-tests.schema.json',
+    'dispatcher/unit-test-run.schema.json',
+    'dispatcher/verification.schema.json',
+    'dispatcher/release.schema.json',
 ]:
     load_json(rel)
 
@@ -177,6 +194,10 @@ if config:
     props = implementation.get('properties', {})
     check(props.get('approval_policy', {}).get('enum') == ['always', 'risk-based', 'never'],
           'config: invalid implementation.approval_policy')
+    check(props.get('checkpoint', {}).get('enum') == ['task', 'workstream', 'none'],
+          'config: invalid implementation.checkpoint')
+    check(props.get('checkpoint', {}).get('default') == 'task',
+          'config: implementation.checkpoint default must be task')
     check(props.get('max_task_attempts', {}).get('default') == 3,
           'config: max_task_attempts default must be 3')
     check(props.get('max_agent_runs_per_task', {}).get('default') == 8,
@@ -190,22 +211,64 @@ if config:
 
 implementation_skill = (ROOT / 'skills/implement/SKILL.md').read_text()
 for required in [
-    'kapelle:test-author',
     'kapelle:implementation-planner',
     'kapelle:implementer',
     'kapelle:reviewer',
-    'TEST-STRATEGY',
     'PLAN -> APPROVE',
     'max_task_attempts',
     'max_agent_runs_per_task',
     '--validation=ask|allow|skip',
     'validation-deferred',
-    'validation-decision.schema.json',
-    'tests, static analysis such as PHPStan, linters',
-    'explicit user approval',
-    'unofficial `Workflow`',
+    '--checkpoint=task|workstream|none',
+    'Do not create unit tests',
+    '/kapelle:unit-tests',
 ]:
     check(required in implementation_skill, f'implement: missing orchestration guard {required!r}')
+check('dispatch `kapelle:test-author`' not in implementation_skill,
+      'implement: must not dispatch test-author during production implementation')
+
+for rel in [
+    'skills/start/SKILL.md',
+    'skills/spec/SKILL.md',
+    'skills/plan/SKILL.md',
+    'skills/base-functional-tests/SKILL.md',
+    'skills/unit-tests/SKILL.md',
+    'skills/verify/SKILL.md',
+    'skills/amend/SKILL.md',
+    'skills/finalize/SKILL.md',
+]:
+    check((ROOT / rel).exists(), f'human-controlled workflow: missing {rel}')
+
+human_control = (ROOT / 'references/human-control.md').read_text().lower()
+for required in [
+    'human-controlled development workflow',
+    'base endpoint/use-case functional tests',
+    'production implementation',
+    'all unit tests',
+    'complete verification',
+    '--checkpoint=task',
+    '--checkpoint=workstream',
+    '--checkpoint=none',
+]:
+    check(required in human_control, f'human control: missing {required!r}')
+check('<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->' in
+      (ROOT / 'skills/start/SKILL.md').read_text(),
+      'start: missing durable workflow recovery marker')
+
+unit_skill = (ROOT / 'skills/unit-tests/SKILL.md').read_text()
+check('never during `/kapelle:implement`' in unit_skill,
+      'unit-tests: must enforce post-implementation timing')
+verify_skill = (ROOT / 'skills/verify/SKILL.md').read_text()
+for required in [
+    'functional',
+    'unit',
+    'integration',
+    'contract',
+    'static-analysis',
+    'lint',
+    'build',
+]:
+    check(required in verify_skill, f'verify: missing category {required!r}')
 
 validation_execution = (ROOT / 'references/validation-execution.md').read_text()
 for required in [
@@ -219,42 +282,6 @@ for required in [
 ]:
     check(required in validation_execution,
           f'validation execution: missing policy guarantee {required!r}')
-
-review_skill = (ROOT / 'skills/feature-review/SKILL.md').read_text()
-check('BLOCKED-validation-deferred' in review_skill,
-      'review: deferred validation must block PASS')
-ship_skill = (ROOT / 'skills/ship/SKILL.md').read_text()
-check('REFUSED-validation-incomplete' in ship_skill,
-      'ship: incomplete validation must refuse readiness')
-
-change_skill = (ROOT / 'skills/change/SKILL.md').read_text()
-for required in [
-    'bugfix',
-    'enhancement',
-    'refactor',
-    'kapelle:explorer',
-    'kapelle:critic',
-    'change-request.schema.json',
-    'approve',
-    'progress.jsonl',
-    '--revise',
-    'change-reconciler',
-    'reconciliation.schema.json',
-]:
-    check(required in change_skill, f'change: missing lifecycle contract {required!r}')
-
-fix_skill = (ROOT / 'skills/fix/SKILL.md').read_text()
-check('mode: bugfix' in fix_skill, 'fix: must be a bugfix change-lifecycle shorthand')
-
-resume_skill = (ROOT / 'skills/resume-change/SKILL.md').read_text()
-for required in [
-    'resumable',
-    'artifact_fingerprint.py',
-    'reconciliation',
-    'needs-rework',
-    'kapelle:implement',
-]:
-    check(required in resume_skill, f'resume: missing revision guard {required!r}')
 
 task_schema = load_json('dispatcher/task-context.schema.json')
 if task_schema:
@@ -382,8 +409,11 @@ if dependencies:
         '_kapelle/task-plan.json',
         'test-plan.md',
         '_kapelle/validation',
-        '_kapelle/reviews/documentation-convergence.json',
-        '_kapelle/reviews/feature-review.json',
+        '_kapelle/approvals/feature-plan.json',
+        '_kapelle/base-functional-tests.json',
+        '_kapelle/unit-tests.json',
+        '_kapelle/verification.json',
+        '_kapelle/release.json',
         '_kapelle/state.json',
         'STATUS.md',
     ]:
@@ -394,7 +424,6 @@ if dependencies:
 feature_manifest_schema = load_json('dispatcher/feature-manifest.schema.json')
 feature_state_schema = load_json('dispatcher/feature-state.schema.json')
 recovery_schema = load_json('dispatcher/recovery-report.schema.json')
-convergence_schema = load_json('dispatcher/documentation-convergence.schema.json')
 if feature_manifest_schema:
     check(feature_manifest_schema.get('properties', {}).get('layout_version', {}).get('const') == 2,
           'feature manifest: layout_version must be 2')
@@ -418,10 +447,6 @@ if recovery_schema:
     )
     check('implemented-unverified' in dispositions,
           'recovery report: missing implemented-unverified disposition')
-if convergence_schema:
-    statuses = convergence_schema.get('properties', {}).get('status', {}).get('enum', [])
-    check(statuses == ['PASS', 'CHANGES_REQUIRED', 'BLOCKED'],
-          'documentation convergence: invalid statuses')
 
 for required in [
     'references/feature-layout.md',
@@ -445,35 +470,34 @@ for required in [
     'architecture-guidance.schema.json',
     'surface-plan.schema.json',
     'execution-depth.md',
+    'design-template.md',
+    'validate_design.py',
 ]:
     check(required in design_skill, f'design: missing scoped architecture/surface guard {required!r}')
 
-specify_skill = (ROOT / 'skills/specify/SKILL.md').read_text()
+start_skill = (ROOT / 'skills/start/SKILL.md').read_text()
 for required in [
-    'bounded input preflight',
-    'authoritative slug/ticket',
-    'consolidated interaction',
-    'Status: NEEDS-INPUT',
-    'do not run git/shell discovery',
-    'dispatch subagents',
-    'Do not create `docs/features/<slug>/`',
-    'Broad code mapping',
-]:
-    check(required in specify_skill, f'specify: missing input-efficiency guard {required!r}')
-
-tasks_skill = (ROOT / 'skills/decompose/SKILL.md').read_text()
-for required in [
-    'task-decomposition.md',
-    'architecture-rules subagent',
-    'BLOCKED-split-required',
-    'workstreams',
-    'one primary aspect',
+    '--lane=auto|fast|standard',
+    '--interview=auto|lean|standard|deep',
+    'at most three production tasks',
+    'architecture rules',
+    'feature-plan.json',
     'validate_task_plan.py',
-    'decomposition-review.schema.json',
-    'exactly one fresh `kapelle:critic`',
-    'one correction pass',
 ]:
-    check(required in tasks_skill, f'tasks: missing decomposition guard {required!r}')
+    check(required in start_skill, f'start: missing adaptive-planning guard {required!r}')
+
+spec_skill = (ROOT / 'skills/spec/SKILL.md').read_text()
+for required in ['lean', 'standard', 'deep', 'Never reduce behavioral coverage']:
+    check(required in spec_skill, f'spec: missing interview-depth guard {required!r}')
+
+plan_skill = (ROOT / 'skills/plan/SKILL.md').read_text()
+for required in [
+    'low coupling',
+    'high cohesion',
+    'validate_task_plan.py',
+    'Production tasks do not include writing unit tests',
+]:
+    check(required in plan_skill, f'plan: missing decomposition guard {required!r}')
 
 for rel in [
     'skills/implement/SKILL.md',
@@ -498,45 +522,36 @@ for required in [
 
 usage = (ROOT / 'docs/USAGE.md').read_text()
 for required in [
-    '/kapelle:survey <slug>',
-    '/kapelle:survey --refresh-baseline',
-    '/kapelle:specify <slug>',
-    '/kapelle:change',
-    '--mode=enhancement',
-    '--mode=bugfix',
-    '--mode=refactor',
-    '--revise',
-    '/kapelle:resume-change',
-    '_kapelle/surface-plan.json',
+    '/kapelle:start <slug>',
+    '--lane=auto',
+    '--interview=auto',
+    '/kapelle:base-functional-tests',
+    '/kapelle:unit-tests',
+    '/kapelle:verify',
+    '/kapelle:finalize',
+    '/kapelle:migrate',
     '/kapelle:status <slug>',
-    'REFUSED-missing-project-capability',
 ]:
     check(required in usage, f'usage guide: missing workflow detail {required!r}')
 
 command_guide = (ROOT / 'docs/COMMAND_EXECUTION_UK.md').read_text()
 for required in [
-    '/kapelle:survey',
-    '/kapelle:specify <slug>',
-    '/kapelle:clarify <slug>',
+    '/kapelle:start <slug>',
+    '--lane=auto|fast|standard',
+    '--interview=auto|lean|standard|deep',
+    '/kapelle:spec <slug>',
     '/kapelle:design <slug>',
-    '/kapelle:sequences <slug>',
-    '/kapelle:data-model <slug>',
-    '/kapelle:contracts <slug>',
-    '/kapelle:decompose <slug>',
-    '/kapelle:plan-tests <slug>',
+    '/kapelle:plan <slug>',
+    '/kapelle:base-functional-tests <slug>',
     '/kapelle:implement <slug>',
-    '/kapelle:feature-review <slug>',
-    '/kapelle:ship <slug>',
-    '/kapelle:change',
-    '/kapelle:fix',
-    '/kapelle:resume-change',
-    '/kapelle:classify-size <slug>',
-    '/kapelle:glossary <slug>',
-    '/kapelle:decide-adr <slug>',
-    '/kapelle:roadmap <slug>',
+    '/kapelle:unit-tests <slug>',
+    '/kapelle:verify <slug>',
+    '/kapelle:amend <slug>',
+    '/kapelle:finalize <slug>',
+    '/kapelle:migrate <slug>',
     '/kapelle:status <slug>',
-    'Що задати на вході',
-    'Що отримуємо',
+    'Що задати',
+    'Результат',
 ]:
     check(required in command_guide, f'command guide: missing detail {required!r}')
 
@@ -546,6 +561,19 @@ if vocabulary:
     dispositions = vocabulary.get('reconciliation_dispositions', [])
     change_states = vocabulary.get('change_states', [])
     skill_names = {skill.parent.name for skill in skills}
+    check('legacy_backbone_stages' not in vocabulary,
+          'vocabulary: legacy backbone must not exist')
+    check(vocabulary.get('backbone_stages') == [
+        'start',
+        'spec',
+        'design',
+        'plan',
+        'base-functional-tests',
+        'implement',
+        'unit-tests',
+        'verify',
+        'finalize',
+    ], 'vocabulary: human-controlled backbone drifted')
 
     if task_schema:
         check(task_schema.get('properties', {}).get('status', {}).get('enum') == task_states,
@@ -618,6 +646,33 @@ if vocabulary:
     check(set(vocabulary.get('change_route_stages', [])) <= skill_names,
           'vocabulary: every change route stage must be a bundled skill')
 
+deprecated_skills = {
+    'specify',
+    'clarify',
+    'decompose',
+    'plan-tests',
+    'feature-review',
+    'ship',
+    'change',
+    'fix',
+    'resume-change',
+}
+for deprecated in sorted(deprecated_skills):
+    text = (ROOT / 'skills' / deprecated / 'SKILL.md').read_text()
+    check('# Deprecated:' in text and 'Write nothing' in text,
+          f'{deprecated}: legacy wrapper must be non-executing')
+
+workflow_schema = load_json('dispatcher/workflow-state.schema.json')
+if workflow_schema:
+    check(workflow_schema.get('properties', {}).get('lane', {}).get('enum')
+          == ['fast', 'standard'],
+          'workflow state: lane must be fast or standard')
+size_schema = load_json('dispatcher/size.schema.json')
+if size_schema:
+    required = set(size_schema.get('required', []))
+    check({'interview_depth', 'lane'} <= required,
+          'size state: interview_depth and lane must be required')
+
     state_only_terms = ['needs-rework', 'superseded']
     for path in sorted(ROOT.rglob('*.md')):
         rel = path.relative_to(ROOT)
@@ -639,8 +694,8 @@ if role_profiles:
     profile_stages = role_profiles.get('stages', {})
     check(set(profile_agents) == agent_names,
           'role profiles: agents must exactly cover bundled agents')
-    check(set(profile_stages) == skill_names,
-          'role profiles: stages must exactly cover bundled skills')
+    check(set(profile_stages) == skill_names - deprecated_skills,
+          'role profiles: stages must exactly cover executable bundled skills')
     for name, profile in {**profile_agents, **profile_stages}.items():
         check(profile.get('reasoning') in reasoning_levels,
               f'role profiles: {name} has invalid reasoning level')

@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.10.0",
-  "description": "Provider-neutral SDLC harness with readable feature docs, recoverable execution state, architecture guidance, and adaptive implementation.",
+  "version": "0.12.0",
+  "description": "Human-controlled SDLC harness with one adaptive workflow, fast planning for small features, project architecture guidance, explicit approvals, and recoverable state.",
   "author": {
     "name": "Ihor Pal"
   },

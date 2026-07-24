@@ -3,17 +3,17 @@
     "design.md": {
       "exists": true,
       "path": "design.md",
-      "sha256": "612ef09c2111f594be19612235f5365538d18c7705911085815041ff9a4c8da9"
+      "sha256": "20ba5a384a969fa1e5edfac0ff884388fc28236c0569515883f665212198d402"
     },
     "proposal.md": {
       "exists": true,
       "path": "proposal.md",
-      "sha256": "ba3938d6ad08402d9f48d7b48fe9f89dd2e011d8c7c67755e1c965cd186c7159"
+      "sha256": "03ba6a462caaa05639f6a0cbd659b8c727e6545c8e93c3a6ab859113c1dcfecc"
     },
     "spec.md": {
       "exists": true,
       "path": "spec.md",
-      "sha256": "5b15e70e74f245943bf8e99f77b58c5abec9405a5c99add9e40b3860b9e9bdda"
+      "sha256": "6ae6be5187c298da8fa83f42612377d7f1d0e2689548e398988b9635a893b818"
     },
     "tasks.md": {
       "exists": true,
@@ -33,5 +33,5 @@
   },
   "schema_version": "1.0",
   "slug": "human-readable-artifacts-refactor",
-  "state_built_at": "2026-07-23T20:16:38Z"
+  "state_built_at": "2026-07-24T19:16:47Z"
 }

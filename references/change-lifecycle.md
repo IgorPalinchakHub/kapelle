@@ -1,166 +1,35 @@
-# Revision-based existing-feature change lifecycle
+# Human-controlled amendment lifecycle
 
-Use this contract for a bug fix, enhancement, or behavior-preserving refactor, including requirement
-or architecture changes discovered during implementation.
+Use `/kapelle:amend <slug> "<feedback>"` for requirement, architecture, contract, implementation,
+test, or documentation changes discovered after planning begins.
 
-## Storage
+## Protocol
 
-```text
-docs/features/<slug>/_kapelle/changes/<change-id>/
-  change.json
-  state.json
-  artifact-state/
-  revisions/
-    r001/
-      revision.json
-      request.md
-      impact.json
-      baseline/
-    r002/
-      revision.json
-      amendment.md
-      impact.json
-      baseline/
-  reconciliation.json
-  progress.jsonl
-```
-
-Revisions are immutable after approval. `change.json` points to `current_revision`; `state.json`
-owns runtime state. Human-facing scope and decisions are reflected in proposal/spec/design/ADR.
-
-## New change
-
-Accept:
-
-```text
-/kapelle:change <slug> [--mode=bugfix|enhancement|refactor] "<description>"
-```
-
-Generate a collision-safe change id when omitted. Dispatch `kapelle:explorer` for current behavior,
-artifacts, source/tests, contracts, schema, and precedents. Dispatch `kapelle:critic` against mode,
-hidden behavior changes, impacted acceptance criteria, and route.
-
-Capture revision `r001`, fingerprints, impacted artifact snapshots, and code evidence. Never copy
-project source into the baseline. Show mode, impacts, risks, and minimal route; require approval
-before canonical artifact edits.
-
-## Mid-implementation revision
-
-Accept either an explicit command or a requirement/architecture amendment expressed while
-`implement` is running:
-
-```text
-/kapelle:change <slug> --change=<id> --revise "<amendment>"
-```
-
-### 1. Safe pause
-
-Stop all new implementation edits for the change. Finish only the currently running atomic tool
-operation, then:
-
-1. set `state.state` to `paused`;
-2. record active task, changed-file evidence, completed validations, and unresolved work;
-3. set current in-progress task to `blocked` with reason `revision-pending`;
-4. do not dispatch more implementation agents, including Agent Team lanes.
-
-Transition:
-
-```text
-running -> paused -> reconciling
-```
-
-Kapelle performs no git stash, reset, checkout, or revert.
-
-### 2. Create immutable revision
-
-Increment the integer revision and create `rNNN/`. Record requirement, architecture, and constraint
-deltas separately. Snapshot only impacted existing Kapelle artifacts and compute raw-byte SHA-256
-fingerprints with:
-
-```text
-scripts/artifact_fingerprint.py --root <project> <artifact>...
-```
-
-Write `revision.json` matching `dispatcher/change-revision.schema.json`. Do not mutate an approved
-older revision.
-
-### 3. Invalidate transitively
-
-Read the canonical graph from `dispatcher/artifact-dependencies.json`. Its effective structure is:
-
-```text
-proposal.md -> spec.md -> design.md -> _kapelle/surface-plan.json
-spec.md + design.md + _kapelle/surface-plan.json -> contracts
-all design artifacts + contracts -> tasks.md -> _kapelle/task-plan.json
-spec.md + _kapelle/surface-plan.json + contracts + _kapelle/task-plan.json -> test-plan.md
-all upstream artifacts -> _kapelle/task-runs -> _kapelle/validation
-all docs + validation -> documentation-convergence -> feature-review -> STATUS.md
-```
-
-For each artifact, store a sidecar matching `dispatcher/artifact-state.schema.json` with its
-fingerprint, revision, direct `based_on` fingerprints, and one status:
-
-```text
-current | review-required | stale | superseded
-```
-
-A changed upstream fingerprint marks direct dependants `stale`; propagate until a stage
-regenerates the artifact against the new revision. Manual edits detected by fingerprint mismatch
-follow the same revision path.
-
-### 4. Reconcile existing work
-
-Dispatch `kapelle:change-reconciler` and write `reconciliation.json`. Every task receives exactly
-one disposition:
+1. Pause new implementation dispatch after the current atomic operation.
+2. Capture immutable revision evidence under `_kapelle/changes/<change-id>/revisions/rNNN/`.
+3. Classify impact across specification, design, contracts, functional tests, tasks, production
+   code, unit tests, verification, diagrams, and release evidence.
+4. Fingerprint affected artifacts and propagate stale state through
+   `dispatcher/artifact-dependencies.json`.
+5. Reconcile each existing task as:
 
 ```text
 keep | revalidate | rework | supersede | revert-required
 ```
 
-Map dispositions into task state:
+6. Show the minimal route and require explicit approval before canonical edits.
+7. Use only current pipeline stages:
 
-- `keep`: retain `completed`;
-- `revalidate`: set `stale` until validation passes;
-- `rework`: set `needs-rework` and replace its implementation plan/test strategy;
-- `supersede`: set `superseded`;
-- `revert-required`: set `blocked` and create an explicit corrective task after approval.
+- business behavior: `spec`;
+- architecture/contracts: `design`;
+- task/test planning: `plan`;
+- production code: `implement`;
+- unit coverage: `unit-tests`;
+- complete checks: `verify`;
+- as-built documents/diagrams: `finalize`.
 
-Never delete completed evidence or automatically revert code.
+8. Update canonical human documents in place. Keep history internal.
+9. Recompute approvals/evidence only from actual current results. Never fabricate lost evidence or
+   automatically revert code.
 
-### 5. Rebuild the minimal route
-
-- Requirement delta starts at `specify` or `clarify`.
-- Architecture delta starts at `design` or `decide-adr`.
-- Contract/data/flow delta starts at the corresponding stage.
-- Validation-only delta starts at `plan-tests`.
-
-Then regenerate only transitively stale downstream artifacts. Never silently expand the route.
-
-### 6. Re-approval
-
-Show amendment, changed acceptance criteria, stale artifacts, reconciliation dispositions, new
-route, risks, and existing code requiring rework/revert. Transition:
-
-```text
-reconciling -> waiting-approval -> approved -> resumable
-```
-
-Silence is not approval. Rejection sets state to `blocked`.
-
-## Resume
-
-`/kapelle:resume-change <slug> --change=<id>` must:
-
-1. require state `resumable`;
-2. recompute fingerprints and block on unexplained drift;
-3. require no unresolved `stale` upstream artifacts;
-4. verify reconciliation covers every existing task;
-5. regenerate plans/test strategies for `needs-rework` tasks;
-6. run validation for `stale` tasks;
-7. resume from the first `pending` or `needs-rework` task under the current revision;
-8. set state to `running` and continue through the adaptive execution contract.
-
-Before every task, verify that its plan records the current revision and current `based_on`
-fingerprints. Otherwise mark it stale and return to reconciliation.
-
-On successful ship readiness, set state to `completed`.
+Kapelle performs no git operations. Rejection or unexplained drift leaves the amendment blocked.

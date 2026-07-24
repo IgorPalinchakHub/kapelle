@@ -4,18 +4,21 @@ Kapelle layout version 2 separates durable human documentation from derived exec
 
 ## Human-readable durable state
 
-Every feature uses:
+The superset layout is:
 
 ```text
 docs/features/<slug>/
   STATUS.md
   proposal.md
   spec.md
+  specs/                    # standard lane or genuinely needed fast detail
   design.md
+  design/                   # standard detail only when useful
   tasks.md
-  test-plan.md
+  test-plan.md              # standard; fast may inline strategy in tasks.md
   contracts/
   adr/
+  diagrams/
   _context/                 # optional feature-local repository evidence
   _kapelle/                 # derived state and historical evidence
 ```
@@ -30,6 +33,7 @@ runtime logs must not be written in the feature root.
 _kapelle/
   manifest.json
   state.json
+  workflow.json
   size.json
   surface-plan.json
   task-plan.json
@@ -38,7 +42,7 @@ _kapelle/
   architecture-guidance/
   task-runs/
   validation/
-  reviews/
+  approvals/
   telemetry/
   history/
 ```
@@ -46,13 +50,15 @@ _kapelle/
 - `manifest.json` identifies layout version 2 and fingerprints human artifacts.
 - `state.json` is the current derived execution projection.
 - `_kapelle/surface-plan.json` and `task-plan.json` remain the canonical machine coordination graphs.
-- Evidence that cannot be reconstructed lives under validation, reviews, telemetry, changes, and
+- Evidence that cannot be reconstructed lives under validation, approvals, telemetry, changes, and
   history.
 
 ## Recovery invariant
 
 Human documents are sufficient to resume planning and reconcile implementation. If `_kapelle/` is
 missing or invalid, rebuild it from the human package and current project evidence.
+For the human-controlled route, the invisible marker in `proposal.md` reconstructs
+`_kapelle/workflow.json`.
 
 Recovery may derive scope, AC identifiers, surfaces, tasks, likely progress, validation needs, and
 the minimal next route. It must not fabricate:
@@ -64,10 +70,10 @@ the minimal next route. It must not fabricate:
 - validation results not present in current, trustworthy project or CI evidence.
 
 A checked human task without current validation evidence becomes `implemented-unverified`.
-Evidence loss reduces certainty and ship readiness; it does not force a complete SDLC restart.
+Evidence loss reduces certainty and completion readiness; it does not force a complete restart.
 A recovered coordination graph is provisional: it may support validation-only work for already
-implemented tasks, but it cannot authorize new code-writing, feature review, or ship until scoped
-architecture guidance and decomposition replace it.
+implemented tasks, but it cannot authorize new code-writing or finalization until scoped
+architecture guidance and planning replace it.
 
 ## Stage paths
 
@@ -75,7 +81,9 @@ architecture guidance and decomposition replace it.
 |---|---|
 | proposal | `proposal.md` |
 | product specification | `spec.md` |
+| detailed business specifications | `specs/*.md` |
 | technical design | `design.md` |
+| detailed component/domain design | `design/*.md` |
 | aspect coordination | `_kapelle/surface-plan.json` |
 | task checklist | `tasks.md` |
 | execution graph | `_kapelle/task-plan.json` |
@@ -84,7 +92,10 @@ architecture guidance and decomposition replace it.
 | architecture guidance | `_kapelle/architecture-guidance/*.json` |
 | task execution evidence | `_kapelle/task-runs/<task-id>.json` |
 | validation evidence | `_kapelle/validation/*.json` |
-| review/convergence evidence | `_kapelle/reviews/*.json` |
+| human approvals | `_kapelle/approvals/*.json` |
+| test-phase evidence | `_kapelle/base-functional-tests.json`, `unit-tests.json`, `verification.json` |
+| final diagrams | `diagrams/*.mmd` |
+| completion record | `_kapelle/release.json` |
 | feature status | `_kapelle/state.json` and generated `STATUS.md` |
 
 There is one physical path for each logical artifact. Skills must not write a second source of truth
@@ -92,7 +103,9 @@ under a legacy path.
 
 ## Compatibility
 
-Legacy directories are never silently rewritten. Use:
+Unmarked feature directories are never silently routed through old stages. First use
+`/kapelle:migrate <slug>` or `scripts/migrate_workflow.py`. Physical layout-v1 directories may
+also require:
 
 ```text
 scripts/migrate_feature_layout.py <feature-dir> --dry-run

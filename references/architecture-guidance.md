@@ -23,7 +23,7 @@ a specific agent name or provider.
 - `design` refuses architecture decisions until the capability returns
   `ARCHITECTURE_GUIDANCE_READY` without blocking gaps.
 - `implement` refreshes the result for each task's actual aspects and file scope before planning.
-- `feature-review` verifies the implementation against the scoped rules evidence.
+- `finalize` verifies the implementation against the scoped rules evidence in fresh context.
 
 Write evidence to:
 

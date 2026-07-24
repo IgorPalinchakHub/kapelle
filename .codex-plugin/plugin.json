@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.10.0+codex.20260723201616",
-  "description": "Provider-neutral SDLC harness with readable feature docs, recoverable execution state, architecture guidance, and adaptive implementation.",
+  "version": "0.12.0+codex.20260724191822",
+  "description": "Human-controlled SDLC harness with one adaptive workflow, fast planning for small features, project architecture guidance, explicit approvals, and recoverable state.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -9,8 +9,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Kapelle",
-    "shortDescription": "Readable, recoverable spec-driven SDLC",
-    "longDescription": "A gated SDLC harness with human-readable feature artifacts, recoverable internal state, scoped architecture guidance, immutable change revisions, deterministic task validation, and adaptive implementation.",
+    "shortDescription": "Human-controlled, reviewable SDLC",
+    "longDescription": "A human-controlled SDLC harness with one adaptive workflow, progressive business and technical specifications, an XS/S fast lane, explicit approvals, scoped architecture guidance, deterministic planning, recoverable state, and separate functional, implementation, unit-test, and verification phases.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
     "capabilities": [
@@ -18,10 +18,14 @@
       "Write"
     ],
     "defaultPrompt": [
+      "Start a new feature from my raw task with Kapelle.",
+      "Plan a small feature through Kapelle's fast lane.",
+      "Expand and review a feature business specification with Kapelle.",
+      "Plan and implement a feature with human checkpoints.",
       "Survey this repository with Kapelle.",
       "Show or recover a feature status with Kapelle.",
-      "Change an existing feature safely with Kapelle.",
-      "Resume a reconciled Kapelle change."
+      "Amend an in-progress feature safely with Kapelle.",
+      "Migrate an older Kapelle feature to the current workflow."
     ]
   }
 }

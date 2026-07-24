@@ -13,9 +13,13 @@ from pathlib import Path
 from typing import Any
 
 from validate_task_plan import validate as validate_task_plan
+from validate_design import validate as validate_design
 
 LAYOUT_VERSION = 2
 SCHEMA_VERSION = "1.0"
+DURABLE_WORKFLOW_PATTERN = re.compile(
+    r"<!--\s*kapelle-workflow:\s*human-controlled-v1(?:;\s*lane:\s*(fast|standard))?\s*-->"
+)
 HUMAN_ARTIFACTS = (
     "proposal.md",
     "spec.md",
@@ -76,6 +80,24 @@ def read_json(path: Path) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
+def has_durable_human_workflow_marker(feature_dir: Path) -> bool:
+    proposal = feature_dir / "proposal.md"
+    return bool(
+        proposal.is_file()
+        and DURABLE_WORKFLOW_PATTERN.search(proposal.read_text(errors="replace"))
+    )
+
+
+def durable_workflow_lane(feature_dir: Path) -> str | None:
+    proposal = feature_dir / "proposal.md"
+    if not proposal.is_file():
+        return None
+    match = DURABLE_WORKFLOW_PATTERN.search(proposal.read_text(errors="replace"))
+    if not match:
+        return None
+    return match.group(1) or "standard"
+
+
 def atomic_write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(
@@ -101,7 +123,13 @@ def file_fingerprint(path: Path) -> str | None:
 
 
 def document_fingerprints(feature_dir: Path) -> dict[str, str | None]:
-    paths = list(HUMAN_ARTIFACTS) + ["contracts", "adr"]
+    paths = list(HUMAN_ARTIFACTS) + [
+        "specs",
+        "design",
+        "contracts",
+        "adr",
+        "diagrams",
+    ]
     result: dict[str, str | None] = {}
     for relative in paths:
         path = feature_dir / relative
@@ -131,11 +159,23 @@ def normalized_task_plan_fingerprint(path: Path) -> str | None:
     return hashlib.sha256(payload).hexdigest()
 
 
+def normalized_tasks_fingerprint(path: Path) -> str | None:
+    if not path.is_file():
+        return None
+    normalized = re.sub(
+        r"^(\s*-\s+\[)[ xX](\]\s+)",
+        r"\1 \2",
+        path.read_text(errors="replace"),
+        flags=re.MULTILINE,
+    )
+    return hashlib.sha256(normalized.encode()).hexdigest()
+
+
 def input_fingerprints(feature_dir: Path) -> dict[str, str]:
     result = {
         name: digest
         for name, digest in document_fingerprints(feature_dir).items()
-        if digest is not None
+        if digest is not None and name != "diagrams"
     }
     surface = file_fingerprint(feature_dir / "_kapelle" / "surface-plan.json")
     task_plan = normalized_task_plan_fingerprint(
@@ -235,6 +275,18 @@ def rebuild_coordination_skeleton(feature_dir: Path) -> list[str]:
     internal = feature_dir / "_kapelle"
     internal.mkdir(parents=True, exist_ok=True)
     gaps: list[str] = []
+    workflow_path = internal / "workflow.json"
+    if has_durable_human_workflow_marker(feature_dir) and not workflow_path.is_file():
+        lane = durable_workflow_lane(feature_dir) or "standard"
+        atomic_write_json(
+            workflow_path,
+            {
+                "workflow": "human-controlled",
+                "version": 1,
+                "created_from": "raw-task",
+                "lane": lane,
+            },
+        )
     surface_path = internal / "surface-plan.json"
     task_plan_path = internal / "task-plan.json"
 
@@ -367,6 +419,220 @@ def _fingerprints_match(
         if name not in current or digest is None or current[name] != digest:
             return False
     return True
+
+
+def _relative_fingerprint(feature_dir: Path, relative: str) -> str | None:
+    if relative == "tasks.md#structural":
+        return normalized_tasks_fingerprint(feature_dir / "tasks.md")
+    if relative == "_kapelle/task-plan.json#structural":
+        return normalized_task_plan_fingerprint(
+            feature_dir / "_kapelle" / "task-plan.json"
+        )
+    path = feature_dir / relative
+    if path.is_dir():
+        digest = hashlib.sha256()
+        files = sorted(item for item in path.rglob("*") if item.is_file())
+        for item in files:
+            digest.update(str(item.relative_to(path)).encode())
+            digest.update(b"\0")
+            digest.update(item.read_bytes())
+            digest.update(b"\0")
+        return digest.hexdigest() if files else None
+    return file_fingerprint(path)
+
+
+def _claimed_fingerprints_current(feature_dir: Path, claimed: Any) -> bool:
+    if not isinstance(claimed, dict) or not claimed:
+        return False
+    for relative, digest in claimed.items():
+        if (
+            not isinstance(relative, str)
+            or not isinstance(digest, str)
+            or _relative_fingerprint(feature_dir, relative) != digest
+        ):
+            return False
+    return True
+
+
+def _markdown_package_exists(feature_dir: Path, relative: str) -> bool:
+    package = feature_dir / relative
+    return package.is_dir() and any(package.rglob("*.md"))
+
+
+def human_controlled_workflow(feature_dir: Path) -> bool:
+    marker = read_json(feature_dir / "_kapelle" / "workflow.json")
+    return bool(
+        marker
+        and marker.get("workflow") == "human-controlled"
+        and marker.get("version") == 1
+        and marker.get("created_from") in {"raw-task", "legacy-migration"}
+        and marker.get("lane", "standard") in {"fast", "standard"}
+    ) or has_durable_human_workflow_marker(feature_dir)
+
+
+def workflow_lane(feature_dir: Path) -> str:
+    marker = read_json(feature_dir / "_kapelle" / "workflow.json")
+    if marker and marker.get("lane") in {"fast", "standard"}:
+        return marker["lane"]
+    return durable_workflow_lane(feature_dir) or "standard"
+
+
+def approval_current(feature_dir: Path, gate: str) -> bool:
+    approval = read_json(
+        feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
+    )
+    return bool(
+        approval
+        and _exact_keys(
+            approval,
+            {"gate", "status", "confirmation", "artifact_fingerprints"},
+        )
+        and approval.get("gate") == gate
+        and approval.get("status") == "approved"
+        and isinstance(approval.get("confirmation"), str)
+        and approval["confirmation"].strip()
+        and _claimed_fingerprints_current(
+            feature_dir, approval.get("artifact_fingerprints")
+        )
+    )
+
+
+def phase_evidence_current(
+    feature_dir: Path,
+    filename: str,
+    accepted_statuses: set[str],
+) -> bool:
+    evidence = read_json(feature_dir / "_kapelle" / filename)
+    expected_keys = {
+        "base-functional-tests.json": {
+            "status",
+            "scope",
+            "test_files",
+            "covered_contracts",
+            "input_fingerprints",
+        },
+        "unit-tests.json": {
+            "status",
+            "planned_units",
+            "test_files",
+            "commands",
+            "input_fingerprints",
+            "implementation_fingerprints",
+        },
+        "verification.json": {
+            "status",
+            "categories",
+            "commands",
+            "input_fingerprints",
+            "implementation_fingerprints",
+        },
+    }
+    if not evidence or not _exact_keys(evidence, expected_keys.get(filename, set())):
+        return False
+    if filename == "base-functional-tests.json":
+        scope = evidence.get("scope")
+        if not (
+            isinstance(scope, list)
+            and len(scope) == len(set(scope))
+            and set(scope) <= {"endpoint", "use-case", "critical-contract"}
+            and all(
+                isinstance(evidence.get(field), list)
+                and all(isinstance(item, str) and item for item in evidence[field])
+                for field in ("test_files", "covered_contracts")
+            )
+            and (
+                evidence.get("status") == "SKIPPED-confirmed"
+                or (scope and evidence["test_files"])
+            )
+        ):
+            return False
+    elif filename == "unit-tests.json":
+        if not (
+            isinstance(evidence.get("planned_units"), list)
+            and evidence["planned_units"]
+            and all(
+                isinstance(evidence.get(field), list)
+                and all(isinstance(item, str) and item for item in evidence[field])
+                for field in ("planned_units", "test_files", "commands")
+            )
+        ):
+            return False
+    elif filename == "verification.json":
+        categories = evidence.get("categories")
+        if not (
+            isinstance(categories, list)
+            and categories
+            and len(categories) == len(set(categories))
+            and set(categories)
+            <= {
+                "functional",
+                "unit",
+                "integration",
+                "contract",
+                "static-analysis",
+                "lint",
+                "build",
+            }
+            and isinstance(evidence.get("commands"), list)
+            and evidence["commands"]
+            and all(isinstance(item, str) and item for item in evidence["commands"])
+        ):
+            return False
+    implementation = evidence.get("implementation_fingerprints")
+    return bool(
+        evidence
+        and evidence.get("status") in accepted_statuses
+        and _claimed_fingerprints_current(
+            feature_dir, evidence.get("input_fingerprints")
+        )
+        and (
+            implementation is None
+            or _implementation_fingerprints_match(feature_dir, implementation)
+        )
+    )
+
+
+def release_current(feature_dir: Path) -> bool:
+    release = read_json(feature_dir / "_kapelle" / "release.json")
+    if not (
+        release
+        and _exact_keys(
+            release,
+            {
+                "status",
+                "version",
+                "developer_confirmation",
+                "document_fingerprints",
+                "implementation_fingerprints",
+                "diagrams",
+            },
+        )
+        and release.get("status") == "completed"
+        and isinstance(release.get("version"), str)
+        and re.fullmatch(
+            r"[1-9][0-9]*\.[0-9]+(?:\.[0-9]+)?", release["version"]
+        )
+        and isinstance(release.get("developer_confirmation"), str)
+        and release["developer_confirmation"].strip()
+        and approval_current(feature_dir, "final")
+        and _claimed_fingerprints_current(
+            feature_dir, release.get("document_fingerprints")
+        )
+        and _implementation_fingerprints_match(
+            feature_dir, release.get("implementation_fingerprints")
+        )
+    ):
+        return False
+    diagrams = release.get("diagrams")
+    return bool(
+        isinstance(diagrams, list)
+        and len(diagrams) >= 2
+        and all(
+            isinstance(item, str)
+            and (feature_dir / item).is_file()
+            for item in diagrams
+        )
+    )
 
 
 def _project_root(feature_dir: Path) -> Path:
@@ -729,40 +995,111 @@ def choose_next_command(
     convergence_current: bool,
     review_current: bool,
 ) -> tuple[str, str]:
-    if not (feature_dir / "proposal.md").is_file() or not (feature_dir / "spec.md").is_file():
-        return "specify", f"/kapelle:specify {slug}"
+    del convergence_current, review_current
+    if human_controlled_workflow(feature_dir):
+        return choose_human_controlled_next_command(slug, feature_dir, task_states)
+    return "migrate", f"/kapelle:migrate {slug}"
+
+
+def choose_human_controlled_next_command(
+    slug: str,
+    feature_dir: Path,
+    task_states: dict[str, str],
+) -> tuple[str, str]:
+    """Choose the next explicit stage in the single human-controlled workflow."""
+    if not (feature_dir / "proposal.md").is_file() or not (
+        feature_dir / "spec.md"
+    ).is_file():
+        return "start", f'/kapelle:start {slug} "<raw task>"'
+    if workflow_lane(feature_dir) == "fast":
+        surface_errors, task_plan_errors, provisional = coordination_integrity(feature_dir)
+        if (
+            not (feature_dir / "design.md").is_file()
+            or not (feature_dir / "tasks.md").is_file()
+            or (
+                (feature_dir / "design.md").is_file()
+                and validate_design(feature_dir / "design.md")
+            )
+            or surface_errors
+            or (task_plan_errors and not provisional)
+        ):
+            return "start", f"/kapelle:start {slug} --lane=fast"
+        task_plan = read_json(feature_dir / "_kapelle" / "task-plan.json")
+        if len((task_plan or {}).get("tasks", [])) > 3:
+            return "start", f"/kapelle:start {slug} --lane=standard"
+        if not approval_current(feature_dir, "feature-plan"):
+            return "start", f"/kapelle:start {slug} --approve"
+        return choose_delivery_next_command(
+            slug, feature_dir, task_states, provisional
+        )
+    if not _markdown_package_exists(feature_dir, "specs"):
+        return "spec", f"/kapelle:spec {slug}"
+    if not approval_current(feature_dir, "outline"):
+        return "spec", f"/kapelle:spec {slug}"
+    if not approval_current(feature_dir, "business-spec"):
+        return "spec", f"/kapelle:spec {slug} --approve"
     if not (feature_dir / "design.md").is_file():
         return "design", f"/kapelle:design {slug}"
+    if validate_design(feature_dir / "design.md"):
+        return "design", f"/kapelle:design {slug} --revise"
+    if not _markdown_package_exists(feature_dir, "design") or not (
+        _markdown_package_exists(feature_dir, "contracts")
+    ):
+        return "design", f"/kapelle:design {slug} --detail"
+    if not approval_current(feature_dir, "architecture"):
+        return "design", f"/kapelle:design {slug} --approve"
     surface_errors, task_plan_errors, provisional = coordination_integrity(feature_dir)
     if surface_errors:
-        return "design", f"/kapelle:design {slug}"
+        return "design", f"/kapelle:design {slug} --revise"
     if (
         not (feature_dir / "tasks.md").is_file()
+        or not (feature_dir / "test-plan.md").is_file()
         or (task_plan_errors and not provisional)
     ):
-        return "decompose", f"/kapelle:decompose {slug}"
-    if not (feature_dir / "test-plan.md").is_file():
-        return "plan-tests", f"/kapelle:plan-tests {slug}"
+        return "plan", f"/kapelle:plan {slug}"
+    if not approval_current(feature_dir, "delivery-plan"):
+        return "plan", f"/kapelle:plan {slug} --approve"
+    return choose_delivery_next_command(slug, feature_dir, task_states, provisional)
 
-    states = set(task_states.values())
-    if provisional and states & {
+
+def choose_delivery_next_command(
+    slug: str,
+    feature_dir: Path,
+    task_states: dict[str, str],
+    provisional: bool,
+) -> tuple[str, str]:
+    if not phase_evidence_current(
+        feature_dir,
+        "base-functional-tests.json",
+        {"READY", "SKIPPED-confirmed"},
+    ):
+        return (
+            "base-functional-tests",
+            f"/kapelle:base-functional-tests {slug} --validation=ask",
+        )
+
+    unfinished = {
         "pending",
         "in-progress",
         "blocked",
         "needs-rework",
         "stale",
         "unknown",
-    }:
-        return "decompose", f"/kapelle:decompose {slug}"
-    if states & {"pending", "in-progress", "blocked", "needs-rework", "stale", "unknown"}:
-        return "implement", f"/kapelle:implement {slug}"
-    if states & {"implemented-unverified", "validation-deferred"}:
-        return "validation", f"/kapelle:implement {slug} --validation=ask"
-    if provisional:
-        return "decompose", f"/kapelle:decompose {slug}"
-    if not convergence_current or not review_current:
-        return "feature-review", f"/kapelle:feature-review {slug}"
-    return "ship", f"/kapelle:ship {slug}"
+    }
+    if provisional or set(task_states.values()) & unfinished:
+        return "implement", f"/kapelle:implement {slug} --checkpoint=task"
+    if not phase_evidence_current(feature_dir, "unit-tests.json", {"PASS"}):
+        return "unit-tests", f"/kapelle:unit-tests {slug} --validation=ask"
+    if not phase_evidence_current(feature_dir, "verification.json", {"PASS"}):
+        return "verify", f"/kapelle:verify {slug} --validation=ask"
+    if any(
+        status not in {"completed", "superseded"}
+        for status in task_states.values()
+    ):
+        return "verify", f"/kapelle:verify {slug} --validation=ask"
+    if not release_current(feature_dir):
+        return "finalize", f"/kapelle:finalize {slug} --version=1.0"
+    return "completed", f"/kapelle:status {slug}"
 
 
 def coordination_integrity(feature_dir: Path) -> tuple[list[str], list[str], bool]:
@@ -869,27 +1206,39 @@ def derive_state(
         for task_id, status in task_states.items()
         if status not in {"completed", "superseded"}
     }
-    complete_human_package = all((feature_dir / name).is_file() for name in HUMAN_ARTIFACTS)
-    review_ready = (
-        bool(task_states)
-        and complete_human_package
-        and not incomplete
-        and not blockers
-        and not deferred
-    )
+    review_ready = False
     active_change, revision = find_active_change(feature_dir)
-    ship_ready = (
-        review_ready
-        and convergence_current
-        and review_current
-        and active_change is None
-    )
+    ship_ready = False
+    if human_controlled_workflow(feature_dir):
+        review_ready = phase_evidence_current(
+            feature_dir, "verification.json", {"PASS"}
+        ) and not incomplete
+        ship_ready = (
+            release_current(feature_dir)
+            and not incomplete
+            and not blockers
+            and not deferred
+            and active_change is None
+        )
 
     gaps = sorted(set(evidence_gaps or (previous_state or {}).get("evidence_gaps", [])))
-    if blockers:
+    human_workflow = human_controlled_workflow(feature_dir)
+    if current_stage == "migrate":
+        feature_state = "awaiting-human-review"
+    elif blockers:
         feature_state = "blocked"
     elif deferred:
         feature_state = "validation-deferred"
+    elif human_workflow and current_stage == "completed":
+        feature_state = "completed"
+    elif human_workflow and current_stage == "finalize":
+        feature_state = "awaiting-human-review"
+    elif human_workflow and current_stage == "verify":
+        feature_state = "verifying"
+    elif human_workflow and current_stage == "unit-tests":
+        feature_state = "unit-testing"
+    elif human_workflow and current_stage in {"start", "spec", "design", "plan"}:
+        feature_state = "awaiting-human-review"
     elif any(status == "implemented-unverified" for status in task_states.values()):
         feature_state = "externally-implemented-unverified"
     elif ship_ready:
@@ -1003,7 +1352,11 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
         groups.setdefault(task["workstream"], []).append(task)
     labels = {
         "planning": "Planning",
+        "awaiting-human-review": "Awaiting developer review",
         "implementation": "Implementation",
+        "unit-testing": "Writing unit tests",
+        "verifying": "Verifying",
+        "completed": "Completed",
         "validation-deferred": "Validation deferred",
         "review-ready": "Ready for feature review",
         "ship-ready": "Ready to ship",
@@ -1026,7 +1379,7 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
             f"{counts.get('implemented-unverified', 0)} implemented-unverified"
         ),
         f"Ready for review: {'Yes' if state.get('review_ready') else 'No'}",
-        f"Ready to ship: {'Yes' if state.get('ship_ready') else 'No'}",
+        f"Completed: {'Yes' if state.get('ship_ready') else 'No'}",
     ]
     if state.get("active_change"):
         lines.append(
@@ -1070,39 +1423,70 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
     if state.get("evidence_gaps"):
         lines.extend(["", "## Evidence unavailable", ""])
         lines.extend(f"- {item}" for item in state["evidence_gaps"])
-    lines.extend(
-        [
-            "",
-            "## Documentation readiness",
-            "",
-            "- Product specification: Current"
-            if (feature_dir / "spec.md").is_file()
-            else "- Product specification: Missing",
-            "- Technical specification: Current"
-            if (feature_dir / "design.md").is_file()
-            else "- Technical specification: Missing",
-            (
-                "- As-built convergence: PASS"
-                if state.get("documentation_convergence") == "current-pass"
-                else "- As-built convergence: Missing or stale"
-            ),
-            (
-                "- Feature review: PASS"
-                if state.get("feature_review") == "current-pass"
-                else "- Feature review: Missing or stale"
-            ),
-        ]
-    )
+    review_paths = [
+        "proposal.md",
+        "spec.md",
+        "specs/" if _markdown_package_exists(feature_dir, "specs") else None,
+        "design.md",
+        "design/" if _markdown_package_exists(feature_dir, "design") else None,
+        "contracts/" if _markdown_package_exists(feature_dir, "contracts") else None,
+        "tasks.md",
+        "test-plan.md",
+        "diagrams/" if (feature_dir / "diagrams").is_dir() else None,
+    ]
+    lines.extend(["", "## Workflow readiness", ""])
+    if human_controlled_workflow(feature_dir):
+        lines.extend(
+            [
+                f"- Planning lane: {workflow_lane(feature_dir)}",
+                (
+                    "- Product specification: Current"
+                    if (feature_dir / "spec.md").is_file()
+                    else "- Product specification: Missing"
+                ),
+                (
+                    "- Technical specification: Current"
+                    if (feature_dir / "design.md").is_file()
+                    else "- Technical specification: Missing"
+                ),
+                (
+                    "- Base functional tests: Current"
+                    if phase_evidence_current(
+                        feature_dir,
+                        "base-functional-tests.json",
+                        {"READY", "SKIPPED-confirmed"},
+                    )
+                    else "- Base functional tests: Missing or stale"
+                ),
+                (
+                    "- Unit tests: PASS"
+                    if phase_evidence_current(feature_dir, "unit-tests.json", {"PASS"})
+                    else "- Unit tests: Missing, failed, or stale"
+                ),
+                (
+                    "- Verification: PASS"
+                    if phase_evidence_current(feature_dir, "verification.json", {"PASS"})
+                    else "- Verification: Missing, deferred, failed, or stale"
+                ),
+                (
+                    "- Release: Completed"
+                    if release_current(feature_dir)
+                    else "- Release: Not completed"
+                ),
+            ]
+        )
+    else:
+        lines.append("- Workflow: Migration required")
     lines.extend(
         [
             "",
             "## Review now",
             "",
-            "- proposal.md",
-            "- spec.md",
-            "- design.md",
-            "- tasks.md",
-            "- test-plan.md",
+            *(
+                f"- {path}"
+                for path in review_paths
+                if path is not None and (feature_dir / path.rstrip("/")).exists()
+            ),
             "",
             "## Next action",
             "",

@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/release.schema.json",
+  "title": "Kapelle finalized feature release",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "version", "developer_confirmation", "document_fingerprints", "implementation_fingerprints", "diagrams"],
+  "properties": {
+    "status": { "const": "completed" },
+    "version": {
+      "type": "string",
+      "pattern": "^[1-9][0-9]*\\.[0-9]+(?:\\.[0-9]+)?$"
+    },
+    "developer_confirmation": { "type": "string", "minLength": 1 },
+    "document_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "implementation_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    },
+    "diagrams": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

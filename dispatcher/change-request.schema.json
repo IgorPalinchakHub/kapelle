@@ -85,18 +85,15 @@
       "items": {
         "type": "string",
         "enum": [
-          "specify",
-          "clarify",
+          "spec",
           "design",
-          "decide-adr",
-          "sequences",
-          "data-model",
-          "contracts",
-          "decompose",
-          "plan-tests",
+          "plan",
+          "base-functional-tests",
           "implement",
-          "feature-review",
-          "ship"
+          "unit-tests",
+          "verify",
+          "amend",
+          "finalize"
         ]
       }
     },

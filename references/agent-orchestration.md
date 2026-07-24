@@ -22,13 +22,14 @@ isolated role must dispatch it in its protocol.
 
 | Agent | Purpose | Side effects |
 |---|---|---|
+| `business-analyst` | Separate current behavior, requested outcomes, rules, and scenarios | none |
 | `explorer` | Map repository structure and precedents | none |
 | `critic` | Find specification or design inconsistencies | none |
 | `devils-advocate` | Find ambiguity and failure modes | none |
 | `implementation-planner` | Produce an approval-ready project-aware plan | plan artifact only |
 | `change-reconciler` | Classify existing work against a new change revision | none |
-| `test-author` | Select and execute the task's test strategy | tests and test fixtures |
-| `implementer` | Execute the approved plan and validate each slice | project files and tests |
+| `test-author` | Author base functional tests before implementation or unit tests after it | tests and test fixtures |
+| `implementer` | Execute approved production-code plans | project files, excluding unit tests |
 | `reviewer` | Return an independent structured verdict | none |
 
 Project-specific skills and agents remain native project capabilities. Kapelle agents coordinate
@@ -46,7 +47,8 @@ project capability, not a bundled Kapelle role, and its name is not fixed.
 
 ## Agent Teams
 
-Sequential execution is the default. An Agent Team is allowed only for `implement` when all of
+Sequential execution is the default. An Agent Team is allowed only for production tasks in
+`implement` when all of
 these are true:
 
 - `.claude/kapelle.config.json` sets `implementation.mode` to `agent-team`;

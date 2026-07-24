@@ -1,3 +1,4 @@
+<!-- kapelle-workflow: human-controlled-v1; lane: standard -->
 # Human-readable Kapelle feature artifacts
 
 ## Summary
@@ -43,7 +44,7 @@ All LLM-only, JSON, JSONL, fingerprints, reviews, telemetry, and execution state
 - New `/kapelle:status` utility.
 - Deterministic status building, recovery, feature-state validation, and legacy migration.
 - Stage protocols updated to write the new layout.
-- Review/ship freshness and documentation-convergence gates.
+- Verification/finalization freshness and as-built documentation convergence.
 - Updated examples and user documentation.
 
 ## Non-goals
@@ -67,4 +68,3 @@ All LLM-only, JSON, JSONL, fingerprints, reviews, telemetry, and execution state
 - Existing layouts are supported through explicit migration and read-only recovery, not silent
   destructive moves.
 - `STATUS.md` is generated and must not be edited as an independent source of truth.
-

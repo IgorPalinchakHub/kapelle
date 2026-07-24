@@ -37,9 +37,9 @@ smallest safe next command.
    - keep checked work without trustworthy current validation as `implemented-unverified`;
    - list approvals, reviews, command output, telemetry, or validation evidence that could not be
      reconstructed.
-4. When legacy root JSON, `_audit/`, `_review/`, `changes/`, `sad.md`, `.size`, or `ship.md` is
-   detected, show the migration dry-run command. Do not run `--apply` without explicit user
-   approval.
+4. When the durable workflow marker is absent, route only to `/kapelle:migrate <slug>`. When legacy
+   root JSON, `_audit/`, `_review/`, `changes/`, `sad.md`, `.size`, or `ship.md` is detected, also
+   show the layout migration dry-run. Do not apply either migration without explicit approval.
 5. Run `scripts/build_feature_status.py docs/features/<slug>` and then
    `scripts/validate_feature_state.py docs/features/<slug>`.
 6. If validation finds drift, repair only generated/derived state from current evidence. Do not
@@ -65,5 +65,5 @@ smallest safe next command.
 - Implementation edits.
 - Tests, linters, static analysis, builds, or migrations.
 - Git operations.
-- Silent legacy layout migration.
+- Silent workflow or layout migration.
 - Fabricating approvals, reviews, or validation evidence.

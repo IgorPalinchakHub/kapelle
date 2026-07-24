@@ -1,12 +1,26 @@
 ---
 name: design
 description: >
-  Write `design.md`, `_kapelle/surface-plan.json`, and ADRs using scoped project architecture rules.
+  Create, detail, revise, or approve a pragmatic feature architecture using scoped project rules,
+  including domain models, contracts, and low-coupling design documents when useful.
 ---
 
 # Skill: design
 
 Write the developer-facing technical specification, machine coordination plan, and ADRs.
+
+Read [`../../references/design-template.md`](../../references/design-template.md). `design.md`
+always uses its eleven headings in the specified order; run
+`scripts/validate_design.py docs/features/<slug>/design.md` before approval.
+
+Invoke:
+
+```text
+/kapelle:design <slug>
+/kapelle:design <slug> --detail
+/kapelle:design <slug> --revise "<developer feedback>"
+/kapelle:design <slug> --approve
+```
 
 ## Inputs
 
@@ -21,7 +35,9 @@ Write the developer-facing technical specification, machine coordination plan, a
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
+1. Validate required inputs and standard lane. Fast-lane high-level design is produced by `start`.
+   For standard lane, also require current
+   `_kapelle/approvals/business-spec.json`. If missing, refuse with `/kapelle:spec <slug> --approve`.
 2. Read artifacts directly from disk.
 3. Select and record execution depth. Prefer
    `docs/features/<slug>/_context/architecture.md`, then use `docs/architecture-map.md` as a shared
@@ -33,7 +49,8 @@ Write the developer-facing technical specification, machine coordination plan, a
    blocking gaps.
 5. Let the selected project subagent discover any narrower project skills/subagents needed to
    evaluate the design. Record selections as evidence, not routing configuration.
-6. Draft `design.md` from the specification, cited precedents, and scoped architecture rules.
+6. In default mode, draft a concise high-level `design.md` from the specification, cited
+   precedents, and scoped architecture rules, using the fixed template.
    Include affected components, backend/frontend/data responsibilities, runtime/failure flows,
    data/schema impact, contracts, security, compatibility, validation, and known deviations. Use a
    separate `sequences.md` only for unusually complex flows.
@@ -43,14 +60,32 @@ Write the developer-facing technical specification, machine coordination plan, a
 8. At `standard` or `full` depth, or for a risk trigger, dispatch `kapelle:critic` in fresh context
    against `spec.md`, `design.md`, `_kapelle/surface-plan.json`, rules evidence, and ADRs. At `lean`, perform a
    focused inline consistency check. Resolve or explicitly defer every blocking finding.
-9. Write outputs: `design.md`, `_kapelle/surface-plan.json`, `adr/*.md`, and
+9. After the developer accepts the high-level design by invoking `--detail`, create only useful
+   low-coupling, high-cohesion documents under `design/`. Include:
+   - component responsibilities and dependencies;
+   - backend, frontend, worker, data, and integration slices that actually apply;
+   - proposed domain model skeleton with aggregates, classes, fields, relations, invariants, and
+     status transitions;
+   - contracts for every changed endpoint, command, event, or worker input/output;
+   - ADRs only for consequential choices.
+   Keep `design.md` as the overview and put contract details under `contracts/`.
+10. On `--revise`, update the affected design package and invalidate architecture approval and all
+    downstream approvals/evidence. If business behavior must change, propose `/kapelle:spec
+    <slug> --revise` instead of silently editing the spec.
+11. On `--approve`, require the detailed design package, contracts (or an explicit no-contract
+    document), valid surface plan, and explicit developer confirmation. Never generate missing
+    design on an approval invocation. Require `validate_design.py` PASS. Persist
+    `_kapelle/approvals/architecture.json` with current fingerprints, and hand off to
+    `/kapelle:plan <slug>`.
+12. Write outputs: `design.md`, optional `design/*.md`, `_kapelle/surface-plan.json`, `adr/*.md`, and
    `_kapelle/architecture-guidance/design.json`.
-10. Run `scripts/build_feature_status.py docs/features/<slug>` and emit the chat handoff per
+13. Run `scripts/build_feature_status.py docs/features/<slug>` and emit the chat handoff per
     [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
-- `design.md`, `_kapelle/surface-plan.json`, `adr/*.md`, and architecture-guidance evidence.
+- `design.md`, optional `design/*.md`, contracts, `_kapelle/surface-plan.json`, ADRs, approvals,
+  and architecture-guidance evidence.
 - `Status: DONE | stage: design | produced: <paths>`.
 
 ## Definition of Done
@@ -60,7 +95,7 @@ Write the developer-facing technical specification, machine coordination plan, a
 - Every aspect and cross-aspect dependency is explicit and validated.
 - Design decisions cite scoped project architecture rules.
 - Skips are explicit.
-- Handoff points to `contracts` when interfaces exist, otherwise `decompose`.
+- Handoff points to `--detail`, `--approve`, or `plan` as the current gate requires.
 
 ## Anti-patterns
 

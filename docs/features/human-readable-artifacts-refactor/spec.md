@@ -51,8 +51,9 @@ next step.
 
 ### Final convergence
 
-- Feature review checks proposal/spec/design/contracts/tasks/test-plan/ADR against implementation.
-- Ship requires a current documentation-convergence `PASS` and no required deferred validation.
+- Finalization checks proposal/spec/design/contracts/tasks/test-plan/ADR against the as-built
+  implementation.
+- Completion requires current verification evidence and no required deferred validation.
 
 ## Acceptance criteria
 
@@ -68,11 +69,11 @@ next step.
   be reconstructed.
 - **AC-06** The recovered state chooses a minimal next command based on available documents, tasks,
   and validation gaps.
-- **AC-07** Feature-state validation detects status drift, impossible readiness, stale
-  review/convergence evidence after document, coordination, or implementation changes, malformed
-  active change state, and false recovered validation.
-- **AC-08** Design, decomposition, implementation, review, ship, and change protocols use the
-  layout-v2 paths.
+- **AC-07** Feature-state validation detects status drift, impossible readiness, stale approval or
+  verification evidence after document, coordination, or implementation changes, malformed active
+  change state, and false recovered validation.
+- **AC-08** The single human-controlled backbone, amendment flow, and optional utilities use the
+  layout-v2 paths; legacy stage names do not execute a second pipeline.
 - **AC-09** `tasks.md` stays compact while `_kapelle/task-plan.json` retains the full validated
   dependency graph and AC coverage.
 - **AC-10** A migration command supports `--dry-run` and explicit `--apply`, preserves legacy

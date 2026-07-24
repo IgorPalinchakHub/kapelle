@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/review-gate.schema.json",
+  "title": "Kapelle explicit human review gate",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["gate", "status", "confirmation", "artifact_fingerprints"],
+  "properties": {
+    "gate": {
+      "type": "string",
+      "enum": ["feature-plan", "outline", "business-spec", "architecture", "delivery-plan", "final"]
+    },
+    "status": { "const": "approved" },
+    "confirmation": { "type": "string", "minLength": 1 },
+    "artifact_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  }
+}

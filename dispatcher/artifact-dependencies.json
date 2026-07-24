@@ -1,9 +1,29 @@
 {
   "proposal.md": [],
   "spec.md": ["proposal.md"],
+  "specs": ["proposal.md", "spec.md"],
+  "_kapelle/approvals/outline.json": ["proposal.md", "spec.md"],
+  "_kapelle/approvals/feature-plan.json": [
+    "proposal.md",
+    "spec.md",
+    "design.md",
+    "tasks.md",
+    "_kapelle/surface-plan.json",
+    "_kapelle/task-plan.json"
+  ],
+  "_kapelle/approvals/business-spec.json": ["proposal.md", "spec.md", "specs"],
   "design.md": ["proposal.md", "spec.md"],
+  "design": ["specs", "design.md"],
   "_kapelle/surface-plan.json": ["spec.md", "design.md"],
   "contracts": ["spec.md", "design.md", "_kapelle/surface-plan.json"],
+  "_kapelle/approvals/architecture.json": [
+    "spec.md",
+    "specs",
+    "design.md",
+    "design",
+    "contracts",
+    "_kapelle/surface-plan.json"
+  ],
   "tasks.md": ["spec.md", "design.md", "contracts"],
   "_kapelle/task-plan.json": [
     "spec.md",
@@ -18,26 +38,43 @@
     "contracts",
     "_kapelle/task-plan.json"
   ],
+  "_kapelle/approvals/delivery-plan.json": [
+    "tasks.md",
+    "test-plan.md",
+    "_kapelle/task-plan.json"
+  ],
+  "_kapelle/base-functional-tests.json": [
+    "spec.md",
+    "specs",
+    "contracts",
+    "test-plan.md",
+    "_kapelle/task-plan.json"
+  ],
   "_kapelle/task-runs": [
     "spec.md",
     "design.md",
     "_kapelle/surface-plan.json",
     "contracts",
     "_kapelle/task-plan.json",
-    "test-plan.md"
+    "test-plan.md",
+    "_kapelle/base-functional-tests.json"
   ],
   "_kapelle/validation": ["_kapelle/task-runs"],
-  "_kapelle/reviews/documentation-convergence.json": [
-    "proposal.md",
+  "_kapelle/unit-tests.json": ["_kapelle/task-runs", "_kapelle/base-functional-tests.json"],
+  "_kapelle/verification.json": ["_kapelle/unit-tests.json"],
+  "diagrams": [
     "spec.md",
+    "specs",
     "design.md",
+    "design",
     "contracts",
-    "tasks.md",
-    "test-plan.md",
-    "_kapelle/validation"
+    "_kapelle/verification.json"
   ],
-  "_kapelle/reviews/feature-review.json": [
-    "_kapelle/reviews/documentation-convergence.json"
+  "_kapelle/approvals/final.json": ["diagrams", "_kapelle/verification.json"],
+  "_kapelle/release.json": [
+    "_kapelle/approvals/final.json",
+    "diagrams",
+    "_kapelle/verification.json"
   ],
   "_kapelle/state.json": [],
   "STATUS.md": ["_kapelle/state.json"]

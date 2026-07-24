@@ -30,7 +30,7 @@ state.
    `docs/features/<slug>/_context/architecture.md`; never create or update
    `docs/architecture-map.md`, even when the shared baseline is missing.
 3. If no slug and the baseline exists without `--refresh-baseline`, do not dispatch a repository
-   remap and do not write. Report `Status: BASELINE-READY` and hand off to `specify`.
+   remap and do not write. Report `Status: BASELINE-READY` and hand off to `start`.
 4. If no slug and the baseline is missing, dispatch `kapelle:explorer` once for repository stack, module
    boundaries, wiring, data stores, test commands, project skills/subagents, rules, and cited
    precedents; write `docs/architecture-map.md`.
@@ -59,7 +59,7 @@ state.
   architecture-rules capability readiness.
 - Feature work never rewrites shared repository context.
 - Skips are explicit.
-- Handoff points to `specify`.
+- Handoff points to `start`.
 
 ## Anti-patterns
 

@@ -20,15 +20,17 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
 - `STATUS.md`: generated entry point, normally at most 100 lines.
 - `proposal.md`: problem, goal, scope, non-goals, impact, risks, and product decisions.
 - `spec.md`: observable behavior, actors, requirements, ACs, edge cases, constraints, compatibility.
+- `specs/*.md`: independent scenarios, business rules, subprocesses, and integration reactions.
 - `design.md`: affected components, boundaries, flows, contracts, data, security, decisions, ADRs,
   validation, and as-built deviations.
+- `design/*.md`: only genuinely independent component, domain/status-model, or integration designs.
 - `tasks.md`: workstream checklist with task id, outcome, meaningful dependency, AC coverage,
   blocker, and validation state.
 - `test-plan.md`: strategy, AC/integration coverage, required/optional commands, manual checks,
   explicit skips, and deferrals.
 
-For medium features, prefer 3–7 workstreams and 7–15 implementation tasks. These are review
-signals, not correctness limits.
+Keep the package proportional. Prefer a few vertical workstreams and outcome-oriented tasks; do
+not create one document per rule, class, or layer.
 
 ## Generated status
 
@@ -54,7 +56,7 @@ After recovery with no durable validation evidence, `[x]` maps to
 
 ## Documentation convergence
 
-Before feature review, reconcile:
+Before finalization, reconcile:
 
 ```text
 proposal <-> final scope
@@ -66,7 +68,5 @@ test-plan <-> performed validation
 ADR <-> actual architectural decisions
 ```
 
-The machine verdict is `_kapelle/reviews/documentation-convergence.json`. Feature review and ship
-require a current `PASS`; it is current only while both complete input fingerprints and the
-reviewed implementation-file fingerprints match. Observable requirement changes still use the
-change lifecycle.
+The human-controlled route records complete verification and a fingerprinted release. Observable
+requirement changes always use the amendment lifecycle.

@@ -1,8 +1,8 @@
 # Adaptive execution depth
 
-Kapelle keeps every SDLC stage independently invocable, but scales the work inside a stage to the
-feature's size and risk. Execution depth reduces duplicate analysis; it never weakens required
-artifacts, architecture guidance, acceptance-criteria coverage, or validation.
+Kapelle scales work inside the single human-controlled pipeline. Execution depth reduces duplicate
+analysis; interview depth controls clarification/adversarial work; lane controls artifact/stage
+shape. None weakens architecture guidance, acceptance-criteria coverage, or validation.
 
 ## Selection
 
@@ -41,19 +41,17 @@ implementation task. After decomposition, task execution depth is selected indep
 
 Specific rules:
 
-- `specify` input preflight is always bounded, regardless of depth. Until authoritative slug, work
-  context, and raw idea are resolved, it performs no source/commit search and dispatches no
-  subagent.
-- `specify` and `clarify` must not repeat the same adversarial review. At `lean`, `specify` performs
-  one inline acceptance-criteria check and `clarify` runs only a delta ambiguity sweep.
+- `start` performs bounded discovery, writes size/lane/depth, and follows
+  `interview-depth.md`.
+- `spec` uses the same recorded interview depth and never repeats an already accepted adversarial
+  pass.
 - `design` always dispatches the project's architecture-rules capability. It dispatches
   `kapelle:critic` only at `standard`/`full` or when a risk trigger is present.
 - `data-model` dispatches `kapelle:explorer` only when persistence is affected and cited precedents
   are missing.
-- `implement` always persists a plan. At `lean`, a low-risk task may execute the planner role inline
-  and defer independent review to the feature-level `feature-review` stage. Risk-triggered tasks always use
-  a fresh `kapelle:implementation-planner` and per-task `kapelle:reviewer`.
-- `test-author` execute mode is skipped for `validation-only` work that creates no test artifact.
+- `implement` always persists a plan. At `lean`, a low-risk task may execute the planner role
+  inline. Risk-triggered tasks use a fresh planner and reviewer.
+- Test-author runs only for the base-functional or post-implementation unit-test phases.
 
 ## Explicit skips
 

@@ -4,7 +4,7 @@
   "title": "Kapelle feature size and execution depth",
   "type": "object",
   "additionalProperties": false,
-  "required": ["size", "execution_depth", "reason"],
+  "required": ["size", "execution_depth", "interview_depth", "lane", "reason"],
   "properties": {
     "size": {
       "type": "string",
@@ -14,6 +14,14 @@
       "type": ["string", "null"],
       "enum": ["lean", "standard", "full", null]
     },
+    "interview_depth": {
+      "type": "string",
+      "enum": ["lean", "standard", "deep"]
+    },
+    "lane": {
+      "type": "string",
+      "enum": ["fast", "standard"]
+    },
     "reason": { "type": "string", "minLength": 1 },
     "legacy_text_sha256": {
       "type": "string",
@@ -21,4 +29,3 @@
     }
   }
 }
-

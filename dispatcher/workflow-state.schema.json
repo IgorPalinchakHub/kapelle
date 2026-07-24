@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/workflow-state.schema.json",
+  "title": "Kapelle human-controlled workflow marker",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["workflow", "version", "created_from", "lane"],
+  "properties": {
+    "workflow": { "const": "human-controlled" },
+    "version": { "const": 1 },
+    "created_from": { "type": "string", "enum": ["raw-task", "legacy-migration"] },
+    "lane": { "type": "string", "enum": ["fast", "standard"] }
+  }
+}

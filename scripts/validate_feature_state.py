@@ -17,12 +17,16 @@ from feature_state import (
     documentation_convergence_current,
     document_fingerprints,
     feature_review_current,
+    human_controlled_workflow,
     parse_tasks,
+    phase_evidence_current,
     read_json,
+    release_current,
     render_status,
     resolve_feature_dir,
     validation_statuses,
 )
+from validate_design import validate as validate_design
 
 
 def validate(feature_dir: Path) -> list[str]:
@@ -42,6 +46,11 @@ def validate(feature_dir: Path) -> list[str]:
         errors.append("slug does not match feature directory")
 
     fingerprints = document_fingerprints(feature_dir)
+    if human_controlled_workflow(feature_dir) and (feature_dir / "design.md").is_file():
+        errors.extend(
+            f"design structure: {error}"
+            for error in validate_design(feature_dir / "design.md")
+        )
     manifest_artifacts = manifest.get("human_artifacts", {})
     for name in HUMAN_ARTIFACTS:
         item = manifest_artifacts.get(name, {})
@@ -115,22 +124,24 @@ def validate(feature_dir: Path) -> list[str]:
     }
     blockers = state.get("blockers", [])
     deferred = state.get("deferred_validation", [])
-    complete_human_package = all((feature_dir / name).is_file() for name in HUMAN_ARTIFACTS)
-    expected_review_ready = (
-        bool(state_tasks)
-        and complete_human_package
-        and not incomplete
-        and not blockers
-        and not deferred
-    )
+    if human_controlled_workflow(feature_dir):
+        expected_review_ready = phase_evidence_current(
+            feature_dir, "verification.json", {"PASS"}
+        ) and not incomplete
+    else:
+        expected_review_ready = False
     if state.get("review_ready") != expected_review_ready:
         errors.append("review_ready is inconsistent with tasks/blockers/validation")
-    expected_ship_ready = (
-        expected_review_ready
-        and convergence_current
-        and review_current
-        and state.get("active_change") is None
-    )
+    if human_controlled_workflow(feature_dir):
+        expected_ship_ready = (
+            release_current(feature_dir)
+            and not incomplete
+            and not blockers
+            and not deferred
+            and state.get("active_change") is None
+        )
+    else:
+        expected_ship_ready = False
     if state.get("ship_ready") != expected_ship_ready:
         errors.append("ship_ready is inconsistent with current evidence")
     expected_convergence = "current-pass" if convergence_current else "missing-or-stale"

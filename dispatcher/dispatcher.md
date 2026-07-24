@@ -27,19 +27,18 @@ For each pending task:
    files, APIs, project instructions, or another agent.
 9. When `guidance_evidence` is `required`, stop if evidence is absent or reports unresolved blocking gaps.
    `optional` records available evidence without requiring a provider; `disabled` skips this check.
-10. Execute `execution-contract.md`: classify the task, select execution depth and a test strategy,
-   run planner/reviewer roles inline only when the lean-depth contract permits it, otherwise dispatch
-   `kapelle:implementation-planner`, enforce the approval policy, then dispatch
-   `kapelle:test-author`, `kapelle:implementer`, and `kapelle:reviewer`.
+10. Execute `execution-contract.md`: plan the production task, enforce approval, dispatch
+   `kapelle:implementer`, and dispatch `kapelle:reviewer` when risk requires it. Unit-test authoring
+   is forbidden here; `kapelle:test-author` runs only in the separate base-functional-test and
+   post-implementation unit-test stages.
 11. Use sequential mode by default. Use an Agent Team only when configured, available, explicitly
     approved, and safe for the ready task batch.
 12. Enforce edit-attempt and agent-run caps. Stop and block rather than iterating without bound.
-13. Build the exact project validation batch and apply
-    `references/validation-execution.md`. Run, select, skip, or cancel commands only according to
-    the effective development validation policy and explicit user decision.
-14. Mark the task `completed` only when its Definition of Done, required review policy, and required
-    validation pass. Mark it `validation-deferred` when required validation was explicitly skipped
-    or cancelled; never translate that state to `PASS`.
+13. Optionally run the existing focused base functional tests under
+    `references/validation-execution.md`. Full unit, static-analysis, lint, and build batches are
+    deferred to their explicit later stages.
+14. Mark production work `implemented-unverified`; final completion comes only after unit tests and
+    complete verification. A skipped/cancelled focused check remains visible deferred evidence.
 15. A dependent task may become development-ready from a `validation-deferred` dependency only
     after the explicit skip/cancel decision is recorded. Propagate that risk into its plan; do not
     accept final contract or integration evidence until the dependency passes.
@@ -47,14 +46,13 @@ For each pending task:
     review, and validation in `_kapelle/task-runs/<task-id>.json`; append only actual available usage
     telemetry to `_kapelle/telemetry/execution.jsonl`.
 17. If requirements, architecture, contracts, or constraints change during implementation, stop
-    all change-related dispatch, checkpoint state, and enter the revision lifecycle. Do not resume
-    until `/kapelle:resume-change` passes fingerprint and reconciliation gates.
+    all change-related dispatch, checkpoint state, and enter `/kapelle:amend`. Resume only after
+    the amended route has current fingerprints, reconciled tasks, and explicit developer approval.
 
 ## Status lines
 
 - `Status: CAPABILITY-SELECTED | skill: <name> | agent: <name-or-default>`
 - `Status: EXECUTION-MODE | mode: sequential|agent-team | reason: <selection>`
-- `Status: TEST-STRATEGY | task: <id> | class: <class> | strategy: <strategy>`
 - `Status: PLAN-READY | task: <id> | approval: required|not-required`
 - `Status: PLAN-APPROVED | task: <id> | by: user|policy`
 - `Status: ATTEMPT | task: <id> | edit: <n>/<max> | agent-runs: <n>/<max>`
@@ -65,7 +63,7 @@ For each pending task:
 - `Status: ARCHITECTURE-GUIDANCE-READY | capability: <project-subagent> | rules: <n> | gaps: 0`
 - `Status: REFUSED-missing-project-capability | capability: project architecture-rules subagent`
 - `Status: BLOCKED-guidance | gaps: <descriptions>`
-- `Status: IMPLEMENTED-and-validated | task: <id>`
+- `Status: IMPLEMENTED-unverified | task: <id>`
 
 ## Invariants
 
@@ -75,8 +73,8 @@ For each pending task:
 - **Scoped architecture law** — a project subagent supplies applicable rules for each design/task scope.
 - **Explicit roles** — agent execution comes from protocol dispatch, never custom frontmatter.
 - **Plan first** — code follows a validated strategy and durable plan.
-- **Adaptive verification** — TDD, characterization, scenarios, contracts, and validation are
-  chosen from task evidence.
+- **Explicit test timing** — base functional tests precede production code; unit tests follow all
+  production implementation; complete verification follows unit tests.
 - **Bounded execution** — retry and agent-run caps prevent runaway loops.
 - **Revision safety** — changed requirements pause execution; fingerprints and reconciliation gate
   resume.

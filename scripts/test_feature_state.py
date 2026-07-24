@@ -12,6 +12,8 @@ from feature_state import (
     file_fingerprint,
     initialize_feature_state,
     input_fingerprints,
+    normalized_task_plan_fingerprint,
+    normalized_tasks_fingerprint,
     parse_tasks,
     rebuild_feature_state,
     refresh_feature_status,
@@ -19,9 +21,16 @@ from feature_state import (
 from migrate_feature_layout import apply_migration, migration_plan
 from validate_feature_state import validate
 from validate_task_plan import validate as validate_task_plan
+from validate_design import REQUIRED_HEADINGS
 
 
 class FeatureStateTests(unittest.TestCase):
+    def valid_design(self) -> str:
+        lines = ["# Design", ""]
+        for heading in REQUIRED_HEADINGS:
+            lines.extend([heading, "", "Current evidence or not applicable.", ""])
+        return "\n".join(lines)
+
     def make_feature(self, root: Path, *, checked: bool = False) -> Path:
         feature = root / "docs" / "features" / "readable-feature"
         feature.mkdir(parents=True)
@@ -31,7 +40,7 @@ class FeatureStateTests(unittest.TestCase):
         (feature / "spec.md").write_text(
             "# Specification\n\n- **AC-01** Status is visible.\n"
         )
-        (feature / "design.md").write_text("# Design\n\nNo data schema change.\n")
+        (feature / "design.md").write_text(self.valid_design())
         marker = "x" if checked else " "
         (feature / "tasks.md").write_text(
             f"# Tasks\n\n## Delivery\n\n- [{marker}] **T01 Build status** — covers AC-01\n"
@@ -141,6 +150,22 @@ class FeatureStateTests(unittest.TestCase):
         )
         return path
 
+    def write_approval(
+        self, feature: Path, gate: str, fingerprints: dict[str, str]
+    ) -> None:
+        path = feature / "_kapelle" / "approvals" / f"{gate}.json"
+        path.parent.mkdir(exist_ok=True)
+        path.write_text(
+            json.dumps(
+                {
+                    "gate": gate,
+                    "status": "approved",
+                    "confirmation": f"Developer approved {gate}",
+                    "artifact_fingerprints": fingerprints,
+                }
+            )
+        )
+
     def test_recovery_never_treats_checked_task_as_validated(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             feature = self.make_feature(Path(tmp), checked=True)
@@ -170,7 +195,8 @@ class FeatureStateTests(unittest.TestCase):
             _, state, recovered = refresh_feature_status(feature)
             self.assertFalse(recovered)
             self.assertEqual("completed", state["tasks"]["T01"])
-            self.assertTrue(state["review_ready"])
+            self.assertFalse(state["review_ready"])
+            self.assertEqual("migrate", state["current_stage"])
             self.assertEqual([], validate(feature))
 
     def test_ad_hoc_validation_pass_is_not_completion_evidence(self) -> None:
@@ -253,17 +279,13 @@ class FeatureStateTests(unittest.TestCase):
             self.assertEqual("implemented-unverified", state["tasks"]["T01"])
             self.assertFalse(state["ship_ready"])
 
-    def test_ship_requires_strict_fresh_review_and_implementation_evidence(self) -> None:
+    def test_legacy_review_evidence_never_bypasses_migration(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             feature = self.make_feature(Path(tmp), checked=True)
             rebuild_feature_state(feature)
             validation_path = self.write_pass_validation(feature)
-            refresh_feature_status(feature)
             fingerprints = input_fingerprints(feature)
             implementation = feature.parent.parent.parent / "src" / "feature.txt"
-            implementation_fingerprints = {
-                "src/feature.txt": file_fingerprint(implementation)
-            }
             reviews = feature / "_kapelle" / "reviews"
             reviews.mkdir()
             (reviews / "documentation-convergence.json").write_text(
@@ -272,7 +294,9 @@ class FeatureStateTests(unittest.TestCase):
                         "status": "PASS",
                         "revision": None,
                         "input_fingerprints": fingerprints,
-                        "implementation_fingerprints": implementation_fingerprints,
+                        "implementation_fingerprints": {
+                            "src/feature.txt": file_fingerprint(implementation)
+                        },
                         "requirement_mismatches": [],
                         "design_mismatches": [],
                         "contract_mismatches": [],
@@ -285,68 +309,21 @@ class FeatureStateTests(unittest.TestCase):
                 json.dumps(
                     {
                         "status": "PASS",
-                        "summary": "Independent review passed.",
+                        "summary": "Historical review passed.",
                         "input_fingerprints": fingerprints,
-                        "validation_files": [
-                            str(validation_path.relative_to(feature))
-                        ],
+                        "validation_files": [str(validation_path.relative_to(feature))],
                         "reviewed_aspects": ["core"],
                         "findings": [],
                     }
                 )
             )
             _, state, _ = refresh_feature_status(feature)
-            self.assertTrue(state["ship_ready"])
-            convergence_path = reviews / "documentation-convergence.json"
-            original_convergence = convergence_path.read_text()
-            convergence = json.loads(original_convergence)
-            extra = feature.parent.parent.parent / "src" / "extra.txt"
-            extra.write_text("not in task validation inventory\n")
-            convergence["implementation_fingerprints"]["src/extra.txt"] = (
-                file_fingerprint(extra)
+            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual(
+                f"/kapelle:migrate {feature.name}", state["next_command"]
             )
-            convergence_path.write_text(json.dumps(convergence))
-            _, mismatched_inventory_state, _ = refresh_feature_status(feature)
-            self.assertFalse(mismatched_inventory_state["ship_ready"])
-            convergence_path.write_text(original_convergence)
-            _, restored_inventory_state, _ = refresh_feature_status(feature)
-            self.assertTrue(restored_inventory_state["ship_ready"])
-            invalid_change = (
-                feature / "_kapelle" / "changes" / "corrupt" / "state.json"
-            )
-            invalid_change.parent.mkdir(parents=True)
-            invalid_change.write_text("{broken")
-            _, invalid_change_state, _ = refresh_feature_status(feature)
-            self.assertFalse(invalid_change_state["ship_ready"])
-            self.assertTrue(
-                any("invalid change state" in error for error in validate(feature))
-            )
-            invalid_change.unlink()
-            invalid_change.parent.rmdir()
-            _, restored_change_state, _ = refresh_feature_status(feature)
-            self.assertTrue(restored_change_state["ship_ready"])
-            surface_path = feature / "_kapelle" / "surface-plan.json"
-            original_surface = surface_path.read_text()
-            surface = json.loads(original_surface)
-            surface["aspects"].append(
-                {
-                    "id": "secondary",
-                    "intent": "Secondary behavior",
-                    "modules": [],
-                    "entrypoints": [],
-                    "depends_on": [],
-                }
-            )
-            surface_path.write_text(json.dumps(surface))
-            _, partial_review_state, _ = refresh_feature_status(feature)
-            self.assertFalse(partial_review_state["ship_ready"])
-            surface_path.write_text(original_surface)
-            _, restored_state, _ = refresh_feature_status(feature)
-            self.assertTrue(restored_state["ship_ready"])
-            implementation.write_text("changed after review\n")
-            _, stale_state, _ = refresh_feature_status(feature)
-            self.assertFalse(stale_state["ship_ready"])
-            self.assertEqual("missing-or-stale", stale_state["documentation_convergence"])
+            self.assertFalse(state["review_ready"])
+            self.assertFalse(state["ship_ready"])
 
     def test_corrupt_coordination_routes_to_producing_stage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -354,13 +331,13 @@ class FeatureStateTests(unittest.TestCase):
             initialize_feature_state(feature)
             (feature / "_kapelle" / "task-plan.json").write_text("{broken")
             _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("decompose", state["current_stage"])
+            self.assertEqual("migrate", state["current_stage"])
             self.assertTrue(
                 any("task-plan" in error for error in validate(feature))
             )
             (feature / "_kapelle" / "surface-plan.json").write_text("{broken")
             _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("design", state["current_stage"])
+            self.assertEqual("migrate", state["current_stage"])
 
     def test_wrapped_task_metadata_and_ac_ranges_are_parsed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -413,10 +390,7 @@ class FeatureStateTests(unittest.TestCase):
             self.assertTrue((feature / "_kapelle" / "surface-plan.json").is_file())
             self.assertTrue((feature / "_kapelle" / "task-plan.json").is_file())
             self.assertEqual("implemented-unverified", state["tasks"]["T01"])
-            self.assertEqual(
-                "/kapelle:implement readable-feature --validation=ask",
-                report["next_command"],
-            )
+            self.assertEqual("/kapelle:migrate readable-feature", report["next_command"])
             self.assertIn(
                 "current scoped architecture guidance",
                 report["evidence_unavailable"],
@@ -442,9 +416,9 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "_kapelle").rmdir()
             _, state, _ = rebuild_feature_state(feature)
             self.assertEqual("pending", state["tasks"]["T01"])
-            self.assertEqual("decompose", state["current_stage"])
+            self.assertEqual("migrate", state["current_stage"])
             self.assertEqual(
-                "/kapelle:decompose readable-feature", state["next_command"]
+                "/kapelle:migrate readable-feature", state["next_command"]
             )
 
     def test_missing_downstream_human_artifacts_selects_minimal_stage(self) -> None:
@@ -454,11 +428,313 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "tasks.md").unlink()
             (feature / "test-plan.md").unlink()
             _, state, _ = rebuild_feature_state(feature)
-            self.assertEqual("design", state["current_stage"])
+            self.assertEqual("migrate", state["current_stage"])
             self.assertEqual(
-                "/kapelle:design readable-feature", state["next_command"]
+                "/kapelle:migrate readable-feature", state["next_command"]
             )
             self.assertEqual([], validate(feature))
+
+    def test_human_controlled_workflow_routes_explicit_test_phases(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = self.make_feature(root)
+            internal = feature / "_kapelle"
+            (internal / "workflow.json").write_text(
+                json.dumps(
+                    {
+                        "workflow": "human-controlled",
+                        "version": 1,
+                        "created_from": "raw-task",
+                        "lane": "standard",
+                    }
+                )
+            )
+            (feature / "proposal.md").write_text(
+                "<!-- kapelle-workflow: human-controlled-v1; lane: standard -->\n"
+                + (feature / "proposal.md").read_text()
+            )
+            (feature / "specs").mkdir()
+            (feature / "specs" / "scenarios.md").write_text("# Scenarios\n")
+            docs = document_fingerprints(feature)
+            self.write_approval(
+                feature,
+                "outline",
+                {
+                    "proposal.md": docs["proposal.md"],
+                    "spec.md": docs["spec.md"],
+                },
+            )
+            self.write_approval(
+                feature,
+                "business-spec",
+                {
+                    "proposal.md": docs["proposal.md"],
+                    "spec.md": docs["spec.md"],
+                    "specs": docs["specs"],
+                },
+            )
+            (feature / "design").mkdir()
+            (feature / "design" / "components.md").write_text("# Components\n")
+            (feature / "contracts").mkdir()
+            (feature / "contracts" / "README.md").write_text("# Contracts\n\nNone.\n")
+            docs = document_fingerprints(feature)
+            self.write_approval(
+                feature,
+                "architecture",
+                {
+                    "spec.md": docs["spec.md"],
+                    "specs": docs["specs"],
+                    "design.md": docs["design.md"],
+                    "design": docs["design"],
+                    "contracts": docs["contracts"],
+                    "_kapelle/surface-plan.json": file_fingerprint(
+                        internal / "surface-plan.json"
+                    ),
+                },
+            )
+            self.write_approval(
+                feature,
+                "delivery-plan",
+                {
+                    "tasks.md#structural": normalized_tasks_fingerprint(
+                        feature / "tasks.md"
+                    ),
+                    "test-plan.md": file_fingerprint(feature / "test-plan.md"),
+                    "_kapelle/task-plan.json#structural": (
+                        normalized_task_plan_fingerprint(
+                            internal / "task-plan.json"
+                        )
+                    ),
+                },
+            )
+            _, state = initialize_feature_state(feature)
+            self.assertEqual("base-functional-tests", state["current_stage"])
+
+            phase_inputs = {
+                "spec.md": file_fingerprint(feature / "spec.md"),
+                "specs": document_fingerprints(feature)["specs"],
+                "contracts": document_fingerprints(feature)["contracts"],
+                "test-plan.md": file_fingerprint(feature / "test-plan.md"),
+                "tasks.md#structural": normalized_tasks_fingerprint(
+                    feature / "tasks.md"
+                ),
+                "_kapelle/task-plan.json#structural": (
+                    normalized_task_plan_fingerprint(internal / "task-plan.json")
+                ),
+            }
+            (internal / "base-functional-tests.json").write_text(
+                json.dumps(
+                    {
+                        "status": "READY",
+                        "scope": ["endpoint"],
+                        "test_files": ["tests/functional.txt"],
+                        "covered_contracts": [],
+                        "input_fingerprints": phase_inputs,
+                    }
+                )
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("implement", state["current_stage"])
+
+            (feature / "tasks.md").write_text(
+                (feature / "tasks.md").read_text().replace("- [ ]", "- [x]")
+            )
+            task_plan = json.loads((internal / "task-plan.json").read_text())
+            task_plan["tasks"][0]["status"] = "implemented-unverified"
+            (internal / "task-plan.json").write_text(json.dumps(task_plan))
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("unit-tests", state["current_stage"])
+
+            implementation_fingerprints = {
+                "src/feature.txt": file_fingerprint(root / "src" / "feature.txt")
+            }
+            post_implementation_inputs = {
+                "spec.md": file_fingerprint(feature / "spec.md"),
+                "tasks.md#structural": normalized_tasks_fingerprint(
+                    feature / "tasks.md"
+                ),
+                "_kapelle/task-plan.json#structural": (
+                    normalized_task_plan_fingerprint(internal / "task-plan.json")
+                ),
+            }
+            (internal / "unit-tests.json").write_text(
+                json.dumps(
+                    {
+                        "status": "PASS",
+                        "planned_units": ["feature unit"],
+                        "test_files": ["tests/unit.txt"],
+                        "commands": ["unit-test"],
+                        "input_fingerprints": post_implementation_inputs,
+                        "implementation_fingerprints": implementation_fingerprints,
+                    }
+                )
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("verify", state["current_stage"])
+
+            (internal / "verification.json").write_text(
+                json.dumps({"status": "PASS"})
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("verify", state["current_stage"])
+
+            (internal / "verification.json").write_text(
+                json.dumps(
+                    {
+                        "status": "PASS",
+                        "categories": ["functional", "unit", "lint"],
+                        "commands": ["test-all", "lint"],
+                        "input_fingerprints": post_implementation_inputs,
+                        "implementation_fingerprints": implementation_fingerprints,
+                    }
+                )
+            )
+            self.write_pass_validation(feature)
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("finalize", state["current_stage"])
+            self.assertTrue(state["review_ready"])
+
+            (feature / "diagrams").mkdir()
+            diagrams = [
+                "diagrams/feature-flow.mmd",
+                "diagrams/architecture.mmd",
+            ]
+            for relative in diagrams:
+                (feature / relative).write_text("flowchart LR\n  A --> B\n")
+            self.write_approval(
+                feature,
+                "final",
+                {
+                    "diagrams": document_fingerprints(feature)["diagrams"],
+                    "_kapelle/verification.json": file_fingerprint(
+                        internal / "verification.json"
+                    ),
+                },
+            )
+            release_docs = {
+                name: digest
+                for name, digest in document_fingerprints(feature).items()
+                if digest is not None
+            }
+            (internal / "release.json").write_text(
+                json.dumps(
+                    {
+                        "status": "completed",
+                        "version": "1.0",
+                        "developer_confirmation": "Manual testing complete",
+                        "document_fingerprints": release_docs,
+                        "implementation_fingerprints": implementation_fingerprints,
+                        "diagrams": diagrams,
+                    }
+                )
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("completed", state["current_stage"])
+            self.assertEqual("completed", state["feature_state"])
+            self.assertTrue(state["ship_ready"])
+            self.assertEqual([], validate(feature))
+
+            for path in sorted(internal.rglob("*"), reverse=True):
+                if path.is_file():
+                    path.unlink()
+                else:
+                    path.rmdir()
+            internal.rmdir()
+            _, recovered_state, _ = rebuild_feature_state(feature)
+            self.assertTrue((internal / "workflow.json").is_file())
+            self.assertEqual("spec", recovered_state["current_stage"])
+            self.assertEqual(
+                f"/kapelle:spec {feature.name}",
+                recovered_state["next_command"],
+            )
+            self.assertEqual([], validate(feature))
+
+    def test_fast_lane_skips_separate_spec_design_plan_cycles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            internal = feature / "_kapelle"
+            (feature / "test-plan.md").unlink()
+            (internal / "workflow.json").write_text(
+                json.dumps(
+                    {
+                        "workflow": "human-controlled",
+                        "version": 1,
+                        "created_from": "raw-task",
+                        "lane": "fast",
+                    }
+                )
+            )
+            (feature / "proposal.md").write_text(
+                "<!-- kapelle-workflow: human-controlled-v1; lane: fast -->\n"
+                + (feature / "proposal.md").read_text()
+            )
+            self.write_approval(
+                feature,
+                "feature-plan",
+                {
+                    "proposal.md": file_fingerprint(feature / "proposal.md"),
+                    "spec.md": file_fingerprint(feature / "spec.md"),
+                    "design.md": file_fingerprint(feature / "design.md"),
+                    "tasks.md#structural": normalized_tasks_fingerprint(
+                        feature / "tasks.md"
+                    ),
+                    "_kapelle/surface-plan.json": file_fingerprint(
+                        internal / "surface-plan.json"
+                    ),
+                    "_kapelle/task-plan.json#structural": (
+                        normalized_task_plan_fingerprint(internal / "task-plan.json")
+                    ),
+                },
+            )
+            _, state = initialize_feature_state(feature)
+            self.assertEqual("base-functional-tests", state["current_stage"])
+            self.assertEqual(
+                f"/kapelle:base-functional-tests {feature.name} --validation=ask",
+                state["next_command"],
+            )
+            self.assertEqual([], validate(feature))
+
+    def test_fast_lane_with_more_than_three_tasks_escalates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            internal = feature / "_kapelle"
+            (internal / "workflow.json").write_text(
+                json.dumps(
+                    {
+                        "workflow": "human-controlled",
+                        "version": 1,
+                        "created_from": "raw-task",
+                        "lane": "fast",
+                    }
+                )
+            )
+            (feature / "proposal.md").write_text(
+                "<!-- kapelle-workflow: human-controlled-v1; lane: fast -->\n"
+                + (feature / "proposal.md").read_text()
+            )
+            task_plan = json.loads((internal / "task-plan.json").read_text())
+            base = task_plan["tasks"][0]
+            task_plan["workstreams"][0]["completion_task_id"] = "T04"
+            task_plan["tasks"] = []
+            human_tasks = ["# Tasks", "", "## Delivery", ""]
+            for index in range(1, 5):
+                task = json.loads(json.dumps(base))
+                task["id"] = f"T0{index}"
+                task["title"] = f"Task {index}"
+                task["intent"] = f"Task {index}"
+                task["deps"] = [] if index == 1 else [f"T0{index - 1}"]
+                task["acs"] = ["AC-01"] if index == 1 else []
+                task["files_hint"] = [f"src/feature-{index}.txt"]
+                task_plan["tasks"].append(task)
+                human_tasks.append(f"- [ ] **T0{index} Task {index}**")
+            (internal / "task-plan.json").write_text(json.dumps(task_plan))
+            (feature / "tasks.md").write_text("\n".join(human_tasks) + "\n")
+            _, state = initialize_feature_state(feature)
+            self.assertEqual("start", state["current_stage"])
+            self.assertEqual(
+                f"/kapelle:start {feature.name} --lane=standard",
+                state["next_command"],
+            )
 
     def test_legacy_migration_is_planned_applied_and_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

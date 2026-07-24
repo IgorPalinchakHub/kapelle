@@ -47,6 +47,12 @@
           "enum": ["always", "risk-based", "never"],
           "default": "risk-based"
         },
+        "checkpoint": {
+          "type": "string",
+          "enum": ["task", "workstream", "none"],
+          "default": "task",
+          "description": "Human progress checkpoint during production implementation. It never removes amendment or final approval gates."
+        },
         "max_task_attempts": {
           "type": "integer",
           "minimum": 1,
@@ -68,6 +74,7 @@
         "mode": "sequential",
         "max_parallel_agents": 3,
         "approval_policy": "risk-based",
+        "checkpoint": "task",
         "max_task_attempts": 3,
         "max_agent_runs_per_task": 8,
         "telemetry": true

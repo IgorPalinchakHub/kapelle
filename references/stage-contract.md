@@ -18,9 +18,10 @@ Protocol:
 5. Refresh `_kapelle/manifest.json`, `_kapelle/state.json`, and generated `STATUS.md`.
 6. Emit the stage-handoff block in chat; do not append it to a human feature artifact.
 
-Normal feature development uses presence gates only. Fingerprint freshness is activated only for an
-approved existing-feature change, where a revision and dependency graph define what "current"
-means. Stages must not invent an ad-hoc stale check.
+The single human-controlled workflow uses deterministic fingerprints for explicit approvals and
+phase evidence. An unmarked feature is routed to `migrate`, never to a second stage graph. Task
+checkbox/status changes use structural fingerprints so progress does not invalidate an approved
+plan. Amendments use revision fingerprints and the dependency graph.
 
 Each logical artifact has one physical path in `dispatcher/artifact-dependencies.json`.
 Human-readable artifacts are durable state. `_kapelle/` contains derived execution state and

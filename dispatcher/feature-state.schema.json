@@ -29,7 +29,11 @@
       "type": "string",
       "enum": [
         "planning",
+        "awaiting-human-review",
         "implementation",
+        "unit-testing",
+        "verifying",
+        "completed",
         "validation-deferred",
         "review-ready",
         "ship-ready",

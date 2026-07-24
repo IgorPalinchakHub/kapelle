@@ -34,7 +34,7 @@ Write or update an ADR for an architectural decision.
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `decompose`.
+- Handoff points back to `design` when architecture approval is pending, otherwise to `plan`.
 
 ## Anti-patterns
 

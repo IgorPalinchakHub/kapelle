@@ -1,7 +1,8 @@
 ---
 name: classify-size
 description: >
-  Classify feature size and write `_kapelle/size.json` for a feature slug.
+  Reclassify feature size, interview depth, and fast/standard lane when explicitly needed;
+  normal features are classified automatically by start.
 ---
 
 # Skill: classify-size
@@ -22,7 +23,7 @@ Classify feature size and write `_kapelle/size.json`.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
 6. Write `_kapelle/size.json` as `{ "size": "XS|S|M|L|XL", "execution_depth": "...",
-   "reason": "..." }`.
+   "interview_depth": "lean|standard|deep", "lane": "fast|standard", "reason": "..." }`.
 7. Refresh `STATUS.md` and emit the chat handoff per
    [`../../references/handoff.md`](../../references/handoff.md).
 
@@ -36,7 +37,7 @@ Classify feature size and write `_kapelle/size.json`.
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `specify`.
+- Handoff points to the current human-controlled stage.
 
 ## Anti-patterns
 

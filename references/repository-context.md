@@ -32,7 +32,7 @@ The overlay contains only:
 - project skill/subagent discovery evidence;
 - architecture-rules subagent readiness.
 
-It links to the shared baseline and never copies the whole map. `specify` and `design` read the
+It links to the shared baseline and never copies the whole map. `start`, `spec`, and `design` read the
 feature overlay first, then use the shared baseline for unchanged repository context.
 
 If the baseline is missing, feature-scoped survey still writes only the overlay and records that no

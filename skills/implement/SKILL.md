@@ -1,137 +1,76 @@
 ---
 name: implement
 description: >
-  Plan and implement a feature's dependency-ordered tasks using adaptive test strategies,
-  risk-based approval, bounded retries, native project capabilities, provider-neutral guidance,
-  independent review, and project validation for a feature slug.
+  Implement approved production tasks without writing unit tests, using project capabilities,
+  scoped architecture rules, bounded retries, explicit human checkpoints, and amendment safety.
 ---
 
 # Skill: implement
 
-`implement` is the generic plan-first implementation engine. Sequential execution is the default.
-Strict TDD is selected only when it fits the task.
+Implement production behavior only. Basic functional tests already exist; all unit tests are
+written later by `/kapelle:unit-tests`.
+
+Invoke:
+
+```text
+/kapelle:implement <slug> [--checkpoint=task|workstream|none] [--validation=ask|allow|skip]
+```
 
 ## Inputs
 
-- Gate: `docs/features/<slug>/_kapelle/task-plan.json`.
-- Required coordination input: `docs/features/<slug>/_kapelle/surface-plan.json`.
-- Optional change context: `docs/features/<slug>/_kapelle/changes/<change-id>/change.json` when invoked with
-  `--change=<change-id>`.
-- Feature artifacts under `docs/features/<slug>/`.
-- Project instructions and native `.claude/skills`, `.claude/agents`, `.claude/rules`.
-- Any user/project plugins, MCP tools, or provider capabilities already available to Claude Code.
-- Execution contract: [`../../dispatcher/execution-contract.md`](../../dispatcher/execution-contract.md).
-- Agent dispatch contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
-- Execution depth: [`../../references/execution-depth.md`](../../references/execution-depth.md).
-- Architecture guidance:
-  [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
-- Validation execution:
-  [`../../references/validation-execution.md`](../../references/validation-execution.md).
-- Optional invocation override: `--validation=ask|allow|skip`.
+- `_kapelle/task-plan.json` and `_kapelle/surface-plan.json`.
+- Human feature artifacts, architecture approval, delivery-plan approval, and
+  `_kapelle/base-functional-tests.json` for `human-controlled` features.
+- Optional approved change context under `_kapelle/changes/`.
+- Project instructions and native skills/subagents.
+- [`../../dispatcher/execution-contract.md`](../../dispatcher/execution-contract.md).
+- [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
+- [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
+- [`../../references/human-control.md`](../../references/human-control.md).
 
 ## Protocol
 
-1. Refuse if `_kapelle/task-plan.json` is missing; run `decompose` first.
-2. Validate `_kapelle/surface-plan.json` against `dispatcher/surface-plan.schema.json`, `_kapelle/task-plan.json` against
-   `dispatcher/task-plan.schema.json`, each task against `dispatcher/task-context.schema.json`, and
-   rerun `scripts/validate_task_plan.py`.
-   If the task plan has `recovery.requires_architecture_refresh: true`, refuse all code-writing:
-   dispatch scoped architecture guidance and run `decompose` to replace the provisional graph first.
-   Validation-only work for already checked `implemented-unverified` tasks remains allowed, but the
-   provisional flag still blocks feature review and ship routing until the graph is replaced.
-   For a change request, also validate that `implement` is in its approved route and restrict tasks
-   to the approved change delta.
-3. For a change request, refuse unless `_kapelle/changes/<change-id>/state.json.state` is `running`. Before every task,
-   recompute its plan's `based_on` fingerprints and require the current revision. A requirement or
-   architecture amendment expressed during implementation triggers the safe-pause revision path;
-   stop all further implementation dispatch.
-4. Validate that dependencies exist, the graph is acyclic, every task aspect exists, provider
-   contract tasks precede consumers, and integration checks have owner tasks. Compute
-   dependency-ready batches. For development only, a recorded `validation-deferred` dependency may
-   unlock its consumer, but the consumer plan must carry that inherited risk and cannot produce
-   final contract or integration evidence until the dependency passes.
-5. Read implementation mode, approval policy, attempt and agent-run limits, telemetry setting, and
-   `validation.development_policy` from project config. Apply `--validation=ask|allow|skip` only to
-   the current invocation.
-6. Select Agent Team mode only when every precondition in the orchestration contract passes.
-   Otherwise report the failed precondition and use sequential mode.
-7. For every task, execute:
-   `UNDERSTAND -> CLASSIFY -> SELECT-CAPABILITY -> GUIDANCE -> TEST-STRATEGY -> PLAN -> APPROVE
-   -> IMPLEMENT -> REVIEW -> VALIDATE`.
-   - select task execution depth from the task's local risk, contract role, ambiguity, and
-     complexity; feature size controls decomposition depth and must not force every task to `full`;
-   - select project skills and subagents semantically from native descriptions for every declared
-     task aspect; encourage the selected project subagent to discover narrower project capabilities;
-   - semantically discover and dispatch the project's architecture-rules subagent for the task's
-     aspects, modules, entrypoints, and candidate paths; validate and persist its scoped evidence;
-   - request applicable guidance without naming or assuming a provider;
-   - select and validate the test strategy; at `lean`, routine strategy selection may execute
-     inline, while risk-triggered tasks dispatch `kapelle:test-author` in `strategy` mode;
-   - persist a plan for every task; a low-risk `lean` task may execute the planner role inline,
-     while risk-triggered tasks dispatch `kapelle:implementation-planner`;
-   - apply the configured approval policy; never infer required approval;
-   - dispatch `kapelle:test-author` in `execute` mode when the strategy creates tests or fixtures;
-     skip this dispatch for `validation-only`;
-   - dispatch `kapelle:implementer` with the approved plan and strategy;
-   - dispatch `kapelle:reviewer` in fresh read-only context for risk-triggered tasks. Low-risk
-     `lean` tasks may defer independent review to the mandatory feature-level `feature-review` stage;
-   - prepare one exact validation batch containing tests, static analysis such as PHPStan, linters,
-     builds, and other project checks selected for the task;
-   - under `ask`, show the commands, kinds, scopes, and required/optional status and require
-     `run-all`, `run-selected`, or `skip-all`; under `allow`, run the batch; under `skip`, run none;
-   - if the user cancels a running validation command, stop it when supported and do not retry it
-     without a new decision;
-   - validate and persist the decision using `dispatcher/validation-decision.schema.json`;
-   - require `PASS` to complete the task. Required skipped or cancelled checks set
-     `validation-deferred` and may not be reported as successful.
-8. Validate each role result against `dispatcher/execution-verdict.schema.json`.
-9. Stop edit retries at `implementation.max_task_attempts` and all agent dispatches at
-   `implementation.max_agent_runs_per_task`.
-10. Persist capability, architecture guidance, strategy, plan, approval, implementation, review,
-    and validation in `_kapelle/task-runs/<task-id>.json`; write task validation evidence to
-    `_kapelle/validation/<task-id>.json`.
-11. When telemetry is enabled, append actual execution events to
-    `_kapelle/telemetry/execution.jsonl`; never estimate unavailable token or cost data.
-12. Before new implementation work, process `validation-deferred` tasks when the effective policy
-    permits commands. Update a task to `completed` only after Definition of Done, review, and all
-    required validation pass. Explicitly deferred validation does not consume an edit attempt.
-13. Synchronize runtime task status in `_kapelle/task-plan.json`. Update a `tasks.md` checkbox only
-    when implementation of that human-visible task is actually present; a checked box is never
-    validation evidence. Refresh `STATUS.md`, and emit handoff to
-    `/kapelle:feature-review <slug>`.
+1. Validate the plans and rerun `scripts/validate_task_plan.py`. Refuse code-writing for a
+   provisional recovery graph or stale approval/fingerprint.
+2. For a human-controlled feature, require current architecture and delivery approvals plus
+   base-functional-test evidence. A confirmed pre-implementation test skip is visible risk, never
+   PASS.
+3. Compute dependency-ready production tasks. Sequential execution is the default. Agent Teams
+   still require runtime support, safe disjoint ownership, configuration, and explicit approval.
+4. Resolve `--checkpoint` from the invocation or `implementation.checkpoint`; default to `task`.
+   - `task`: stop after every completed task for developer review;
+   - `workstream`: stop after each coherent workstream;
+   - `none`: continue through all ready work and return one concise summary.
+5. For every task execute:
+   `UNDERSTAND -> SELECT-CAPABILITY -> GUIDANCE -> PLAN -> APPROVE -> IMPLEMENT -> REVIEW -> SUMMARIZE`.
+   - discover project skills/subagents semantically for each aspect;
+   - dispatch the project's architecture-rules subagent for scoped rules;
+   - dispatch `kapelle:implementation-planner` and persist its plan with current revision and
+     fingerprints;
+   - apply risk-based approval and bounded retries;
+   - dispatch `kapelle:implementer` and fresh `kapelle:reviewer` when risk requires it;
+   - write production code and production configuration only.
+6. Do not create unit tests, unit-test fixtures, or strict-TDD loops. Do not ask `test-author` to
+   generate unit tests during this stage.
+7. Existing base functional tests may be run as a focused development check under
+   `ask | allow | skip`. Do not run full static analysis or lint batches here unless the developer
+   explicitly requests them. Skipped required checks remain `validation-deferred`.
+8. After each checkpoint return: implemented business outcome, changed files, observable behavior,
+   deviations/risks, and the next task or command. Keep internal agent chatter out of the packet.
+9. Developer feedback that changes approved behavior, design, contract, or task ownership triggers
+   `/kapelle:amend`; pause remaining dispatch.
+10. Mark implemented tasks `implemented-unverified`, not `completed`. Synchronize `tasks.md`,
+    `_kapelle/task-plan.json`, task-run evidence, and `STATUS.md`.
+11. When every production task is implemented, hand off to `/kapelle:unit-tests <slug>
+    --validation=ask`.
+12. Stop edit retries at `implementation.max_task_attempts` and role dispatches at
+    `implementation.max_agent_runs_per_task`.
 
 ## Definition of Done
 
-- Every completed task has capability-selection and validation evidence.
-- Every `validation-deferred` task has an explicit skip/cancel decision and remains visibly
-  unvalidated.
-- The semantic task-plan validator passed before dispatch.
-- Every task has scoped architecture-rule evidence, a validated strategy, a durable plan, approval
-  evidence when required, and a recorded review policy. Risk-triggered tasks have a per-task
-  independent review verdict; all tasks remain subject to the feature-level review.
-- Every aspect contract dependency and integration check is validated.
-- Required guidance evidence exists when the project enables that policy.
-- Retry and agent-run limits were respected.
-- Parallel tasks have explicit, pairwise-disjoint file ownership.
-- No runtime pack manifest, rule storage convention, CLI, or provider name was assumed.
-
-## Anti-patterns
-
-- Selecting project capabilities from a Kapelle routing table.
-- Requiring one specific rule provider or command.
-- Encoding search topics or rule codes in Kapelle core.
-- Requiring strict TDD for every task.
-- Writing code before business invariants, strategy, and plan are known.
-- Continuing after a requirement or architecture amendment without creating a revision.
-- Running a task whose plan revision or fingerprints are stale.
-- Treating silence as approval.
-- Running tests, PHPStan, linters, builds, or other project validation under `ask` without an
-  explicit command-batch decision.
-- Treating skipped or cancelled validation as `PASS`.
-- Continuing edits after the configured attempt limit.
-- Estimating tokens or monetary cost when the host did not report usage.
-- Treating `agents:` frontmatter as orchestration.
-- Using Agent Teams without runtime support and explicit user approval.
-- Parallelizing tasks with missing or overlapping `files_hint`.
-- Invoking or generating an unofficial `Workflow` tool.
-- Running git operations.
+- All selected production tasks have current plans, scoped architecture guidance, implementation
+  evidence, and required reviews.
+- No unit tests were authored in this stage.
+- Human checkpoint policy and validation decisions are recorded.
+- Requirements/design changes were routed through amendment.
+- Retry limits, file ownership, and no-git policy were respected.

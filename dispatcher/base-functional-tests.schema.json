@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/base-functional-tests.schema.json",
+  "title": "Kapelle pre-implementation behavioral safety net",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "scope", "test_files", "covered_contracts", "input_fingerprints"],
+  "properties": {
+    "status": { "type": "string", "enum": ["READY", "BLOCKED", "SKIPPED-confirmed"] },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["endpoint", "use-case", "critical-contract"]
+      },
+      "uniqueItems": true
+    },
+    "test_files": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "covered_contracts": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "input_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "READY" } },
+        "required": ["status"]
+      },
+      "then": {
+        "properties": {
+          "scope": { "minItems": 1 },
+          "test_files": { "minItems": 1 }
+        }
+      }
+    }
+  ]
+}

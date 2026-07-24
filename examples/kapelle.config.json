@@ -6,6 +6,7 @@
     "mode": "sequential",
     "max_parallel_agents": 3,
     "approval_policy": "risk-based",
+    "checkpoint": "task",
     "max_task_attempts": 3,
     "max_agent_runs_per_task": 8,
     "telemetry": true
@@ -24,6 +25,7 @@
     "claude": {
       "//": "Example adapter: maps provider-neutral role profiles to concrete Claude models. Omit a binding to inherit the session default.",
       "roles": {
+        "business-analyst": { "model": "opus", "effort": "high" },
         "explorer": { "model": "haiku", "effort": "low" },
         "critic": { "model": "opus", "effort": "high" },
         "devils-advocate": { "model": "opus", "effort": "high" },
@@ -34,13 +36,16 @@
         "reviewer": { "model": "opus", "effort": "high" }
       },
       "stages": {
-        "specify": { "model": "opus", "effort": "high" },
-        "clarify": { "model": "opus", "effort": "high" },
+        "start": { "model": "opus", "effort": "high" },
+        "spec": { "model": "opus", "effort": "high" },
+        "plan": { "model": "sonnet", "effort": "medium" },
+        "base-functional-tests": { "model": "sonnet", "effort": "medium" },
+        "unit-tests": { "model": "sonnet", "effort": "medium" },
+        "verify": { "model": "sonnet", "effort": "medium" },
+        "amend": { "model": "opus", "effort": "high" },
+        "finalize": { "model": "opus", "effort": "high" },
+        "migrate": { "model": "sonnet", "effort": "medium" },
         "design": { "model": "opus", "effort": "high" },
-        "change": { "model": "opus", "effort": "high" },
-        "fix": { "model": "opus", "effort": "high" },
-        "resume-change": { "model": "opus", "effort": "high" },
-        "feature-review": { "model": "opus", "effort": "high" },
         "decide-adr": { "model": "opus", "effort": "high" },
         "implement": { "effort": "high" },
         "classify-size": { "model": "haiku", "effort": "low" },

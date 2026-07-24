@@ -1,30 +1,26 @@
 {
   "//": "Canonical Kapelle vocabulary. Single source of truth for states, dispositions, and stage order. Schemas and documents must match it; scripts/validate_plugin.py enforces consistency.",
   "backbone_stages": [
-    "survey",
-    "specify",
-    "clarify",
+    "start",
+    "spec",
     "design",
-    "contracts",
-    "decompose",
-    "plan-tests",
+    "plan",
+    "base-functional-tests",
     "implement",
-    "feature-review",
-    "ship"
+    "unit-tests",
+    "verify",
+    "finalize"
   ],
   "change_route_stages": [
-    "specify",
-    "clarify",
+    "spec",
     "design",
-    "decide-adr",
-    "sequences",
-    "data-model",
-    "contracts",
-    "decompose",
-    "plan-tests",
+    "plan",
+    "base-functional-tests",
     "implement",
-    "feature-review",
-    "ship"
+    "unit-tests",
+    "verify",
+    "amend",
+    "finalize"
   ],
   "task_states": [
     "pending",
@@ -40,7 +36,11 @@
   ],
   "feature_states": [
     "planning",
+    "awaiting-human-review",
     "implementation",
+    "unit-testing",
+    "verifying",
+    "completed",
     "validation-deferred",
     "review-ready",
     "ship-ready",

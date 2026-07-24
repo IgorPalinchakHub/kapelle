@@ -1,122 +1,103 @@
-# Human-readable artifact architecture
+# Design
 
-## Summary
+## 1. Context and goal
 
-Layout-v2 separates canonical human documents from derived execution state. Small deterministic
-Python utilities build status, recover document-derived state, validate consistency, and migrate
-legacy directories. Stage skills remain provider-neutral and use the same layout contract.
+Kapelle must expose one understandable, human-controlled SDLC route. Durable product and technical
+documents stay at the feature root, while recoverable execution state and evidence stay under
+`_kapelle/`. A developer can remove that internal directory and later resume from the documents and
+current project state without fabricated approval or validation evidence.
 
-## Components
+## 2. Scope and constraints
 
-### Presentation contract
+The design covers the human feature layout, deterministic status and recovery, workflow migration,
+an XS/S fast lane, adaptive interview depth, and stage protocols. It remains provider-neutral,
+performs no git operations, and keeps explicit developer approvals. It does not introduce
+one-click autonomous orchestration or reconstruct deleted historical evidence.
 
-`references/feature-layout.md` owns physical paths and recovery classification.
-`references/artifact-presentation.md` owns readability and generated-section rules.
+## 3. Architecture rules applied
 
-### Status/recovery library
+- Human-readable Markdown is durable state; machine-only data lives under `_kapelle/`.
+- `STATUS.md` is a deterministic projection, not a second source of truth.
+- Missing inputs or evidence fail safely instead of being inferred.
+- Project architecture rules are discovered through native project capabilities.
+- The deterministic runtime uses Python's standard library and writes only inside the feature
+  directory.
+- One public backbone owns routing; former stage names are non-executing compatibility wrappers.
 
-`scripts/feature_state.py` provides shared pure functions:
+## 4. Building blocks and responsibilities
 
-- discover and fingerprint human artifacts;
-- parse generated task checklist markers;
-- derive task counts, evidence gaps, readiness, and next command;
-- write manifest/state/status with stable serialization.
+- `references/feature-layout.md` defines physical paths and recovery classes.
+- `references/artifact-presentation.md` defines the human presentation contract.
+- `references/fast-lane.md` and `references/interview-depth.md` control process depth without
+  weakening artifact coverage.
+- `references/design-template.md` defines the stable high-level design structure and the boundary
+  for detailed documents under `design/`.
+- `scripts/feature_state.py` discovers artifacts, validates freshness, derives readiness, and
+  selects the next command.
+- `build_feature_status.py`, `rebuild_feature_state.py`, and `validate_feature_state.py` expose
+  deterministic status, recovery, and consistency checks.
+- `migrate_feature_layout.py` migrates physical layout v1 to v2;
+  `migrate_workflow.py` adopts the single human-controlled workflow.
+- Backbone skills own nine stages: `start`, `spec`, `design`, `plan`,
+  `base-functional-tests`, `implement`, `unit-tests`, `verify`, and `finalize`.
 
-Command wrappers:
+## 5. Runtime flows
 
-- `build_feature_status.py`: build or refresh `STATUS.md` from current state;
-- `rebuild_feature_state.py`: reconstruct `_kapelle/manifest.json`, state, and recovery report;
-- `validate_feature_state.py`: deterministic consistency checks;
-- `migrate_feature_layout.py`: dry-run/apply legacy conversion.
+For a standard feature, `start` creates the reviewed outline, then `spec`, `design`, and `plan`
+produce separate approval gates before delivery. For an eligible XS/S feature, `start --lane=fast`
+creates the specification, design, and plan in one bounded pass and asks for one `feature-plan`
+approval. Both lanes then share the same delivery stages.
 
-The deterministic layer does not inspect arbitrary source semantics. During `/kapelle:status`, the
-host agent may use native project capabilities and scoped architecture guidance to enrich recovery
-evidence before invoking the scripts.
+Status first validates the workflow marker and internal state. If `_kapelle/` is missing or invalid,
+it rebuilds reconstructible state, labels checked work without evidence as
+`implemented-unverified`, lists unrecoverable evidence, and selects the smallest safe next step.
+An unmarked historical feature routes only to `migrate`; it never silently re-enters a legacy
+pipeline.
 
-### Schemas and vocabulary
+## 6. Data and domain impact
 
-New schemas define manifest, state, and recovery report. Vocabulary adds recovery feature states and
-`implemented-unverified`. Artifact dependencies extend through documentation convergence,
-feature-review, and ship.
+No application database is involved. This is a plugin artifact-schema change. Workflow state now
+records `lane: fast|standard`; size state records both lane and interview depth. Fast-lane planning
+uses the same canonical product, design, surface, and task artifacts as the standard lane, so it can
+fall back to standard execution without data conversion.
 
-### Stage protocols
+## 7. Contracts and integrations
 
-- `specify` creates `proposal.md`, `spec.md`, and `_kapelle/size.json`.
-- `design` creates `design.md`, `_kapelle/surface-plan.json`, ADRs, and guidance evidence.
-- `sequences` is optional and normally updates runtime flows in `design.md`.
-- `decompose` creates `tasks.md` and `_kapelle/task-plan.json`.
-- `implement` writes per-task evidence below `_kapelle/task-runs/` and validation below
-  `_kapelle/validation/`.
-- `feature-review` writes convergence/review evidence below `_kapelle/reviews/`.
-- `ship` updates readiness in state/STATUS rather than creating a competing `ship.md`.
+JSON schemas under `dispatcher/` define workflow, approval, feature, task, validation, and release
+state. `scripts/validate_task_plan.py` validates dependency ordering and acceptance-criteria
+coverage. `scripts/validate_design.py` validates the fixed high-level design headings. Native
+project architecture and delivery capabilities are discovered semantically and remain outside
+Kapelle's core routing.
 
-Every feature stage runs a lightweight status refresh after writing its own artifacts.
+## 8. Cross-cutting concerns
 
-## Data flow
+Recovery preserves security and correctness through path confinement, stable serialization, atomic
+writes, bounded agent passes, explicit validation policy, and refusal on ambiguous input. Interview
+depth changes the number of questions and critique passes, never acceptance-criteria,
+architecture-rule, contract, or validation coverage. Fast-lane eligibility excludes unclear,
+cross-cutting, security-sensitive, destructive-data, or large-task features.
 
-```text
-human docs + current project evidence
-              |
-              v
-      recover/refresh state
-              |
-              v
- _kapelle/manifest.json + state.json
-              |
-              v
-          STATUS.md
-```
+## 9. Decisions and trade-offs
 
-## Recovery certainty
+- A single public backbone removes routing ambiguity; deprecated wrappers remain temporarily only
+  to provide an actionable migration message.
+- Fast lane merges planning interactions, not artifacts. This keeps recovery and later expansion
+  simple at the cost of retaining several small files.
+- The high-level design has a fixed Arc42-like shape. This improves scanability while separate
+  `design/` documents prevent complex component detail from bloating it.
+- Human and machine task representations coexist, but deterministic validation exposes drift and
+  the machine graph remains authoritative for execution dependencies.
+- `_kapelle/` recovery is safe continuation, not lossless restoration.
 
-- Document presence and fingerprints are deterministic.
-- Task checkbox state is a claim, not validation evidence.
-- Existing `_kapelle/validation/*` can support `validated` only when schema-shaped, current, and
-  linked to every implementation path owned by the task.
-- After complete internal-state loss, checked tasks are `implemented-unverified`.
-- Recovered graphs are provisional: checked work may be validated, but new code-writing waits for
-  refreshed architecture guidance and decomposition.
-- Missing historical evidence remains listed in `recovery.json`.
+## 10. Validation and rollout
 
-## Migration strategy
+Unit tests cover feature routing, deleted internal state, false checked-task evidence, migration,
+fast-lane approval, structured-design validation, and task-plan invariants. `validate_plugin.py`
+checks the public backbone, schemas, wrappers, docs, manifests, and bundled skills. Existing feature
+directories are adopted explicitly with `/kapelle:migrate`; no approval or historical test result
+is recreated during rollout.
 
-Migration first parses and semantically validates legacy graphs, change state, mappings, and
-collisions. `--dry-run` is default-safe and writes nothing.
-`--apply`:
+## 11. Open questions
 
-- creates target directories;
-- copies/renames human artifacts where unambiguous;
-- derives `proposal.md` and `tasks.md` with visible migration notes;
-- moves machine evidence under `_kapelle/history/legacy/`;
-- rebuilds state and status;
-- writes a migration marker only after rebuilt-state validation passes, so reruns are safe no-ops.
-
-Legacy content is preserved; ambiguous collisions stop before mutation.
-
-## Trade-offs
-
-- Markdown remains intentionally constrained so deterministic parsing stays reliable.
-- Human and machine task representations are duplicated, but validation makes drift visible and the
-  machine graph remains authoritative for execution dependencies.
-- `_kapelle/` is recoverable for continuation, not lossless. This improves usability without making
-  false evidence claims.
-- Full source-code reconciliation remains an agent responsibility because a generic deterministic
-  script cannot understand every project architecture.
-
-## Security and operations
-
-- Paths are resolved and symlink escapes outside the feature directory are refused.
-- No shell, git, network, test, or linter command is executed by status/recovery/migration scripts.
-- JSON writes use temporary sibling files followed by atomic replacement.
-
-## No data schema change
-
-No application database is involved. This is a plugin artifact-schema change from layout 1 to
-layout 2.
-
-## Validation
-
-- Unit tests exercise fresh layout, deleted `_kapelle/`, false checked-task and review evidence,
-  source/coordination drift, symlink escape, migration preflight/apply/idempotency, and legacy
-  preservation.
-- Existing task-plan and plugin validation remain green.
+None blocking. Compatibility wrappers can be removed in a later major cleanup after users have had
+one release to migrate command usage.

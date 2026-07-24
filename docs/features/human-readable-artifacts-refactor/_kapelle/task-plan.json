@@ -29,7 +29,7 @@
       "primary_aspect": "contracts",
       "provides_contracts": [],
       "risk": "medium",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Define layout and presentation contracts",
       "validation": [
         {
@@ -74,7 +74,7 @@
       "primary_aspect": "contracts",
       "provides_contracts": [],
       "risk": "medium",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Add manifest, state, recovery schemas and vocabulary",
       "validation": [
         {
@@ -119,7 +119,7 @@
       "primary_aspect": "runtime",
       "provides_contracts": [],
       "risk": "high",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Implement status and recovery state engine",
       "validation": [
         {
@@ -156,7 +156,7 @@
       "primary_aspect": "runtime",
       "provides_contracts": [],
       "risk": "high",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Implement feature-state validator",
       "validation": [
         {
@@ -194,7 +194,7 @@
       "primary_aspect": "runtime",
       "provides_contracts": [],
       "risk": "high",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Implement safe legacy migration",
       "validation": [
         {
@@ -264,7 +264,7 @@
       "primary_aspect": "stages",
       "provides_contracts": [],
       "risk": "high",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Migrate backbone and change skills to layout-v2",
       "validation": [
         {
@@ -308,7 +308,7 @@
       "primary_aspect": "stages",
       "provides_contracts": [],
       "risk": "high",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Add status skill and convergence gates",
       "validation": [
         {
@@ -348,7 +348,7 @@
       "primary_aspect": "runtime",
       "provides_contracts": [],
       "risk": "medium",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Add recovery/migration tests and plugin self-validation",
       "validation": [
         {
@@ -396,7 +396,7 @@
       "primary_aspect": "documentation",
       "provides_contracts": [],
       "risk": "medium",
-      "status": "completed",
+      "status": "implemented-unverified",
       "title": "Update examples and user documentation",
       "validation": [
         {
