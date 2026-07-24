@@ -152,6 +152,8 @@ chooses the minimal next stage. Checked tasks without current validation become
 
 ## Commands
 
+Quick start: [коротка інструкція та послідовність команд](docs/QUICK_START_UK.md).
+
 ```text
 /kapelle:survey [<slug>]
 /kapelle:survey --refresh-baseline

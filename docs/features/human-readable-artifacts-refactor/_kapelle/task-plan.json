@@ -379,6 +379,7 @@
         "README.md",
         "docs/USAGE.md",
         "docs/COMMAND_EXECUTION_UK.md",
+        "docs/QUICK_START_UK.md",
         "examples/task-plan.json",
         "examples/feature-layout-v2/README.md",
         ".claude-plugin/plugin.json",

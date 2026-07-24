@@ -5,6 +5,8 @@ machine-only execution state under `_kapelle/`.
 
 For a detailed Ukrainian command guide, see
 [Детальний порядок команд](COMMAND_EXECUTION_UK.md).
+For a concise copy-paste workflow, see
+[Коротка інструкція](QUICK_START_UK.md).
 
 ## 1. What a feature looks like
 
@@ -321,4 +323,3 @@ developer control.
 | `/kapelle:change ...` | Start or revise an existing-feature change |
 | `/kapelle:resume-change ...` | Resume an approved reconciled revision |
 | `/kapelle:fix ...` | Bugfix shorthand |
-

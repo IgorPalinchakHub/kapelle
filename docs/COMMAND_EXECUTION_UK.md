@@ -1,6 +1,8 @@
 # Детальний порядок виконання команд Kapelle
 
 Цей документ описує порядок команд, необхідний input, внутрішні кроки, результати та важливі gates.
+Для короткого copy-paste сценарію дивіться
+[Kapelle: коротка інструкція та послідовність команд](QUICK_START_UK.md).
 
 ## 1. Загальна модель
 
@@ -626,4 +628,3 @@ python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
 
 Ці plugin utilities не запускають project tests, PHPStan, linters, builds, network або git.
-
