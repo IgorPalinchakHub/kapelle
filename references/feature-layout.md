@@ -20,6 +20,7 @@ docs/features/<slug>/
   adr/
   diagrams/
   _context/                 # optional feature-local repository evidence
+    evidence-index.md       # reconstruction claim/source index
   _kapelle/                 # derived state and historical evidence
 ```
 
@@ -38,6 +39,8 @@ _kapelle/
   surface-plan.json
   task-plan.json
   recovery.json
+  reconstruction.json
+  reconstruction-coverage.json
   changes/
   architecture-guidance/
   task-runs/
@@ -53,12 +56,15 @@ _kapelle/
 - Evidence that cannot be reconstructed lives under validation, approvals, telemetry, changes, and
   history.
 
+The reconstruction workflow creates at least one useful detail document under both `specs/` and
+`design/`. It does not create `tasks.md` or `test-plan.md` and never enters delivery.
+
 ## Recovery invariant
 
 Human documents are sufficient to resume planning and reconcile implementation. If `_kapelle/` is
 missing or invalid, rebuild it from the human package and current project evidence.
-For the human-controlled route, the invisible marker in `proposal.md` reconstructs
-`_kapelle/workflow.json`.
+For the human-controlled and reconstruction routes, the invisible marker in `proposal.md`
+reconstructs `_kapelle/workflow.json`.
 
 Recovery may derive scope, AC identifiers, surfaces, tasks, likely progress, validation needs, and
 the minimal next route. It must not fabricate:
@@ -90,6 +96,8 @@ architecture guidance and planning replace it.
 | test plan | `test-plan.md` |
 | size | `_kapelle/size.json` |
 | architecture guidance | `_kapelle/architecture-guidance/*.json` |
+| reconstruction scope | `_kapelle/reconstruction.json` |
+| reconstruction evidence coverage | `_context/evidence-index.md`, `_kapelle/reconstruction-coverage.json` |
 | task execution evidence | `_kapelle/task-runs/<task-id>.json` |
 | validation evidence | `_kapelle/validation/*.json` |
 | human approvals | `_kapelle/approvals/*.json` |

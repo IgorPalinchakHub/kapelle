@@ -22,11 +22,14 @@ Invoke:
    `references/fast-lane.md` is demonstrably satisfied and the developer explicitly confirms it.
 3. Dry-run first: report preserved files, missing target artifacts, evidence gaps, collisions,
    selected lane, and the minimal post-migration command.
-4. On `--apply`, run `scripts/migrate_workflow.py <feature-dir> --apply --lane=<lane>`.
-5. Preserve canonical human documents in place. Add the durable workflow marker and
+4. Before `--apply`, create or refresh `_context/architecture.md` from current, cited project
+   evidence when it is missing. Do not create an empty placeholder; the stable outline gate
+   fingerprints this context.
+5. On `--apply`, run `scripts/migrate_workflow.py <feature-dir> --apply --lane=<lane>`.
+6. Preserve canonical human documents in place. Add the durable workflow marker and
    `_kapelle/workflow.json`; rebuild derived state.
-6. Never recreate lost approvals, agent verdicts, command output, validation evidence, or
+7. Never recreate lost approvals, agent verdicts, command output, validation evidence, or
    telemetry. The migrated route asks for the earliest missing approval or artifact.
-7. Refresh `STATUS.md` and return the exact next human-controlled command.
+8. Refresh `STATUS.md` and return the exact next human-controlled command.
 
 Migration performs no production-code or git changes. Use the standard handoff block.

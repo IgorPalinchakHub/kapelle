@@ -21,6 +21,8 @@ REQUIRED_HEADINGS = [
     "## 10. Validation and rollout",
     "## 11. Open questions",
 ]
+MAX_LINES = 280
+MAX_WORDS = 2800
 
 
 def validate(path: Path) -> list[str]:
@@ -33,6 +35,17 @@ def validate(path: Path) -> list[str]:
         if re.match(r"^##\s+\d+\.\s+", line.strip())
     ]
     errors: list[str] = []
+    if len(lines) > MAX_LINES:
+        errors.append(
+            f"high-level design has {len(lines)} lines; maximum is {MAX_LINES}; "
+            "move boundary details under design/"
+        )
+    word_count = len(path.read_text(errors="replace").split())
+    if word_count > MAX_WORDS:
+        errors.append(
+            f"high-level design has {word_count} words; maximum is {MAX_WORDS}; "
+            "move boundary details under design/"
+        )
     if headings != REQUIRED_HEADINGS:
         missing = [heading for heading in REQUIRED_HEADINGS if heading not in headings]
         unexpected = [heading for heading in headings if heading not in REQUIRED_HEADINGS]
@@ -73,7 +86,7 @@ def main() -> int:
         for error in errors:
             print(f"- {error}")
         return 1
-    print("PASSED: design structure is valid")
+    print("PASSED: design structure and high-level size are valid")
     return 0
 
 

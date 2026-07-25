@@ -1,17 +1,27 @@
 {
   "proposal.md": [],
+  "_context/evidence-index.md": ["proposal.md"],
+  "_kapelle/reconstruction.json": ["proposal.md", "_context/evidence-index.md"],
+  "_kapelle/approvals/reconstruction-scope.json": [
+    "proposal.md",
+    "_kapelle/reconstruction.json"
+  ],
   "spec.md": ["proposal.md"],
   "specs": ["proposal.md", "spec.md"],
-  "_kapelle/approvals/outline.json": ["proposal.md", "spec.md"],
+  "_kapelle/approvals/outline.json": ["proposal.md", "_context/architecture.md"],
   "_kapelle/approvals/feature-plan.json": [
     "proposal.md",
     "spec.md",
     "design.md",
-    "tasks.md",
+    "tasks.md#structural",
     "_kapelle/surface-plan.json",
-    "_kapelle/task-plan.json"
+    "_kapelle/task-plan.json#structural"
   ],
   "_kapelle/approvals/business-spec.json": ["proposal.md", "spec.md", "specs"],
+  "_kapelle/approvals/reconstruction-spec.json": [
+    "spec.md",
+    "specs"
+  ],
   "design.md": ["proposal.md", "spec.md"],
   "design": ["specs", "design.md"],
   "_kapelle/surface-plan.json": ["spec.md", "design.md"],
@@ -22,7 +32,28 @@
     "design.md",
     "design",
     "contracts",
+    "_kapelle/surface-plan.json",
+    "_kapelle/architecture-guidance/design.json"
+  ],
+  "_kapelle/approvals/reconstruction-design.json": [
+    "spec.md",
+    "specs",
+    "design.md",
+    "design",
+    "_kapelle/surface-plan.json",
+    "_kapelle/architecture-guidance"
+  ],
+  "_kapelle/reconstruction-coverage.json": [
+    "proposal.md",
+    "spec.md",
+    "specs",
+    "design.md",
+    "design",
+    "_context/evidence-index.md",
     "_kapelle/surface-plan.json"
+  ],
+  "_kapelle/approvals/reconstruction.json": [
+    "_kapelle/reconstruction-coverage.json"
   ],
   "tasks.md": ["spec.md", "design.md", "contracts"],
   "_kapelle/task-plan.json": [
@@ -39,9 +70,9 @@
     "_kapelle/task-plan.json"
   ],
   "_kapelle/approvals/delivery-plan.json": [
-    "tasks.md",
+    "tasks.md#structural",
     "test-plan.md",
-    "_kapelle/task-plan.json"
+    "_kapelle/task-plan.json#structural"
   ],
   "_kapelle/base-functional-tests.json": [
     "spec.md",

@@ -29,11 +29,15 @@ Invoke:
    - `diagrams/feature-flow.mmd`;
    - `diagrams/architecture.mmd`.
    Use C4/PlantUML or Draw.io only when a project capability and developer preference justify it.
-7. Persist final approval in `_kapelle/approvals/final.json`.
+7. After diagrams exist and explicit confirmation is present, run
+   `scripts/review_gate.py approve docs/features/<slug> final --confirmation "Developer confirmed
+   manual testing and explicitly approved the final as-built result."`. Never construct approval
+   JSON manually.
 8. Write `_kapelle/release.json` matching `release.schema.json`, with the requested version and
    current document and verified implementation fingerprints.
 9. Mark the feature `completed`, refresh `STATUS.md`, and report the final human documentation.
 
-Kapelle does not commit, tag, push, merge, or create a pull request.
+Kapelle does not commit, tag, push, merge, or create a pull request. It never hand-edits manifest,
+state, status, or approval JSON.
 
 Use the standard backbone handoff block from `references/handoff.md`.

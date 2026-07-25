@@ -17,6 +17,7 @@ from feature_state import (
     parse_tasks,
     rebuild_feature_state,
     refresh_feature_status,
+    relative_fingerprint,
 )
 from migrate_feature_layout import apply_migration, migration_plan
 from validate_feature_state import validate
@@ -37,6 +38,9 @@ class FeatureStateTests(unittest.TestCase):
         (feature / "proposal.md").write_text(
             "# Readable feature\n\n## Summary\n\nMake feature state readable.\n"
         )
+        context = feature / "_context"
+        context.mkdir()
+        (context / "architecture.md").write_text("# Architecture context\n")
         (feature / "spec.md").write_text(
             "# Specification\n\n- **AC-01** Status is visible.\n"
         )
@@ -165,6 +169,234 @@ class FeatureStateTests(unittest.TestCase):
                 }
             )
         )
+
+    def make_reconstruction(self, root: Path) -> Path:
+        feature = root / "docs" / "features" / "existing-flow"
+        feature.mkdir(parents=True)
+        (feature / "proposal.md").write_text(
+            "<!-- kapelle-workflow: reconstruction-v1 -->\n"
+            "# Existing flow\n\n## Summary\n\nDocument current behavior.\n"
+        )
+        context = feature / "_context"
+        context.mkdir()
+        (context / "evidence-index.md").write_text(
+            "# Evidence index\n\n- RC-001 — observed in `src/flow.txt:1`.\n"
+        )
+        internal = feature / "_kapelle"
+        internal.mkdir()
+        (internal / "workflow.json").write_text(
+            json.dumps(
+                {
+                    "workflow": "reconstruction",
+                    "version": 1,
+                    "created_from": "existing-code",
+                }
+            )
+        )
+        (internal / "reconstruction.json").write_text(
+            json.dumps(
+                {
+                    "slug": "existing-flow",
+                    "scope": "Current existing flow",
+                    "aspects": ["backend"],
+                    "entrypoints": ["src/flow.txt"],
+                    "exclusions": [],
+                    "unknowns": [],
+                }
+            )
+        )
+        source = root / "src" / "flow.txt"
+        source.parent.mkdir()
+        source.write_text("current behavior\n")
+        return feature
+
+    def test_reconstruction_routes_only_documentation_gates(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = self.make_reconstruction(root)
+            internal = feature / "_kapelle"
+            _, state = initialize_feature_state(feature)
+            self.assertEqual("reconstruct-scope", state["current_stage"])
+            self.assertEqual(
+                "/kapelle:reconstruct existing-flow --approve",
+                state["next_command"],
+            )
+
+            self.write_approval(
+                feature,
+                "reconstruction-scope",
+                {
+                    "proposal.md": file_fingerprint(feature / "proposal.md"),
+                    "_kapelle/reconstruction.json": file_fingerprint(
+                        internal / "reconstruction.json"
+                    ),
+                },
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("reconstruct-spec", state["current_stage"])
+
+            (feature / "spec.md").write_text(
+                "# Product specification\n\n- **AC-01** Current behavior occurs. RC-001\n"
+            )
+            (feature / "specs").mkdir()
+            (feature / "specs" / "behavior.md").write_text(
+                "# Behavior\n\nRC-001 is observed.\n"
+            )
+            self.write_approval(
+                feature,
+                "reconstruction-spec",
+                {
+                    "spec.md": file_fingerprint(feature / "spec.md"),
+                    "specs": document_fingerprints(feature)["specs"],
+                },
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("reconstruct-design", state["current_stage"])
+
+            (feature / "design.md").write_text(self.valid_design())
+            (feature / "design").mkdir()
+            (feature / "design" / "backend.md").write_text(
+                "# Backend\n\nAs-built behavior is RC-001.\n"
+            )
+            guidance = internal / "architecture-guidance"
+            guidance.mkdir()
+            (guidance / "reconstruction.json").write_text(
+                json.dumps({"status": "available", "rules": []})
+            )
+            (internal / "surface-plan.json").write_text(
+                json.dumps(
+                    {
+                        "slug": "existing-flow",
+                        "aspects": [
+                            {
+                                "id": "backend",
+                                "intent": "Document existing flow",
+                                "modules": ["src"],
+                                "entrypoints": ["src/flow.txt"],
+                                "depends_on": [],
+                            }
+                        ],
+                        "contracts": [],
+                        "integration_checks": [],
+                    }
+                )
+            )
+            self.write_approval(
+                feature,
+                "reconstruction-design",
+                {
+                    "spec.md": file_fingerprint(feature / "spec.md"),
+                    "specs": document_fingerprints(feature)["specs"],
+                    "design.md": file_fingerprint(feature / "design.md"),
+                    "design": document_fingerprints(feature)["design"],
+                    "_kapelle/surface-plan.json": file_fingerprint(
+                        internal / "surface-plan.json"
+                    ),
+                    "_kapelle/architecture-guidance": (
+                        relative_fingerprint(
+                            feature, "_kapelle/architecture-guidance"
+                        )
+                    ),
+                },
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("reconstruct-review", state["current_stage"])
+            self.assertEqual(
+                "/kapelle:reconstruct existing-flow --review",
+                state["next_command"],
+            )
+
+            source = root / "src" / "flow.txt"
+            (internal / "reconstruction-coverage.json").write_text(
+                json.dumps(
+                    {
+                        "slug": "existing-flow",
+                        "status": "PASS",
+                        "claims": [
+                            {
+                                "id": "RC-001",
+                                "classification": "observed",
+                                "statement": "The current flow executes.",
+                                "artifact": "specs/behavior.md",
+                                "sources": [
+                                    {
+                                        "path": "src/flow.txt",
+                                        "line_start": 1,
+                                        "line_end": 1,
+                                    }
+                                ],
+                                "confidence": "high",
+                            }
+                        ],
+                        "gaps": [],
+                        "artifact_fingerprints": {
+                            "proposal.md": file_fingerprint(feature / "proposal.md"),
+                            "spec.md": file_fingerprint(feature / "spec.md"),
+                            "specs": document_fingerprints(feature)["specs"],
+                            "design.md": file_fingerprint(feature / "design.md"),
+                            "design": document_fingerprints(feature)["design"],
+                            "_context/evidence-index.md": file_fingerprint(
+                                feature / "_context" / "evidence-index.md"
+                            ),
+                            "_kapelle/surface-plan.json": file_fingerprint(
+                                internal / "surface-plan.json"
+                            ),
+                        },
+                        "source_fingerprints": {
+                            "src/flow.txt": file_fingerprint(source)
+                        },
+                    }
+                )
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertTrue(state["review_ready"])
+            self.assertFalse(state["ship_ready"])
+            self.assertEqual(
+                "/kapelle:reconstruct existing-flow --approve",
+                state["next_command"],
+            )
+
+            self.write_approval(
+                feature,
+                "reconstruction",
+                {
+                    "_kapelle/reconstruction-coverage.json": file_fingerprint(
+                        internal / "reconstruction-coverage.json"
+                    )
+                },
+            )
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("documented", state["current_stage"])
+            self.assertEqual("documented", state["feature_state"])
+            self.assertFalse(state["ship_ready"])
+            self.assertEqual("/kapelle:status existing-flow", state["next_command"])
+            self.assertEqual([], validate(feature))
+
+            source.write_text("changed behavior\n")
+            _, state, _ = refresh_feature_status(feature)
+            self.assertEqual("reconstruct-review", state["current_stage"])
+            self.assertEqual(
+                "/kapelle:reconstruct existing-flow --review",
+                state["next_command"],
+            )
+
+    def test_reconstruction_marker_recovers_workflow_without_delivery(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_reconstruction(Path(tmp))
+            (feature / "_kapelle" / "workflow.json").unlink()
+            (feature / "_kapelle" / "reconstruction.json").unlink()
+            _, state, _ = rebuild_feature_state(feature)
+            workflow = json.loads(
+                (feature / "_kapelle" / "workflow.json").read_text()
+            )
+            self.assertEqual("reconstruction", workflow["workflow"])
+            self.assertTrue(
+                (feature / "_kapelle" / "reconstruction.json").is_file()
+            )
+            self.assertEqual("reconstruct-scope", state["current_stage"])
+            self.assertNotIn("plan", state["next_command"])
+            self.assertNotIn("implement", state["next_command"])
+            self.assertEqual([], validate(feature))
 
     def test_recovery_never_treats_checked_task_as_validated(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -461,7 +693,9 @@ class FeatureStateTests(unittest.TestCase):
                 "outline",
                 {
                     "proposal.md": docs["proposal.md"],
-                    "spec.md": docs["spec.md"],
+                    "_context/architecture.md": file_fingerprint(
+                        feature / "_context" / "architecture.md"
+                    ),
                 },
             )
             self.write_approval(
@@ -477,6 +711,9 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "design" / "components.md").write_text("# Components\n")
             (feature / "contracts").mkdir()
             (feature / "contracts" / "README.md").write_text("# Contracts\n\nNone.\n")
+            guidance = internal / "architecture-guidance"
+            guidance.mkdir()
+            (guidance / "design.json").write_text('{"status":"ready"}\n')
             docs = document_fingerprints(feature)
             self.write_approval(
                 feature,
@@ -489,6 +726,9 @@ class FeatureStateTests(unittest.TestCase):
                     "contracts": docs["contracts"],
                     "_kapelle/surface-plan.json": file_fingerprint(
                         internal / "surface-plan.json"
+                    ),
+                    "_kapelle/architecture-guidance/design.json": file_fingerprint(
+                        guidance / "design.json"
                     ),
                 },
             )

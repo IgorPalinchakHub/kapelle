@@ -31,7 +31,14 @@ Fast lane replaces the first four with one `feature-plan` gate and retains final
 
 Silence is never approval. Starting the next gated phase, using its explicit approval option, or
 answering the stage's approval prompt is the required affirmative action. Persist accepted gates
-under `_kapelle/approvals/` with current artifact fingerprints.
+only through `scripts/review_gate.py`. Canonical gate names and exact artifact sets come from
+`dispatcher/artifact-dependencies.json`; every fingerprint is a full SHA-256.
+
+The standard outline gate fingerprints stable `proposal.md` and `_context/architecture.md`. The
+following `spec` stage expands `spec.md`, so the outline gate must not fingerprint that mutable
+draft. The later `business-spec` gate fingerprints `proposal.md`, the completed `spec.md`, and
+`specs/`. An accepted business specification therefore remains mechanically distinguishable from
+its earlier outline.
 
 `proposal.md` carries
 `<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->`. This durable marker

@@ -1,5 +1,14 @@
 # Kapelle: короткий порядок
 
+Якщо фіча вже реалізована і потрібно відновити її product specification та as-built architecture:
+
+```text
+/kapelle:reconstruct <slug> "<feature scope>"
+```
+
+Далі виконуйте exact next command із `STATUS.md`. Повна інструкція:
+[RECONSTRUCTION_UK.md](RECONSTRUCTION_UK.md).
+
 ## Нова фіча
 
 ```text

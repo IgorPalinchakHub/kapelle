@@ -18,6 +18,8 @@ from feature_state import (
     document_fingerprints,
     feature_review_current,
     human_controlled_workflow,
+    reconstruction_review_current,
+    reconstruction_workflow,
     parse_tasks,
     phase_evidence_current,
     read_json,
@@ -46,7 +48,9 @@ def validate(feature_dir: Path) -> list[str]:
         errors.append("slug does not match feature directory")
 
     fingerprints = document_fingerprints(feature_dir)
-    if human_controlled_workflow(feature_dir) and (feature_dir / "design.md").is_file():
+    if (
+        human_controlled_workflow(feature_dir) or reconstruction_workflow(feature_dir)
+    ) and (feature_dir / "design.md").is_file():
         errors.extend(
             f"design structure: {error}"
             for error in validate_design(feature_dir / "design.md")
@@ -58,6 +62,14 @@ def validate(feature_dir: Path) -> list[str]:
             errors.append(f"manifest fingerprint drift: {name}")
     if state.get("document_fingerprints") != fingerprints:
         errors.append("state document_fingerprints drift")
+    for alias, canonical in {
+        "feature-outline.json": "outline.json",
+        "business-specification.json": "business-spec.json",
+    }.items():
+        if (internal / "approvals" / alias).is_file():
+            errors.append(
+                f"non-canonical approval alias {alias}; canonical path is {canonical}"
+            )
 
     parsed_tasks = parse_tasks(feature_dir / "tasks.md")
     task_ids = [task["id"] for task in parsed_tasks]
@@ -93,8 +105,17 @@ def validate(feature_dir: Path) -> list[str]:
             if planned.get("status") != state_tasks.get(task_id):
                 errors.append(f"task {task_id}: state drift between task plan and feature state")
     surface_errors, task_plan_errors, provisional = coordination_integrity(feature_dir)
-    errors.extend(f"coordination: {error}" for error in surface_errors)
-    if task_plan_errors and not provisional:
+    if (feature_dir / "design.md").is_file():
+        errors.extend(f"coordination: {error}" for error in surface_errors)
+    if (
+        not reconstruction_workflow(feature_dir)
+        and (
+            (feature_dir / "tasks.md").is_file()
+            or (internal / "task-plan.json").is_file()
+        )
+        and task_plan_errors
+        and not provisional
+    ):
         errors.extend(f"coordination: {error}" for error in task_plan_errors)
     counts = Counter(state_tasks.values())
     expected_counts: dict[str, Any] = {"total": len(state_tasks)}
@@ -107,8 +128,12 @@ def validate(feature_dir: Path) -> list[str]:
         if status == "completed" and validation.get(task_id) != "completed":
             errors.append(f"task {task_id}: completed without current PASS evidence")
 
-    convergence_current = documentation_convergence_current(feature_dir, state_tasks)
-    review_current = feature_review_current(feature_dir, state_tasks)
+    if reconstruction_workflow(feature_dir):
+        convergence_current = reconstruction_review_current(feature_dir)
+        review_current = convergence_current
+    else:
+        convergence_current = documentation_convergence_current(feature_dir, state_tasks)
+        review_current = feature_review_current(feature_dir, state_tasks)
     stage, next_command = choose_next_command(
         feature_dir.name, feature_dir, state_tasks, convergence_current, review_current
     )
@@ -124,7 +149,9 @@ def validate(feature_dir: Path) -> list[str]:
     }
     blockers = state.get("blockers", [])
     deferred = state.get("deferred_validation", [])
-    if human_controlled_workflow(feature_dir):
+    if reconstruction_workflow(feature_dir):
+        expected_review_ready = reconstruction_review_current(feature_dir)
+    elif human_controlled_workflow(feature_dir):
         expected_review_ready = phase_evidence_current(
             feature_dir, "verification.json", {"PASS"}
         ) and not incomplete

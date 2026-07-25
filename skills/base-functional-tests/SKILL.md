@@ -15,7 +15,9 @@ Invoke:
 
 ## Protocol
 
-1. Require current business, architecture, and delivery-plan approvals.
+1. Read the lane. Standard lane must pass
+   `scripts/review_gate.py check docs/features/<slug> delivery-plan`; fast lane must pass the same
+   check for `feature-plan`. Refuse before test writes on non-zero exit.
 2. Read the current lane. Standard reads `spec.md`, `specs/`, contracts, `test-plan.md`, and the
    task plan. Fast reads `spec.md`, `design.md`, the Test strategy section in `tasks.md`, and the
    task plan; optional detailed artifacts are read when present.

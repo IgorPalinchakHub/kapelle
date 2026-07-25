@@ -8,7 +8,18 @@
   "properties": {
     "gate": {
       "type": "string",
-      "enum": ["feature-plan", "outline", "business-spec", "architecture", "delivery-plan", "final"]
+      "enum": [
+        "feature-plan",
+        "outline",
+        "business-spec",
+        "architecture",
+        "delivery-plan",
+        "final",
+        "reconstruction-scope",
+        "reconstruction-spec",
+        "reconstruction-design",
+        "reconstruction"
+      ]
     },
     "status": { "const": "approved" },
     "confirmation": { "type": "string", "minLength": 1 },

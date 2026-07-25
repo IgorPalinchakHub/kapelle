@@ -57,6 +57,7 @@ for rel in [
     'docs/USAGE.md',
     'docs/COMMAND_EXECUTION_UK.md',
     'CLAUDE.md',
+    'AGENTS.md',
     'config/kapelle.config.schema.json',
     'dispatcher/task-context.schema.json',
     'dispatcher/task-plan.schema.json',
@@ -81,6 +82,8 @@ for rel in [
     'dispatcher/vocabulary.json',
     'dispatcher/role-profiles.json',
     'dispatcher/workflow-state.schema.json',
+    'dispatcher/reconstruction.schema.json',
+    'dispatcher/reconstruction-coverage.schema.json',
     'dispatcher/review-gate.schema.json',
     'dispatcher/base-functional-tests.schema.json',
     'dispatcher/unit-test-run.schema.json',
@@ -98,6 +101,8 @@ for rel in [
     'references/fast-lane.md',
     'references/interview-depth.md',
     'references/design-template.md',
+    'references/design-execution.md',
+    'references/reconstruction.md',
     'references/deprecated-legacy-stages.md',
     'references/repository-context.md',
     'config/shapes/architecture-rules-agent.shape.md',
@@ -113,6 +118,8 @@ for rel in [
     'scripts/test_feature_state.py',
     'scripts/validate_design.py',
     'scripts/test_validate_design.py',
+    'scripts/review_gate.py',
+    'scripts/test_review_gate.py',
     'scripts/migrate_workflow.py',
     'scripts/test_migrate_workflow.py',
 ]:
@@ -177,6 +184,8 @@ for rel in [
     'dispatcher/recovery-report.schema.json',
     'dispatcher/size.schema.json',
     'dispatcher/workflow-state.schema.json',
+    'dispatcher/reconstruction.schema.json',
+    'dispatcher/reconstruction-coverage.schema.json',
     'dispatcher/review-gate.schema.json',
     'dispatcher/base-functional-tests.schema.json',
     'dispatcher/unit-test-run.schema.json',
@@ -418,6 +427,33 @@ if dependencies:
         'STATUS.md',
     ]:
         check(required in dependencies, f'artifact graph: missing {required}')
+    check(
+        dependencies.get('_kapelle/approvals/outline.json')
+        == ['proposal.md', '_context/architecture.md'],
+        'artifact graph: outline gate must fingerprint stable proposal/context only',
+    )
+    check(
+        dependencies.get('_kapelle/approvals/business-spec.json')
+        == ['proposal.md', 'spec.md', 'specs'],
+        'artifact graph: business-spec gate artifacts drifted',
+    )
+    check(
+        '_kapelle/architecture-guidance/design.json'
+        in dependencies.get('_kapelle/approvals/architecture.json', []),
+        'artifact graph: architecture approval must fingerprint scoped guidance',
+    )
+    for gate in ['feature-plan', 'delivery-plan']:
+        gate_dependencies = dependencies.get(
+            f'_kapelle/approvals/{gate}.json', []
+        )
+        check(
+            'tasks.md#structural' in gate_dependencies,
+            f'artifact graph: {gate} must use structural tasks fingerprint',
+        )
+        check(
+            '_kapelle/task-plan.json#structural' in gate_dependencies,
+            f'artifact graph: {gate} must use structural task-plan fingerprint',
+        )
     for legacy in ['sad.md', 'surface-plan.json', 'tasks.json', 'ship.md']:
         check(legacy not in dependencies, f'artifact graph: legacy key {legacy}')
 
@@ -471,9 +507,21 @@ for required in [
     'surface-plan.schema.json',
     'execution-depth.md',
     'design-template.md',
+    'design-execution.md',
     'validate_design.py',
+    'review_gate.py check',
 ]:
     check(required in design_skill, f'design: missing scoped architecture/surface guard {required!r}')
+
+design_execution = (ROOT / 'references/design-execution.md').read_text()
+for required in [
+    '2800 words',
+    'at most 12 targeted lookup batches',
+    'fallback work concurrently',
+    'never hand-edit',
+]:
+    check(required in design_execution,
+          f'design execution: missing bounded-run guard {required!r}')
 
 start_skill = (ROOT / 'skills/start/SKILL.md').read_text()
 for required in [
@@ -520,6 +568,35 @@ for required in [
 ]:
     check(required in survey_skill, f'survey: missing worktree-safety guard {required!r}')
 
+reconstruct_skill = (ROOT / 'skills/reconstruct/SKILL.md').read_text()
+for required in [
+    '<!-- kapelle-workflow: reconstruction-v1 -->',
+    'observed',
+    'inferred',
+    'declared',
+    'unknown',
+    'architecture-rules subagent',
+    'kapelle:business-analyst',
+    'kapelle:explorer',
+    'kapelle:critic',
+    'kapelle:reviewer',
+    'reconstruction-coverage.schema.json',
+    'at least one independently useful `specs/*.md`',
+    'at least one independently useful `design/*.md`',
+    'Never hand off to development',
+]:
+    check(required in reconstruct_skill,
+          f'reconstruct: missing evidence/workflow guard {required!r}')
+for rel in ['AGENTS.md', 'CLAUDE.md']:
+    runtime_instructions = (ROOT / rel).read_text()
+    for required in [
+        'Existing-code reconstruction is documentation-only',
+        '`observed | inferred | declared | unknown`',
+        '`documented` never means ship-ready',
+    ]:
+        check(required in runtime_instructions,
+              f'{rel}: missing reconstruction invariant {required!r}')
+
 usage = (ROOT / 'docs/USAGE.md').read_text()
 for required in [
     '/kapelle:start <slug>',
@@ -531,6 +608,7 @@ for required in [
     '/kapelle:finalize',
     '/kapelle:migrate',
     '/kapelle:status <slug>',
+    '/kapelle:reconstruct <slug>',
 ]:
     check(required in usage, f'usage guide: missing workflow detail {required!r}')
 
@@ -550,6 +628,7 @@ for required in [
     '/kapelle:finalize <slug>',
     '/kapelle:migrate <slug>',
     '/kapelle:status <slug>',
+    '/kapelle:reconstruct <slug>',
     'Що задати',
     'Результат',
 ]:
@@ -664,26 +743,88 @@ for deprecated in sorted(deprecated_skills):
 
 workflow_schema = load_json('dispatcher/workflow-state.schema.json')
 if workflow_schema:
-    check(workflow_schema.get('properties', {}).get('lane', {}).get('enum')
+    workflow_variants = workflow_schema.get('oneOf', [])
+    human_variant = next(
+        (
+            item for item in workflow_variants
+            if item.get('properties', {}).get('workflow', {}).get('const')
+            == 'human-controlled'
+        ),
+        {},
+    )
+    reconstruction_variant = next(
+        (
+            item for item in workflow_variants
+            if item.get('properties', {}).get('workflow', {}).get('const')
+            == 'reconstruction'
+        ),
+        {},
+    )
+    check(human_variant.get('properties', {}).get('lane', {}).get('enum')
           == ['fast', 'standard'],
           'workflow state: lane must be fast or standard')
+    check(
+        reconstruction_variant.get('properties', {})
+        .get('created_from', {})
+        .get('const') == 'existing-code',
+        'workflow state: reconstruction must originate from existing-code',
+    )
 size_schema = load_json('dispatcher/size.schema.json')
 if size_schema:
     required = set(size_schema.get('required', []))
     check({'interview_depth', 'lane'} <= required,
           'size state: interview_depth and lane must be required')
 
-    state_only_terms = ['needs-rework', 'superseded']
-    for path in sorted(ROOT.rglob('*.md')):
-        rel = path.relative_to(ROOT)
-        if rel.parts[0] in {'.git', '.idea'}:
+review_gate_schema = load_json('dispatcher/review-gate.schema.json')
+if review_gate_schema:
+    gates = (
+        review_gate_schema.get('properties', {})
+        .get('gate', {})
+        .get('enum', [])
+    )
+    for required in [
+        'outline',
+        'business-spec',
+        'architecture',
+        'delivery-plan',
+        'feature-plan',
+        'final',
+        'reconstruction-scope',
+        'reconstruction-spec',
+        'reconstruction-design',
+        'reconstruction',
+    ]:
+        check(required in gates, f'review gate schema: missing {required}')
+
+for rel in [
+    'skills/start/SKILL.md',
+    'skills/spec/SKILL.md',
+    'skills/design/SKILL.md',
+    'skills/plan/SKILL.md',
+    'skills/finalize/SKILL.md',
+    'skills/reconstruct/SKILL.md',
+]:
+    text = (ROOT / rel).read_text()
+    check(
+        'review_gate.py' in text,
+        f'{rel}: approval-capable stage must use deterministic review gate helper',
+    )
+    check(
+        bool(re.search(r'construct (?:gate|approval)\s+JSON', text)),
+        f'{rel}: must forbid hand-written review gate JSON',
+    )
+
+state_only_terms = ['needs-rework', 'superseded']
+for path in sorted(ROOT.rglob('*.md')):
+    rel = path.relative_to(ROOT)
+    if rel.parts[0] in {'.git', '.idea'}:
+        continue
+    for line_number, line in enumerate(path.read_text(errors='ignore').splitlines(), 1):
+        if 'disposition' not in line.lower():
             continue
-        for line_number, line in enumerate(path.read_text(errors='ignore').splitlines(), 1):
-            if 'disposition' not in line.lower():
-                continue
-            for term in state_only_terms:
-                check(term not in line,
-                      f'{rel}:{line_number}: task state {term!r} used in disposition context')
+        for term in state_only_terms:
+            check(term not in line,
+                  f'{rel}:{line_number}: task state {term!r} used in disposition context')
 
 role_profiles = load_json('dispatcher/role-profiles.json')
 if role_profiles:

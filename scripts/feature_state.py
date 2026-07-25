@@ -17,8 +17,13 @@ from validate_design import validate as validate_design
 
 LAYOUT_VERSION = 2
 SCHEMA_VERSION = "1.0"
+PLUGIN_ROOT = Path(__file__).resolve().parent.parent
+ARTIFACT_DEPENDENCIES_PATH = PLUGIN_ROOT / "dispatcher" / "artifact-dependencies.json"
 DURABLE_WORKFLOW_PATTERN = re.compile(
     r"<!--\s*kapelle-workflow:\s*human-controlled-v1(?:;\s*lane:\s*(fast|standard))?\s*-->"
+)
+RECONSTRUCTION_WORKFLOW_PATTERN = re.compile(
+    r"<!--\s*kapelle-workflow:\s*reconstruction-v1\s*-->"
 )
 HUMAN_ARTIFACTS = (
     "proposal.md",
@@ -85,6 +90,16 @@ def has_durable_human_workflow_marker(feature_dir: Path) -> bool:
     return bool(
         proposal.is_file()
         and DURABLE_WORKFLOW_PATTERN.search(proposal.read_text(errors="replace"))
+    )
+
+
+def has_durable_reconstruction_marker(feature_dir: Path) -> bool:
+    proposal = feature_dir / "proposal.md"
+    return bool(
+        proposal.is_file()
+        and RECONSTRUCTION_WORKFLOW_PATTERN.search(
+            proposal.read_text(errors="replace")
+        )
     )
 
 
@@ -287,6 +302,15 @@ def rebuild_coordination_skeleton(feature_dir: Path) -> list[str]:
                 "lane": lane,
             },
         )
+    elif has_durable_reconstruction_marker(feature_dir) and not workflow_path.is_file():
+        atomic_write_json(
+            workflow_path,
+            {
+                "workflow": "reconstruction",
+                "version": 1,
+                "created_from": "existing-code",
+            },
+        )
     surface_path = internal / "surface-plan.json"
     task_plan_path = internal / "task-plan.json"
 
@@ -309,6 +333,50 @@ def rebuild_coordination_skeleton(feature_dir: Path) -> list[str]:
             },
         )
         gaps.append("exact aspect, contract, and integration topology")
+
+    reconstruction_path = internal / "reconstruction.json"
+    if (
+        has_durable_reconstruction_marker(feature_dir)
+        and not reconstruction_path.is_file()
+    ):
+        surface = read_json(surface_path)
+        surface_aspects = [
+            item
+            for item in (surface or {}).get("aspects", [])
+            if isinstance(item, dict)
+        ]
+        aspects = [
+            item["id"]
+            for item in surface_aspects
+            if isinstance(item.get("id"), str) and item["id"]
+        ] or ["unknown-aspect"]
+        entrypoints = sorted(
+            {
+                entrypoint
+                for item in surface_aspects
+                for entrypoint in item.get("entrypoints", [])
+                if isinstance(entrypoint, str) and entrypoint
+            }
+        )
+        scope = (
+            extract_section(feature_dir / "proposal.md", "Scope")
+            or extract_section(feature_dir / "proposal.md", "Summary")
+            or f"Recovered documentation scope for {feature_dir.name}"
+        )
+        atomic_write_json(
+            reconstruction_path,
+            {
+                "slug": feature_dir.name,
+                "scope": scope,
+                "aspects": sorted(set(aspects)),
+                "entrypoints": entrypoints,
+                "exclusions": [],
+                "unknowns": [
+                    "Exact original reconstruction scope state was not recoverable"
+                ],
+            },
+        )
+        gaps.append("exact original reconstruction scope state")
 
     parsed = parse_tasks(feature_dir / "tasks.md")
     if parsed and surface_path.is_file() and not task_plan_path.is_file():
@@ -421,7 +489,7 @@ def _fingerprints_match(
     return True
 
 
-def _relative_fingerprint(feature_dir: Path, relative: str) -> str | None:
+def relative_fingerprint(feature_dir: Path, relative: str) -> str | None:
     if relative == "tasks.md#structural":
         return normalized_tasks_fingerprint(feature_dir / "tasks.md")
     if relative == "_kapelle/task-plan.json#structural":
@@ -448,15 +516,37 @@ def _claimed_fingerprints_current(feature_dir: Path, claimed: Any) -> bool:
         if (
             not isinstance(relative, str)
             or not isinstance(digest, str)
-            or _relative_fingerprint(feature_dir, relative) != digest
+            or relative_fingerprint(feature_dir, relative) != digest
         ):
             return False
     return True
 
 
+def review_gate_artifacts(gate: str) -> tuple[str, ...]:
+    dependencies = read_json(ARTIFACT_DEPENDENCIES_PATH)
+    if dependencies is None:
+        raise FeatureStateError(
+            f"missing or invalid artifact dependency graph: {ARTIFACT_DEPENDENCIES_PATH}"
+        )
+    key = f"_kapelle/approvals/{gate}.json"
+    artifacts = dependencies.get(key)
+    if (
+        not isinstance(artifacts, list)
+        or not artifacts
+        or not all(isinstance(item, str) and item for item in artifacts)
+    ):
+        raise FeatureStateError(f"unknown or empty review gate: {gate}")
+    return tuple(artifacts)
+
+
 def _markdown_package_exists(feature_dir: Path, relative: str) -> bool:
     package = feature_dir / relative
     return package.is_dir() and any(package.rglob("*.md"))
+
+
+def _json_package_exists(feature_dir: Path, relative: str) -> bool:
+    package = feature_dir / relative
+    return package.is_dir() and any(package.rglob("*.json"))
 
 
 def human_controlled_workflow(feature_dir: Path) -> bool:
@@ -470,6 +560,16 @@ def human_controlled_workflow(feature_dir: Path) -> bool:
     ) or has_durable_human_workflow_marker(feature_dir)
 
 
+def reconstruction_workflow(feature_dir: Path) -> bool:
+    marker = read_json(feature_dir / "_kapelle" / "workflow.json")
+    return bool(
+        marker
+        and marker.get("workflow") == "reconstruction"
+        and marker.get("version") == 1
+        and marker.get("created_from") == "existing-code"
+    ) or has_durable_reconstruction_marker(feature_dir)
+
+
 def workflow_lane(feature_dir: Path) -> str:
     marker = read_json(feature_dir / "_kapelle" / "workflow.json")
     if marker and marker.get("lane") in {"fast", "standard"}:
@@ -481,6 +581,10 @@ def approval_current(feature_dir: Path, gate: str) -> bool:
     approval = read_json(
         feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
     )
+    try:
+        expected_artifacts = set(review_gate_artifacts(gate))
+    except FeatureStateError:
+        return False
     return bool(
         approval
         and _exact_keys(
@@ -491,10 +595,166 @@ def approval_current(feature_dir: Path, gate: str) -> bool:
         and approval.get("status") == "approved"
         and isinstance(approval.get("confirmation"), str)
         and approval["confirmation"].strip()
+        and set(approval.get("artifact_fingerprints", {})) == expected_artifacts
         and _claimed_fingerprints_current(
             feature_dir, approval.get("artifact_fingerprints")
         )
     )
+
+
+def reconstruction_gate_artifacts(
+    feature_dir: Path, gate: str
+) -> set[str]:
+    del feature_dir
+    try:
+        return set(review_gate_artifacts(gate))
+    except FeatureStateError:
+        return set()
+
+
+def reconstruction_approval_current(feature_dir: Path, gate: str) -> bool:
+    approval = read_json(
+        feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
+    )
+    return bool(
+        approval_current(feature_dir, gate)
+        and approval
+        and set(approval.get("artifact_fingerprints", {}))
+        == reconstruction_gate_artifacts(feature_dir, gate)
+    )
+
+
+def reconstruction_scope_current(feature_dir: Path) -> bool:
+    scope = read_json(feature_dir / "_kapelle" / "reconstruction.json")
+    return bool(
+        scope
+        and _exact_keys(
+            scope,
+            {"slug", "scope", "aspects", "entrypoints", "exclusions", "unknowns"},
+        )
+        and scope.get("slug") == feature_dir.name
+        and isinstance(scope.get("scope"), str)
+        and scope["scope"].strip()
+        and isinstance(scope.get("aspects"), list)
+        and scope["aspects"]
+        and len(scope["aspects"]) == len(set(scope["aspects"]))
+        and all(
+            isinstance(scope.get(field), list)
+            and len(scope[field]) == len(set(scope[field]))
+            and all(isinstance(item, str) and item for item in scope[field])
+            for field in ("aspects", "entrypoints", "exclusions", "unknowns")
+        )
+    )
+
+
+def reconstruction_review_current(feature_dir: Path) -> bool:
+    evidence = read_json(
+        feature_dir / "_kapelle" / "reconstruction-coverage.json"
+    )
+    required = {
+        "slug",
+        "status",
+        "claims",
+        "gaps",
+        "artifact_fingerprints",
+        "source_fingerprints",
+    }
+    expected_artifacts = {
+        "proposal.md",
+        "spec.md",
+        "specs",
+        "design.md",
+        "design",
+        "_context/evidence-index.md",
+        "_kapelle/surface-plan.json",
+    }
+    if _markdown_package_exists(feature_dir, "contracts"):
+        expected_artifacts.add("contracts")
+    if not (
+        evidence
+        and _exact_keys(evidence, required)
+        and evidence.get("slug") == feature_dir.name
+        and evidence.get("status") in {"PASS", "PASS-WITH-GAPS"}
+        and isinstance(evidence.get("claims"), list)
+        and evidence["claims"]
+        and isinstance(evidence.get("gaps"), list)
+        and len(evidence["gaps"]) == len(set(evidence["gaps"]))
+        and all(isinstance(item, str) and item for item in evidence["gaps"])
+        and (
+            (evidence["status"] == "PASS" and not evidence["gaps"])
+            or (evidence["status"] == "PASS-WITH-GAPS" and evidence["gaps"])
+        )
+        and _claimed_fingerprints_current(
+            feature_dir, evidence.get("artifact_fingerprints")
+        )
+        and set(evidence.get("artifact_fingerprints", {})) == expected_artifacts
+        and _implementation_fingerprints_match(
+            feature_dir, evidence.get("source_fingerprints")
+        )
+    ):
+        return False
+    claim_ids: set[str] = set()
+    cited_paths: set[str] = set()
+    source_fingerprints = evidence["source_fingerprints"]
+    required_claim_keys = {
+        "id",
+        "classification",
+        "statement",
+        "artifact",
+        "sources",
+        "confidence",
+    }
+    for claim in evidence["claims"]:
+        if not (
+            isinstance(claim, dict)
+            and _exact_keys(claim, required_claim_keys)
+            and isinstance(claim.get("id"), str)
+            and re.fullmatch(r"RC-[0-9]{3,}", claim["id"])
+            and claim["id"] not in claim_ids
+            and claim.get("classification")
+            in {"observed", "inferred", "declared", "unknown"}
+            and isinstance(claim.get("statement"), str)
+            and claim["statement"].strip()
+            and isinstance(claim.get("artifact"), str)
+            and claim["artifact"].strip()
+            and claim.get("confidence") in {"high", "medium", "low"}
+            and isinstance(claim.get("sources"), list)
+        ):
+            return False
+        artifact_path = (feature_dir / claim["artifact"]).resolve()
+        try:
+            artifact_path.relative_to(feature_dir.resolve())
+        except ValueError:
+            return False
+        if not artifact_path.is_file():
+            return False
+        claim_ids.add(claim["id"])
+        if claim["classification"] in {"observed", "inferred"} and not claim["sources"]:
+            return False
+        for source in claim["sources"]:
+            if not (
+                isinstance(source, dict)
+                and _exact_keys(source, {"path", "line_start", "line_end"})
+                and isinstance(source.get("path"), str)
+                and source["path"] in source_fingerprints
+                and isinstance(source.get("line_start"), int)
+                and isinstance(source.get("line_end"), int)
+                and 1 <= source["line_start"] <= source["line_end"]
+            ):
+                return False
+            source_path = (_project_root(feature_dir) / source["path"]).resolve()
+            try:
+                source_path.relative_to(_project_root(feature_dir).resolve())
+            except ValueError:
+                return False
+            if (
+                not source_path.is_file()
+                or source["line_end"]
+                > len(source_path.read_text(errors="replace").splitlines())
+            ):
+                return False
+            cited_paths.add(source["path"])
+    return bool(cited_paths and cited_paths == set(source_fingerprints))
 
 
 def phase_evidence_current(
@@ -996,9 +1256,49 @@ def choose_next_command(
     review_current: bool,
 ) -> tuple[str, str]:
     del convergence_current, review_current
+    if reconstruction_workflow(feature_dir):
+        return choose_reconstruction_next_command(slug, feature_dir)
     if human_controlled_workflow(feature_dir):
         return choose_human_controlled_next_command(slug, feature_dir, task_states)
     return "migrate", f"/kapelle:migrate {slug}"
+
+
+def choose_reconstruction_next_command(
+    slug: str,
+    feature_dir: Path,
+) -> tuple[str, str]:
+    """Choose the next explicit gate in the documentation-only reconstruction workflow."""
+    if not (
+        (feature_dir / "proposal.md").is_file()
+        and (feature_dir / "_context" / "evidence-index.md").is_file()
+        and reconstruction_scope_current(feature_dir)
+    ):
+        return "reconstruct-scope", f'/kapelle:reconstruct {slug} "<feature scope>"'
+    if not reconstruction_approval_current(feature_dir, "reconstruction-scope"):
+        return "reconstruct-scope", f"/kapelle:reconstruct {slug} --approve"
+    if not (
+        (feature_dir / "spec.md").is_file()
+        and _markdown_package_exists(feature_dir, "specs")
+    ):
+        return "reconstruct-spec", f"/kapelle:reconstruct {slug} --spec"
+    if not reconstruction_approval_current(feature_dir, "reconstruction-spec"):
+        return "reconstruct-spec", f"/kapelle:reconstruct {slug} --approve"
+    surface_errors, _, _ = coordination_integrity(feature_dir)
+    if not (
+        (feature_dir / "design.md").is_file()
+        and not validate_design(feature_dir / "design.md")
+        and _markdown_package_exists(feature_dir, "design")
+        and _json_package_exists(feature_dir, "_kapelle/architecture-guidance")
+        and not surface_errors
+    ):
+        return "reconstruct-design", f"/kapelle:reconstruct {slug} --design"
+    if not reconstruction_approval_current(feature_dir, "reconstruction-design"):
+        return "reconstruct-design", f"/kapelle:reconstruct {slug} --approve"
+    if not reconstruction_review_current(feature_dir):
+        return "reconstruct-review", f"/kapelle:reconstruct {slug} --review"
+    if not reconstruction_approval_current(feature_dir, "reconstruction"):
+        return "reconstruct-review", f"/kapelle:reconstruct {slug} --approve"
+    return "documented", f"/kapelle:status {slug}"
 
 
 def choose_human_controlled_next_command(
@@ -1195,8 +1495,13 @@ def derive_state(
         if status in {"blocked", "needs-rework", "stale", "unknown"}
     )
 
-    convergence_current = documentation_convergence_current(feature_dir, task_states)
-    review_current = feature_review_current(feature_dir, task_states)
+    reconstruction = reconstruction_workflow(feature_dir)
+    if reconstruction:
+        convergence_current = reconstruction_review_current(feature_dir)
+        review_current = convergence_current
+    else:
+        convergence_current = documentation_convergence_current(feature_dir, task_states)
+        review_current = feature_review_current(feature_dir, task_states)
 
     current_stage, next_command = choose_next_command(
         slug, feature_dir, task_states, convergence_current, review_current
@@ -1209,7 +1514,9 @@ def derive_state(
     review_ready = False
     active_change, revision = find_active_change(feature_dir)
     ship_ready = False
-    if human_controlled_workflow(feature_dir):
+    if reconstruction:
+        review_ready = reconstruction_review_current(feature_dir)
+    elif human_controlled_workflow(feature_dir):
         review_ready = phase_evidence_current(
             feature_dir, "verification.json", {"PASS"}
         ) and not incomplete
@@ -1225,6 +1532,12 @@ def derive_state(
     human_workflow = human_controlled_workflow(feature_dir)
     if current_stage == "migrate":
         feature_state = "awaiting-human-review"
+    elif reconstruction and current_stage == "documented":
+        feature_state = "documented"
+    elif reconstruction and current_stage == "reconstruct-review":
+        feature_state = "documentation-review"
+    elif reconstruction:
+        feature_state = "reconstructing"
     elif blockers:
         feature_state = "blocked"
     elif deferred:
@@ -1353,6 +1666,9 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
     labels = {
         "planning": "Planning",
         "awaiting-human-review": "Awaiting developer review",
+        "reconstructing": "Reconstructing documentation",
+        "documentation-review": "Documentation review",
+        "documented": "Documentation complete",
         "implementation": "Implementation",
         "unit-testing": "Writing unit tests",
         "verifying": "Verifying",
@@ -1368,6 +1684,7 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
         "shipped": "Shipped",
     }
     counts = state.get("task_counts", {})
+    reconstruction = reconstruction_workflow(feature_dir)
     lines = [
         "<!-- generated by Kapelle; do not edit -->",
         f"# {feature_title(feature_dir)}",
@@ -1375,11 +1692,18 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
         f"Status: {labels.get(state.get('feature_state'), state.get('feature_state', 'Unknown'))}",
         f"Current stage: {state.get('current_stage', 'unknown')}",
         (
+            "Progress: reconstruction documentation"
+            if reconstruction
+            else
             f"Progress: {counts.get('completed', 0)}/{counts.get('total', 0)} validated; "
             f"{counts.get('implemented-unverified', 0)} implemented-unverified"
         ),
         f"Ready for review: {'Yes' if state.get('review_ready') else 'No'}",
-        f"Completed: {'Yes' if state.get('ship_ready') else 'No'}",
+        (
+            f"Documentation complete: {'Yes' if state.get('feature_state') == 'documented' else 'No'}"
+            if reconstruction
+            else f"Completed: {'Yes' if state.get('ship_ready') else 'No'}"
+        ),
     ]
     if state.get("active_change"):
         lines.append(
@@ -1425,6 +1749,11 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
         lines.extend(f"- {item}" for item in state["evidence_gaps"])
     review_paths = [
         "proposal.md",
+        (
+            "_context/evidence-index.md"
+            if (feature_dir / "_context" / "evidence-index.md").is_file()
+            else None
+        ),
         "spec.md",
         "specs/" if _markdown_package_exists(feature_dir, "specs") else None,
         "design.md",
@@ -1435,7 +1764,47 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
         "diagrams/" if (feature_dir / "diagrams").is_dir() else None,
     ]
     lines.extend(["", "## Workflow readiness", ""])
-    if human_controlled_workflow(feature_dir):
+    if reconstruction:
+        lines.extend(
+            [
+                "- Workflow: As-built reconstruction",
+                (
+                    "- Scope: Approved"
+                    if reconstruction_approval_current(
+                        feature_dir, "reconstruction-scope"
+                    )
+                    else "- Scope: Missing or awaiting approval"
+                ),
+                (
+                    "- Product specification: Approved"
+                    if reconstruction_approval_current(
+                        feature_dir, "reconstruction-spec"
+                    )
+                    else "- Product specification: Missing or awaiting approval"
+                ),
+                (
+                    "- Architecture design: Approved"
+                    if reconstruction_approval_current(
+                        feature_dir, "reconstruction-design"
+                    )
+                    else "- Architecture design: Missing or awaiting approval"
+                ),
+                (
+                    "- Evidence review: Current"
+                    if reconstruction_review_current(feature_dir)
+                    else "- Evidence review: Missing, blocked, or stale"
+                ),
+                (
+                    "- Final documentation approval: Current"
+                    if reconstruction_approval_current(
+                        feature_dir, "reconstruction"
+                    )
+                    else "- Final documentation approval: Missing or stale"
+                ),
+                "- Release readiness: Not evaluated by this workflow",
+            ]
+        )
+    elif human_controlled_workflow(feature_dir):
         lines.extend(
             [
                 f"- Planning lane: {workflow_lane(feature_dir)}",

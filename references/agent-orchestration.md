@@ -17,6 +17,9 @@ isolated role must dispatch it in its protocol.
    constraints, and output contract.
 6. If subagents are unavailable, run the role inline and record `execution: inline-fallback`.
 7. Never treat a custom `agents:` field in `SKILL.md` frontmatter as executable orchestration.
+8. A bounded role gets one run and one terminal collection. Do not repeatedly status-ping it. If
+   its budget is exhausted, stop/cancel that run before inline fallback; never execute both
+   concurrently. A required project architecture-rules capability has no inline substitute.
 
 ## Core roles
 

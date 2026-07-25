@@ -14,10 +14,12 @@ Read `docs/features/<slug>/_kapelle/size.json` when present:
 | `M`, or uncertainty that does not trigger full depth | `standard` |
 | `L` or `XL`, or any risk trigger | `full` |
 
-Risk triggers always escalate to `full`: public contract changes, authorization/security, destructive
-data changes, ambiguous business invariants, a new architectural pattern, or cross-aspect work with
-an unestablished shared contract or unclear ownership. A routine backend/frontend change over an
-existing contract may remain `standard`.
+Risk triggers select `full` depth for the affected decision/aspect: public contract changes,
+authorization/security, destructive data changes, ambiguous business invariants, a new
+architectural pattern, or cross-aspect work with an unestablished shared contract or unclear
+ownership. Do not automatically deepen unrelated aspects. Escalate the whole feature only when a
+systemic risk crosses most aspects or the feature boundary itself is uncertain. A routine
+backend/frontend change over an existing contract may remain `standard`.
 
 Record the selected depth and reason under `_kapelle/`. A later stage may escalate depth from new
 evidence, but must not silently reduce it.

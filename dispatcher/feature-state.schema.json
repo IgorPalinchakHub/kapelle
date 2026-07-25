@@ -30,6 +30,9 @@
       "enum": [
         "planning",
         "awaiting-human-review",
+        "reconstructing",
+        "documentation-review",
+        "documented",
         "implementation",
         "unit-testing",
         "verifying",

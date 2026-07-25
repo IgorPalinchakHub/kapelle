@@ -37,14 +37,22 @@ smallest safe next command.
    - keep checked work without trustworthy current validation as `implemented-unverified`;
    - list approvals, reviews, command output, telemetry, or validation evidence that could not be
      reconstructed.
-4. When the durable workflow marker is absent, route only to `/kapelle:migrate <slug>`. When legacy
-   root JSON, `_audit/`, `_review/`, `changes/`, `sad.md`, `.size`, or `ship.md` is detected, also
-   show the layout migration dry-run. Do not apply either migration without explicit approval.
-5. Run `scripts/build_feature_status.py docs/features/<slug>` and then
+4. Recognize both durable markers:
+   `<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->` and
+   `<!-- kapelle-workflow: reconstruction-v1 -->`. Rebuild reconstruction routing from
+   `proposal.md`, `_context/evidence-index.md`, human specification/design documents, and current
+   evidence without routing it to development. When neither marker exists, route only to
+   `/kapelle:migrate <slug>`. When legacy root JSON, `_audit/`, `_review/`, `changes/`, `sad.md`,
+   `.size`, or `ship.md` is detected, also show the layout migration dry-run. Do not apply either
+   migration without explicit approval.
+5. Treat `_kapelle/approvals/feature-outline.json` and `business-specification.json` as invalid
+   aliases. Report the canonical `outline.json` or `business-spec.json` gate as missing and route
+   to its prior approval stage; never reinterpret or rename narrative evidence silently.
+6. Run `scripts/build_feature_status.py docs/features/<slug>` and then
    `scripts/validate_feature_state.py docs/features/<slug>`.
-6. If validation finds drift, repair only generated/derived state from current evidence. Do not
+7. If validation finds drift, repair only generated/derived state from current evidence. Do not
    modify product requirements or implementation code from this utility.
-7. Report the feature state, blockers/evidence gaps, readiness, and exact minimal next command.
+8. Report the feature state, blockers/evidence gaps, readiness, and exact minimal next command.
 
 ## Output
 

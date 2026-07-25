@@ -17,7 +17,8 @@ Invoke:
 
 ## Protocol
 
-1. Require a current architecture approval and the complete business/design/contracts package.
+1. Require the complete business/design/contracts package and run
+   `scripts/review_gate.py check docs/features/<slug> architecture`. Refuse on non-zero exit.
 2. Discover scoped project architecture rules and native delivery/test capabilities.
 3. Write `test-plan.md` for:
    - base endpoint functional tests;
@@ -37,11 +38,11 @@ Invoke:
    test/implementation evidence.
 10. On `--approve`, require current `tasks.md`, `test-plan.md`, a successfully validated task plan,
     and explicit developer confirmation. Never generate missing planning artifacts on an approval
-    invocation. Persist
-    `_kapelle/approvals/delivery-plan.json` using `tasks.md#structural`,
-    `test-plan.md`, and `_kapelle/task-plan.json#structural` fingerprints, and hand off to
-    `/kapelle:base-functional-tests <slug>`.
+    invocation. Run `scripts/review_gate.py approve docs/features/<slug> delivery-plan
+    --confirmation "Developer explicitly approved the delivery plan."`; never construct approval
+    JSON manually. Hand off to `/kapelle:base-functional-tests <slug>`.
 
-Do not write production code, base functional tests, or unit tests in this stage.
+Do not write production code, base functional tests, or unit tests in this stage. Never hand-edit
+manifest, state, status, or approval JSON.
 
 Use the standard backbone handoff block from `references/handoff.md`.

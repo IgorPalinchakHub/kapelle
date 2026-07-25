@@ -61,6 +61,11 @@ def plan(feature_dir: Path, lane: str) -> dict[str, object]:
         "lane": lane,
         "preserved": preserved,
         "missing_target_artifacts": missing,
+        "missing_migration_prerequisites": [
+            relative
+            for relative in ("_context/architecture.md",)
+            if not (feature_dir / relative).is_file()
+        ],
         "evidence_not_recreated": [
             "approvals",
             "agent and review verdicts",
@@ -73,6 +78,12 @@ def plan(feature_dir: Path, lane: str) -> dict[str, object]:
 
 def apply(feature_dir: Path, lane: str) -> dict[str, object]:
     migration = plan(feature_dir, lane)
+    missing_prerequisites = migration["missing_migration_prerequisites"]
+    if missing_prerequisites:
+        raise FeatureStateError(
+            "migration requires factual feature context before approval routing: "
+            + ", ".join(missing_prerequisites)
+        )
     proposal = feature_dir / "proposal.md"
     text = proposal.read_text(errors="replace")
     marker = f"<!-- kapelle-workflow: human-controlled-v1; lane: {lane} -->"

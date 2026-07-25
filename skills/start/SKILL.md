@@ -52,13 +52,15 @@ Read [`../../references/fast-lane.md`](../../references/fast-lane.md),
    - create at most three production tasks and no unit-test-writing task;
    - do not require `specs/`, `design/`, `contracts/`, or `test-plan.md` unless evidence makes one
      necessary, in which case escalate to standard.
-9. Present the complete fast package and require one explicit approval. On approval persist
-   `_kapelle/approvals/feature-plan.json` with current specification, design, structural task, and
-   coordination fingerprints. `--approve` may approve an existing complete fast draft but may not
-   generate missing artifacts.
+9. Present the complete fast package and require one explicit approval. On `--approve`, validate
+   the existing package and run `scripts/review_gate.py approve docs/features/<slug> feature-plan
+   --confirmation "Developer explicitly approved the fast feature plan."`. Never construct gate
+   JSON manually. The helper owns canonical
+   `_kapelle/approvals/feature-plan.json`. `--approve` may not generate missing artifacts.
 10. On `--revise`, update the current lane's draft and invalidate downstream evidence.
-11. Refresh `STATUS.md`. A standard handoff is `spec`; an approved fast handoff is
-    `base-functional-tests`.
+11. Refresh `STATUS.md` once when the review-gate helper has not already refreshed it. Never
+    hand-edit manifest, state, status, or approval JSON. A standard handoff is `spec`; an approved
+    fast handoff is `base-functional-tests`.
 
 ## Review packet
 

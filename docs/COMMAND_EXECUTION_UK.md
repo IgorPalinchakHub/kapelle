@@ -13,6 +13,14 @@ start → spec → design → plan → base-functional-tests
 start --lane=fast → один review/approval → base-functional-tests
 ```
 
+Для документування вже реалізованої фічі є окремий documentation-only процес
+`/kapelle:reconstruct`. Він не є альтернативним development pipeline і не переходить до `plan`,
+`implement` чи release:
+
+```text
+scope → approve → spec → approve → design → approve → review → approve
+```
+
 ## 1. `/kapelle:start <slug> "<raw task>"`
 
 ### Що задати на вході
@@ -82,8 +90,9 @@ Approval:
 
 ### Робота
 
-Architecture-rules subagent повертає правила для конкретних aspects/paths. `design.md` завжди має
-секції:
+Перший виклик виконує тільки delta-discovery відносно вже зібраного `_context/`, запускає один
+bounded architecture-rules lookup і один high-level critic без паралельного inline fallback.
+`design.md` має ціль 150–220 рядків і hard limit 280 рядків / 2800 слів. Він завжди має секції:
 
 1. Context and goal;
 2. Scope and constraints;
@@ -99,24 +108,38 @@ Architecture-rules subagent повертає правила для конкре�
 
 Структура перевіряється `scripts/validate_design.py`.
 
-### Результат
+### Результат першого виклику
 
 ```text
 design.md
-design/*.md
-contracts/*.md
-adr/*.md
 _kapelle/surface-plan.json
+_kapelle/architecture-guidance/design.json
 ```
 
-High-level `design.md` залишається коротким; окремі детальні документи створюються лише для
-самостійних boundaries.
+Повні ADR, contracts, domain/status skeletons, transaction mechanics і call-site analysis тут не
+створюються. Вони з'являються лише після підтвердження напрямку:
 
 ```text
 /kapelle:design <slug> --detail
+```
+
+Після `--detail` отримуємо лише потрібні:
+
+```text
+design/*.md
+contracts/*.md
+adr/*.md
+```
+
+Правки й approval:
+
+```text
 /kapelle:design <slug> --revise "<feedback>"
 /kapelle:design <slug> --approve
 ```
+
+Approval-файли агент не формує вручну: canonical gate helper записує точну schema, повні SHA-256
+та оновлює `STATUS.md`.
 
 ## 4. Standard `/kapelle:plan <slug>`
 
@@ -223,3 +246,46 @@ Dry-run показує preserved files, gaps і next command. Apply додає d
 
 `survey`, `sequences`, `data-model`, `contracts`, `decide-adr`, `glossary`, `roadmap` можуть
 доповнювати артефакти, але не є альтернативним конвеєром.
+
+## 13. `/kapelle:reconstruct <slug> "<feature scope>"`
+
+### Що задати
+
+- новий slug для документаційного пакета;
+- чітку межу існуючої фічі: entrypoints, модулі або observable flow, який треба пояснити.
+
+### Послідовність
+
+```text
+/kapelle:reconstruct <slug> "<feature scope>"
+/kapelle:reconstruct <slug> --approve
+/kapelle:reconstruct <slug> --spec
+/kapelle:reconstruct <slug> --approve
+/kapelle:reconstruct <slug> --design
+/kapelle:reconstruct <slug> --approve
+/kapelle:reconstruct <slug> --review
+/kapelle:reconstruct <slug> --approve
+```
+
+### Результат
+
+```text
+proposal.md
+spec.md
+specs/*.md
+design.md
+design/*.md
+contracts/*.md                         # якщо окремий review справді корисний
+_context/evidence-index.md
+_kapelle/reconstruction.json
+_kapelle/reconstruction-coverage.json
+```
+
+Agent сам семантично знаходить project skills/subagents. Project architecture-rules subagent
+повертає правила саме для поточних aspects, modules, entrypoints і paths. Твердження маркуються як
+`observed`, `inferred`, `declared` або `unknown`; observed/inferred мають точні посилання на код.
+
+Завершення означає лише, що product/business specification та as-built architecture design
+перевірені проти актуального evidence. Це не означає, що фіча release-ready.
+
+Повна інструкція: [RECONSTRUCTION_UK.md](RECONSTRUCTION_UK.md).

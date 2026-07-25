@@ -41,6 +41,12 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
     invalid `_kapelle/` state triggers recovery and the minimal safe next route.
 21. Product `spec.md` and technical `design.md` must converge with the as-built implementation
     before feature review and ship.
+22. Existing-code reconstruction is documentation-only. It classifies material claims as
+    `observed | inferred | declared | unknown`, fingerprints cited sources, distinguishes as-built
+    architecture from rules and deviations, and never routes to planning, implementation, test, or
+    release stages. `documented` never means ship-ready.
+23. Only deterministic Kapelle scripts write review-gate JSON, `_kapelle/manifest.json`,
+    `_kapelle/state.json`, and `STATUS.md`. Skills and subagents never hand-maintain those files.
 
 ## Handoff
 

@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.12.0",
-  "description": "Human-controlled SDLC harness with one adaptive workflow, fast planning for small features, project architecture guidance, explicit approvals, and recoverable state.",
+  "version": "0.14.0",
+  "description": "Human-controlled SDLC harness with bounded architecture design, deterministic approval gates, adaptive feature delivery, and evidence-backed reconstruction.",
   "author": {
     "name": "Ihor Pal"
   },

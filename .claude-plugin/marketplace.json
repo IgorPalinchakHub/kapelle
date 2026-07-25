@@ -8,7 +8,7 @@
     {
       "name": "kapelle",
       "source": "./",
-      "description": "Human-controlled SDLC harness with one adaptive workflow, an XS/S fast lane, explicit approvals, scoped architecture rules, recoverable state, and separate implementation/test phases."
+      "description": "Human-controlled SDLC harness with bounded architecture design, deterministic approval gates, adaptive delivery, scoped project rules, recoverable state, and evidence-backed reconstruction."
     }
   ]
 }

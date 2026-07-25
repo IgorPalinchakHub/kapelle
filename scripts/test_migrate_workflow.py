@@ -24,10 +24,18 @@ class WorkflowMigrationTests(unittest.TestCase):
             self.assertEqual("standard", result["lane"])
             self.assertFalse((feature / "_kapelle").exists())
             self.assertNotIn("kapelle-workflow", (feature / "proposal.md").read_text())
+            self.assertEqual(
+                ["_context/architecture.md"],
+                result["missing_migration_prerequisites"],
+            )
 
     def test_apply_adds_marker_and_routes_without_fabricated_approval(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             feature = self.make_feature(Path(tmp))
+            (feature / "_context").mkdir()
+            (feature / "_context" / "architecture.md").write_text(
+                "# Current architecture context\n"
+            )
             result = apply(feature, "standard")
             workflow = json.loads(
                 (feature / "_kapelle" / "workflow.json").read_text()

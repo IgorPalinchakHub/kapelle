@@ -28,6 +28,8 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
   blocker, and validation state.
 - `test-plan.md`: strategy, AC/integration coverage, required/optional commands, manual checks,
   explicit skips, and deferrals.
+- `_context/evidence-index.md`: reconstruction claim ids, classifications, cited source ranges,
+  confidence, and unresolved evidence gaps.
 
 Keep the package proportional. Prefer a few vertical workstreams and outcome-oriented tasks; do
 not create one document per rule, class, or layer.
@@ -70,3 +72,7 @@ ADR <-> actual architectural decisions
 
 The human-controlled route records complete verification and a fingerprinted release. Observable
 requirement changes always use the amendment lifecycle.
+
+The documentation-only reconstruction route instead converges `spec.md` and `design.md` with
+current cited implementation evidence. It distinguishes as-built behavior, applicable rules, and
+deviations, and never represents documentation completion as release readiness.

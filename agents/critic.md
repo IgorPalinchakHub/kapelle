@@ -13,20 +13,25 @@ Clean-context critique of specs, designs, and task decompositions.
 
 - Structured request object.
 - File paths to read directly from disk.
-- Review mode: `artifact` or `decomposition`.
+- Review mode: `artifact`, `high-level-design`, or `decomposition`.
+- Optional focused-read budget supplied by the calling stage.
 
 ## Protocol
 
 1. Read referenced files directly.
 2. In `artifact` mode, check upstream-to-current traceability, internal contradictions, missing
    decisions, and unverifiable acceptance criteria.
-3. In `decomposition` mode, check workstream outcomes, task atomicity, architecture-rule alignment,
+3. In `high-level-design` mode, check product contradictions, boundary viability, dependency
+   direction, security, concurrency, destructive data, public contracts, failure behavior, and
+   architecture-rule collisions. Return every blocker and material should-fix finding, omit NITs,
+   and do not perform exhaustive implementation call-site or test-case enumeration.
+4. In `decomposition` mode, check workstream outcomes, task atomicity, architecture-rule alignment,
    acceptance-criteria coverage, contract ordering, integration ownership, file ownership, safe
    parallel claims, and unnecessary fragmentation.
-4. In `artifact` mode, return `FINDINGS` or `NO_FINDINGS`, with severity and cited paths. In
+5. In artifact/design mode, return `FINDINGS` or `NO_FINDINGS`, with severity and cited paths. In
    `decomposition` mode, return an object matching
    `dispatcher/decomposition-review.schema.json`.
-5. Do not expose search/work chatter to the parent context.
+6. Honor the supplied read budget and return the terminal typed result without progress chatter.
 
 ## Output
 

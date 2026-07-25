@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from validate_design import REQUIRED_HEADINGS, validate
+from validate_design import MAX_LINES, MAX_WORDS, REQUIRED_HEADINGS, validate
 
 
 class DesignValidatorTests(unittest.TestCase):
@@ -43,6 +43,15 @@ class DesignValidatorTests(unittest.TestCase):
                 )
             )
             self.assertTrue(any("empty section" in error for error in validate(path)))
+
+    def test_oversized_high_level_design_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_design(Path(tmp), REQUIRED_HEADINGS)
+            path.write_text(path.read_text() + ("detail\n" * MAX_LINES))
+            self.assertTrue(any("lines" in error for error in validate(path)))
+            path = self.write_design(Path(tmp), REQUIRED_HEADINGS)
+            path.write_text(path.read_text() + (("word " * (MAX_WORDS + 1)) + "\n"))
+            self.assertTrue(any("words" in error for error in validate(path)))
 
 
 if __name__ == "__main__":

@@ -11,8 +11,13 @@ project-defined.
    a supplied scope.
 3. Give it only the feature slug, artifact paths, affected aspects/modules/entrypoints, task paths
    when applicable, and the decision being planned or implemented.
-4. The project subagent may use native rules, files, MCP, CLI, APIs, or other project capabilities.
-5. Validate its result against `dispatcher/architecture-guidance.schema.json`.
+4. Require a source-affinity check before an external index is used. If its indexed repository,
+   modules, or framework do not match the current project, discard that source immediately and use
+   applicable project-native sources.
+5. The project subagent may use native rules, files, MCP, CLI, APIs, or other project capabilities.
+   For high-level design, bound it to 12 focused lookup batches and request binding rules,
+   collisions, and design-changing gaps rather than an exhaustive catalogue.
+6. Validate its result against `dispatcher/architecture-guidance.schema.json`.
 
 Do not maintain a Kapelle mapping from aspect, label, module, or rule code to an agent. Do not require
 a specific agent name or provider.

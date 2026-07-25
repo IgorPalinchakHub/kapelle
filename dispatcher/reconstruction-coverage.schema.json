@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kapelle.dev/schemas/reconstruction-coverage.schema.json",
+  "title": "Kapelle reconstruction evidence coverage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "slug",
+    "status",
+    "claims",
+    "gaps",
+    "artifact_fingerprints",
+    "source_fingerprints"
+  ],
+  "properties": {
+    "slug": { "type": "string", "minLength": 1 },
+    "status": { "type": "string", "enum": ["PASS", "PASS-WITH-GAPS", "BLOCKED"] },
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "classification",
+          "statement",
+          "artifact",
+          "sources",
+          "confidence"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^RC-[0-9]{3,}$" },
+          "classification": {
+            "type": "string",
+            "enum": ["observed", "inferred", "declared", "unknown"]
+          },
+          "statement": { "type": "string", "minLength": 1 },
+          "artifact": { "type": "string", "minLength": 1 },
+          "sources": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["path", "line_start", "line_end"],
+              "properties": {
+                "path": { "type": "string", "minLength": 1 },
+                "line_start": { "type": "integer", "minimum": 1 },
+                "line_end": { "type": "integer", "minimum": 1 }
+              }
+            }
+          },
+          "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+        }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "artifact_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+    },
+    "source_fingerprints": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+    }
+  }
+}

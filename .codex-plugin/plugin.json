@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.12.0+codex.20260724191822",
-  "description": "Human-controlled SDLC harness with one adaptive workflow, fast planning for small features, project architecture guidance, explicit approvals, and recoverable state.",
+  "version": "0.14.0+codex.20260725143153",
+  "description": "Human-controlled SDLC harness with bounded architecture design, deterministic approval gates, adaptive feature delivery, and evidence-backed reconstruction.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Kapelle",
     "shortDescription": "Human-controlled, reviewable SDLC",
-    "longDescription": "A human-controlled SDLC harness with one adaptive workflow, progressive business and technical specifications, an XS/S fast lane, explicit approvals, scoped architecture guidance, deterministic planning, recoverable state, and separate functional, implementation, unit-test, and verification phases.",
+    "longDescription": "A human-controlled SDLC harness with bounded high-level architecture design, deterministic fingerprinted approval gates, adaptive feature delivery, progressive specifications, recoverable state, and evidence-backed reconstruction of existing behavior and architecture.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
     "capabilities": [
@@ -25,7 +25,8 @@
       "Survey this repository with Kapelle.",
       "Show or recover a feature status with Kapelle.",
       "Amend an in-progress feature safely with Kapelle.",
-      "Migrate an older Kapelle feature to the current workflow."
+      "Migrate an older Kapelle feature to the current workflow.",
+      "Reconstruct an existing feature's product behavior and as-built architecture from code evidence."
     ]
   }
 }

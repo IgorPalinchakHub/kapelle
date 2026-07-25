@@ -32,7 +32,8 @@ Invoke:
 
 1. Validate the plans and rerun `scripts/validate_task_plan.py`. Refuse code-writing for a
    provisional recovery graph or stale approval/fingerprint.
-2. For a human-controlled feature, require current architecture and delivery approvals plus
+2. For a human-controlled feature, check `feature-plan` in fast lane or both `architecture` and
+   `delivery-plan` in standard lane with `scripts/review_gate.py check`. Also require current
    base-functional-test evidence. A confirmed pre-implementation test skip is visible risk, never
    PASS.
 3. Compute dependency-ready production tasks. Sequential execution is the default. Agent Teams

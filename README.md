@@ -3,15 +3,33 @@
 Kapelle is a human-controlled SDLC harness for Claude Code and Codex. It turns a raw developer
 task into reviewable business and technical artifacts, coordinates project-native skills and
 architecture rules, implements production code with human checkpoints, and completes separate
-test and verification phases.
+test and verification phases. It can also reconstruct evidence-backed product and as-built
+architecture documentation for an existing feature without entering delivery.
 
 ```text
 start -> spec -> design -> plan -> base-functional-tests
       -> implement -> unit-tests -> verify -> finalize
 ```
 
-There is one public pipeline. Legacy feature directories are routed to `migrate`; they never
-silently enter a second workflow.
+There is one public development pipeline. A separate documentation-only `reconstruct` workflow
+never hands off to planning or implementation. Legacy feature directories are routed to `migrate`;
+they never silently enter either workflow.
+
+## Existing-feature reconstruction
+
+```text
+scope -> approve -> spec -> approve -> design -> approve -> review -> approve
+```
+
+`/kapelle:reconstruct` traces existing code, tests, configuration, schemas, and project
+documentation. It produces a high-level `spec.md` with detailed `specs/*.md`, and a high-level
+`design.md` with detailed `design/*.md`. Material claims are classified as observed, inferred,
+declared, or unknown and linked to fingerprinted source evidence.
+
+Architecture reconstruction uses the project's semantically discovered skills/subagents and its
+architecture-rules subagent. Documents distinguish the as-built implementation, applicable rules,
+and deviations. Documentation completion does not imply implementation, verification, or release
+readiness.
 
 ## Planning lanes
 
@@ -58,7 +76,14 @@ docs/features/<slug>/
 
 `design.md` always contains Context, Constraints, Architecture rules, Building blocks, Runtime,
 Data/domain, Contracts, Cross-cutting concerns, Decisions, Validation/rollout, and Open questions.
-Detailed component/domain documents stay separate.
+It is capped at 280 lines and 2800 words; the target is 150–220 lines. The first design pass uses
+feature-local evidence-delta discovery, one bounded architecture-rules lookup, and one bounded
+high-level critic. Detailed component/domain documents, contracts, accepted ADRs, mechanical
+call-site analysis, and test mechanics stay in `--detail`.
+
+Review gates have canonical names such as `outline.json` and `business-spec.json`. Stages write
+them only through the deterministic review-gate helper with exact artifact sets and full SHA-256
+fingerprints; aliases and narrative approval JSON are not accepted.
 
 If `_kapelle/` is deleted, `/kapelle:status` reconstructs routing from the durable marker in
 `proposal.md`, human documents, and current code. It never invents approvals, reviews, command
@@ -79,6 +104,8 @@ output, or validation evidence.
 /kapelle:finalize <slug> --version=1.0
 /kapelle:status <slug>
 /kapelle:migrate <slug> [--apply] [--lane=standard|fast]
+/kapelle:reconstruct <slug> "<feature scope>"
+/kapelle:reconstruct <slug> [--approve|--spec|--design|--review]
 ```
 
 Repository/design utilities such as `survey`, `sequences`, `data-model`, `contracts`,
@@ -115,4 +142,5 @@ Kapelle never commits, pushes, merges, tags, creates branches/worktrees, or open
 
 - [Quick start (Ukrainian)](docs/QUICK_START_UK.md)
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
+- [Reverse engineering guide (Ukrainian)](docs/RECONSTRUCTION_UK.md)
 - [Usage and migration](docs/USAGE.md)

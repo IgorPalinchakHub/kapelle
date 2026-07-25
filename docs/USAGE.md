@@ -1,6 +1,6 @@
 # Using Kapelle
 
-## 1. One workflow
+## 1. Development workflow
 
 New work begins with:
 
@@ -84,8 +84,15 @@ Discovery of a risk trigger before approval changes the lane to standard.
 `spec.md` remains the business overview; independently useful scenarios/rules/integrations go to
 `specs/`.
 
-`design.md` always follows the stable high-level template. `--detail` creates only useful
-component/domain/integration documents under `design/` and detailed interfaces under `contracts/`.
+`design.md` follows the stable high-level template, targets 150–220 lines, and is rejected above
+280 lines or 2800 words. The first pass reuses feature context, bounds architecture/critic
+lookups, records ADR candidates, and avoids exhaustive implementation mechanics. `--detail`
+creates only useful component/domain/integration documents under `design/`, accepted ADRs, and
+detailed interfaces under `contracts/`.
+
+All approvals use canonical gate files and exact full fingerprints. A stage never accepts aliases
+such as `feature-outline.json` or `business-specification.json`, and it never hand-edits generated
+state or `STATUS.md`.
 
 `plan` writes outcome-oriented `tasks.md`, a standard-lane `test-plan.md`, and the deterministic
 task graph.
@@ -149,3 +156,30 @@ minimal safe gate.
 - `roadmap`: feature portfolio state.
 
 Utilities enrich artifacts; they never create a second pipeline.
+
+## 9. Reconstruct an existing feature
+
+Use the separate documentation workflow when the code already exists and the goal is to explain
+current behavior and architecture:
+
+```text
+/kapelle:reconstruct <slug> "<feature scope>"
+
+# Example
+/kapelle:reconstruct payments-refund "Existing refund flow from API entrypoint to settlement"
+/kapelle:reconstruct payments-refund --approve
+/kapelle:reconstruct payments-refund --spec
+/kapelle:reconstruct payments-refund --approve
+/kapelle:reconstruct payments-refund --design
+/kapelle:reconstruct payments-refund --approve
+/kapelle:reconstruct payments-refund --review
+/kapelle:reconstruct payments-refund --approve
+```
+
+The result is a hierarchical product package (`spec.md`, `specs/*.md`) and as-built architecture
+package (`design.md`, `design/*.md`), plus an evidence index and fingerprinted coverage record.
+`--approve` always approves only the current draft shown by `STATUS.md`.
+
+This workflow writes documentation only. It does not create tasks, change production code, run
+delivery stages, or claim release readiness. See
+[the Ukrainian reconstruction guide](RECONSTRUCTION_UK.md).
