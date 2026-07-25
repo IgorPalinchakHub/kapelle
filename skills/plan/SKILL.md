@@ -15,6 +15,9 @@ Invoke:
 /kapelle:plan <slug> --approve
 ```
 
+Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
+asking for developer input.
+
 ## Protocol
 
 1. Require the complete business/design/contracts package and run
@@ -32,7 +35,13 @@ Invoke:
 6. Every task states outcome, ACs, dependencies, contracts, primary aspect, exact file ownership,
    and short Definition of Done. Production tasks do not include writing unit tests.
 7. Run `scripts/validate_task_plan.py`. For M/L/XL, dispatch exactly one fresh critic and allow one
-   correction pass.
+   correction pass. Persist its typed result as `_kapelle/decomposition-review.json` and run
+   `scripts/validate_json.py docs/features/<slug>/_kapelle/decomposition-review.json
+   dispatcher/decomposition-review.schema.json` before using its verdict. A non-zero exit blocks
+   approval; do not inspect the schema manually.
+   If decomposition exposes a real decision, translate it into a short description of the intended
+   implementation and at most three options with trade-offs. Never ask about a task's DoD,
+   blocker id, or planning artifact.
 8. Select or record the recommended implementation checkpoint: `task`, `workstream`, or `none`.
 9. On `--revise`, update the delivery package and invalidate delivery approval and downstream
    test/implementation evidence.

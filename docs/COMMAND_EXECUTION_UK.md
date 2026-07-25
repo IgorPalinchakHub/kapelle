@@ -92,7 +92,8 @@ Approval:
 
 Перший виклик виконує тільки delta-discovery відносно вже зібраного `_context/`, запускає один
 bounded architecture-rules lookup і один high-level critic без паралельного inline fallback.
-`design.md` має ціль 150–220 рядків і hard limit 280 рядків / 2800 слів. Він завжди має секції:
+Новий `design.md` має ціль до 220 рядків / 2200 слів і hard limit 280 рядків / 2800 слів.
+Для legacy overview ліміт стає blocking лише після явного `--compact`. Документ завжди має секції:
 
 1. Context and goal;
 2. Scope and constraints;
@@ -135,11 +136,18 @@ adr/*.md
 
 ```text
 /kapelle:design <slug> --revise "<feedback>"
+/kapelle:design <slug> --compact
 /kapelle:design <slug> --approve
 ```
 
-Approval-файли агент не формує вручну: canonical gate helper записує точну schema, повні SHA-256
-та оновлює `STATUS.md`.
+`--compact` потрібен лише для явного перенесення старого довгого overview у новий короткий формат.
+Він робить один повний rewrite, не більше однієї корекції та ніколи не виконує approval у тому ж
+запуску.
+
+`--approve` — чистий детермінований gate. Він не читає документи для LLM-ревю, не шукає код, не
+запускає subagents і не редагує design. Один validator перевіряє весь architecture package, після
+чого canonical gate helper записує точну schema, повні SHA-256 та оновлює `STATUS.md`. При помилці
+команда завершується з `REFUSED-validation` і окремим маршрутом на `--revise`.
 
 ## 4. Standard `/kapelle:plan <slug>`
 

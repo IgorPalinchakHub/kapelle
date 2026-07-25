@@ -5,13 +5,21 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from validate_design import MAX_LINES, MAX_WORDS, REQUIRED_HEADINGS, validate
+from validate_design import (
+    DESIGN_FORMAT_MARKER,
+    MAX_LINES,
+    MAX_WORDS,
+    REQUIRED_HEADINGS,
+    validate,
+)
 
 
 class DesignValidatorTests(unittest.TestCase):
-    def write_design(self, root: Path, headings: list[str]) -> Path:
+    def write_design(
+        self, root: Path, headings: list[str], *, marker: bool = True
+    ) -> Path:
         path = root / "design.md"
-        body = ["# Design", ""]
+        body = ([DESIGN_FORMAT_MARKER] if marker else []) + ["# Design", ""]
         for heading in headings:
             body.extend([heading, "", "Concise evidence or not-applicable reason.", ""])
         path.write_text("\n".join(body))
@@ -52,6 +60,15 @@ class DesignValidatorTests(unittest.TestCase):
             path = self.write_design(Path(tmp), REQUIRED_HEADINGS)
             path.write_text(path.read_text() + (("word " * (MAX_WORDS + 1)) + "\n"))
             self.assertTrue(any("words" in error for error in validate(path)))
+
+    def test_legacy_design_size_is_non_blocking_until_compaction(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.write_design(
+                Path(tmp), REQUIRED_HEADINGS, marker=False
+            )
+            path.write_text(path.read_text() + ("legacy detail\n" * MAX_LINES))
+            self.assertEqual([], validate(path))
+            self.assertTrue(validate(path, strict_size=True))
 
 
 if __name__ == "__main__":

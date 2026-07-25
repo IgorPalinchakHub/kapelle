@@ -17,12 +17,15 @@ Invoke:
 
 Read [`../../references/fast-lane.md`](../../references/fast-lane.md),
 [`../../references/interview-depth.md`](../../references/interview-depth.md), and
-[`../../references/design-template.md`](../../references/design-template.md).
+[`../../references/design-template.md`](../../references/design-template.md). Any developer
+question must follow
+[`../../references/developer-questions.md`](../../references/developer-questions.md).
 
 ## Protocol
 
 1. Require a stable slug and raw task for a new feature. Ask only one consolidated question when
-   intended behavior or plausible project ownership cannot be established.
+   intended behavior or plausible project ownership cannot be established. Describe the intended
+   outcome and options with trade-offs; never make the developer resolve internal ids.
 2. Dispatch `kapelle:explorer` read-only to discover current behavior, actors, entrypoints,
    business flows, data, integrations, tests, precedents, and the project boundary.
 3. Separate observed behavior, requested behavior, assumptions, and unresolved decisions.
@@ -40,14 +43,22 @@ Read [`../../references/fast-lane.md`](../../references/fast-lane.md),
 ```
 
    Also write `spec.md`, `_context/architecture.md`, `_kapelle/workflow.json`, and
-   `_kapelle/size.json`.
+   `_kapelle/size.json`. Validate the two machine artifacts with:
+
+```text
+scripts/validate_json.py docs/features/<slug>/_kapelle/workflow.json dispatcher/workflow-state.schema.json
+scripts/validate_json.py docs/features/<slug>/_kapelle/size.json dispatcher/size.schema.json
+```
+
+   A non-zero exit blocks the stage.
 7. In `standard`, stop after the concise outline and hand off to `/kapelle:spec <slug>`.
 8. In `fast`, complete the bounded planning package in this invocation:
    - complete the small specification inside `spec.md`;
    - obtain scoped project architecture rules;
    - write `design.md` using every required design-template heading;
    - write vertical `tasks.md` with an inline Test strategy section;
-   - write `_kapelle/surface-plan.json` and `_kapelle/task-plan.json`, then run
+   - write `_kapelle/surface-plan.json` and `_kapelle/task-plan.json`, validate the surface with
+     `scripts/validate_json.py`, then run `scripts/validate_design.py` and
      `scripts/validate_task_plan.py`;
    - create at most three production tasks and no unit-test-writing task;
    - do not require `specs/`, `design/`, `contracts/`, or `test-plan.md` unless evidence makes one

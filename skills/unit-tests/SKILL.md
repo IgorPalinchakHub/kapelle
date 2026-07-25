@@ -33,7 +33,10 @@ Invoke:
 8. Write `_kapelle/unit-tests.json` matching `unit-test-run.schema.json`. Fingerprint the
    post-implementation human documents plus structural task plan; include the complete
    implementation-file inventory in `implementation_fingerprints`.
-9. Refresh status and hand off to `/kapelle:verify <slug> --validation=ask`.
+9. Run `scripts/validate_json.py docs/features/<slug>/_kapelle/unit-tests.json
+   dispatcher/unit-test-run.schema.json`. On non-zero exit, refuse completion and correct the
+   artifact once; never validate it by visual comparison with the schema.
+10. Refresh status and hand off to `/kapelle:verify <slug> --validation=ask`.
 
 Unit tests are intentionally written in this phase, never during `/kapelle:implement`.
 

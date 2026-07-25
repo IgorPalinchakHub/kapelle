@@ -35,7 +35,10 @@ Invoke:
    JSON manually.
 8. Write `_kapelle/release.json` matching `release.schema.json`, with the requested version and
    current document and verified implementation fingerprints.
-9. Mark the feature `completed`, refresh `STATUS.md`, and report the final human documentation.
+9. Run `scripts/validate_json.py docs/features/<slug>/_kapelle/release.json
+   dispatcher/release.schema.json`. On non-zero exit, refuse completion and correct the artifact
+   once; never validate it by visual comparison with the schema.
+10. Mark the feature `completed`, refresh `STATUS.md`, and report the final human documentation.
 
 Kapelle does not commit, tag, push, merge, or create a pull request. It never hand-edits manifest,
 state, status, or approval JSON.

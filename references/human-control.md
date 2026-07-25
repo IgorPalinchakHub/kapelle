@@ -18,6 +18,9 @@ See `fast-lane.md`.
 ## Human control
 
 The agent researches and proposes. The developer owns product and technical decisions.
+Whenever a decision requires developer input, follow
+[`developer-questions.md`](./developer-questions.md): ask a standalone plain-language question
+about the intended change and its trade-offs, never about internal artifact notation.
 
 Standard lane has five explicit review gates:
 

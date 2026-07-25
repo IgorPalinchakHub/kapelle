@@ -7,6 +7,11 @@ artifact-driven step that declares:
 - **`produces`** — the artifact(s) it writes (its own on-disk state);
 - **`prior_stage`** — the stage that produces each required artifact (used in the refusal message).
 
+Any question that crosses the stage boundary to the developer follows
+[`developer-questions.md`](./developer-questions.md). Raw agent findings and internal ids remain
+internal; the stage translates them into a concise implementation decision with explicit
+trade-offs.
+
 Protocol:
 
 1. Presence-check every required artifact on disk.
@@ -28,6 +33,12 @@ and artifact set from `dispatcher/artifact-dependencies.json`, writes the strict
 `review-gate.schema.json` shape with full SHA-256 values, and refreshes generated status. Stages
 must check the required gate through this helper and must never accept aliases or narrative gate
 JSON.
+
+Every machine JSON/JSONL artifact must pass the shared fail-closed validator before it affects
+routing or stage completion. See
+[`json-schema-validation.md`](./json-schema-validation.md). Stage-specific validators add
+cross-file, graph, filesystem, fingerprint, and readiness semantics; they do not reimplement
+schema structure.
 
 Each logical artifact has one physical path in `dispatcher/artifact-dependencies.json`.
 Human-readable artifacts are durable state. `_kapelle/` contains derived execution state and
@@ -52,13 +63,14 @@ Normal feature stages write only below `docs/features/<slug>/`. Shared repositor
 
 When invoked with `--change=<change-id>`:
 
-1. Read `docs/features/<slug>/_kapelle/changes/<change-id>/change.json` and its baseline.
+1. Read `docs/features/<slug>/_kapelle/changes/<change-id>/request.json`, `state.json`, and the
+   current revision evidence.
 2. Refuse if the current stage is absent from the approved route.
 3. Restrict reads and edits to the approved impact matrix.
 4. Update canonical feature artifacts in place; do not create a parallel source of truth.
 5. Recompute produced-artifact fingerprints, update lineage sidecars, and clear `stale` only when
    the artifact was regenerated against the current revision.
-6. Append stage status and produced paths to the change `progress.jsonl`.
+6. Update the schema-valid change state and reconciliation evidence.
 7. Stop for renewed approval if an unapproved impact is discovered.
 
 Before any feature stage, a missing or invalid `_kapelle/manifest.json` triggers the recovery

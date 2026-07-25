@@ -8,6 +8,12 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from jsonschema_lite import validate_instance
+
+ROOT = Path(__file__).resolve().parent.parent
+TASK_PLAN_SCHEMA = ROOT / "dispatcher" / "task-plan.schema.json"
+SURFACE_PLAN_SCHEMA = ROOT / "dispatcher" / "surface-plan.schema.json"
+
 AC_PATTERN = re.compile(r"\bAC-[A-Za-z0-9][A-Za-z0-9._-]*\b")
 
 
@@ -103,25 +109,19 @@ def validate(tasks_path: Path, surface_path: Path, spec_path: Path) -> list[str]
     plan = load_json(tasks_path)
     surface = load_json(surface_path)
     spec_text = spec_path.read_text()
+    errors.extend(
+        f"task-plan schema: {item}"
+        for item in validate_instance(plan, TASK_PLAN_SCHEMA)
+    )
+    errors.extend(
+        f"surface-plan schema: {item}"
+        for item in validate_instance(surface, SURFACE_PLAN_SCHEMA)
+    )
+    if errors:
+        return errors
 
-    required_plan_fields = {
-        "slug",
-        "decomposition_depth",
-        "architecture_guidance_path",
-        "workstreams",
-        "tasks",
-    }
-    for field in sorted(required_plan_fields - set(plan)):
-        errors.append(f"task plan: missing field {field}")
-
-    workstreams_raw = plan.get("workstreams", [])
-    tasks_raw = plan.get("tasks", [])
-    if not isinstance(workstreams_raw, list) or not workstreams_raw:
-        errors.append("task plan: workstreams must be a non-empty array")
-        workstreams_raw = []
-    if not isinstance(tasks_raw, list) or not tasks_raw:
-        errors.append("task plan: tasks must be a non-empty array")
-        tasks_raw = []
+    workstreams_raw = plan["workstreams"]
+    tasks_raw = plan["tasks"]
 
     workstreams = index_unique(workstreams_raw, "workstream", errors)
     tasks = index_unique(tasks_raw, "task", errors)
@@ -144,28 +144,7 @@ def validate(tasks_path: Path, surface_path: Path, spec_path: Path) -> list[str]
         if not workstream.get("completion_signal"):
             errors.append(f"workstream {workstream_id}: missing completion_signal")
 
-    required_task_fields = {
-        "workstream_id",
-        "intent",
-        "acs",
-        "dod",
-        "primary_aspect",
-        "aspects",
-        "provides_contracts",
-        "consumes_contracts",
-        "integration_checks",
-        "validation",
-        "risk",
-        "parallel_candidate",
-        "ownership_status",
-        "files_hint",
-        "status",
-    }
-
     for task_id, task in tasks.items():
-        for field in sorted(required_task_fields - set(task)):
-            errors.append(f"task {task_id}: missing field {field}")
-
         workstream_id = task.get("workstream_id")
         if workstream_id not in workstreams:
             errors.append(f"task {task_id}: unknown workstream {workstream_id}")

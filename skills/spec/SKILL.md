@@ -15,7 +15,8 @@ Invoke:
 /kapelle:spec <slug> --approve
 ```
 
-Read [`../../references/interview-depth.md`](../../references/interview-depth.md).
+Read [`../../references/interview-depth.md`](../../references/interview-depth.md) and
+[`../../references/developer-questions.md`](../../references/developer-questions.md).
 
 ## Protocol
 
@@ -30,6 +31,8 @@ Read [`../../references/interview-depth.md`](../../references/interview-depth.md
    - standard: business analysis plus one combined critic pass;
    - deep: business analyst, separate critic, separate devil's advocate.
    Never reduce behavioral coverage; allow one correction pass.
+   When clarification is truly blocking, ask one standalone business question with concrete
+   options and trade-offs. Do not mention internal finding, blocker, AC, or artifact ids.
 4. Cover actors, triggers, main/alternative flows, rules, validations, subprocesses, component
    reactions, failures, retry/idempotency, permission, compatibility, and measurable ACs.
 5. Keep `spec.md` as the overview. Create only independently useful `specs/scenarios.md`,

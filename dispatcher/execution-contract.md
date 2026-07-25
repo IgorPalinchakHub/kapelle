@@ -33,6 +33,10 @@ For every dependency-ready task:
 7. Optionally run existing focused base functional tests under `ask | allow | skip`.
 8. Record `implemented-unverified`, changed files, observable behavior, deviations, and risks.
 
+If planning or implementation needs developer input, the coordinator must translate the internal
+finding using `references/developer-questions.md`. Never forward planner/reviewer prose, artifact
+references, task/blocker ids, or DoD wording as the question.
+
 `task`, `workstream`, and `none` checkpoints control how often control returns to the developer.
 They do not weaken amendment, verification, or final approval gates.
 

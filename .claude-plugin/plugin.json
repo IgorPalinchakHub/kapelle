@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.14.0",
-  "description": "Human-controlled SDLC harness with bounded architecture design, deterministic approval gates, adaptive feature delivery, and evidence-backed reconstruction.",
+  "version": "0.16.1",
+  "description": "Human-controlled SDLC harness with deterministic schema and approval gates, bounded architecture design, adaptive feature delivery, and evidence-backed reconstruction.",
   "author": {
     "name": "Ihor Pal"
   },

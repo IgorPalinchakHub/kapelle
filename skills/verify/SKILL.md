@@ -31,7 +31,10 @@ Invoke:
 6. Persist task validation evidence for the complete implementation inventory and write
    `_kapelle/verification.json` matching `verification.schema.json`, including fingerprints for
    every production and test file in the verified feature inventory.
-7. When behavior is wrong, hand off to developer testing or `/kapelle:amend`. When all required
+7. Run `scripts/validate_json.py docs/features/<slug>/_kapelle/verification.json
+   dispatcher/verification.schema.json`. On non-zero exit, refuse completion and correct the
+   artifact once; never validate it by visual comparison with the schema.
+8. When behavior is wrong, hand off to developer testing or `/kapelle:amend`. When all required
    checks pass, refresh status and hand off to:
 
 ```text

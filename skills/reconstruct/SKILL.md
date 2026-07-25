@@ -70,7 +70,9 @@ generates the next phase in the same invocation.
    - `_context/evidence-index.md` with the claim/source index;
    - `_kapelle/workflow.json` conforming to `workflow-state.schema.json`;
    - `_kapelle/reconstruction.json` conforming to `reconstruction.schema.json`.
-4. Stop for scope review. Handoff to `/kapelle:reconstruct <slug> --approve`.
+4. Validate both JSON artifacts with `scripts/validate_json.py` and their named schemas. A
+   non-zero exit blocks the stage; do not compare the artifact and schema by eye.
+5. Stop for scope review. Handoff to `/kapelle:reconstruct <slug> --approve`.
 
 ## Approval mode
 
@@ -111,8 +113,10 @@ generates the next phase in the same invocation.
    Rule, and Deviation statements.
 5. Write at least one independently useful `design/*.md` detail document. Add `contracts/*.md` only
    for interfaces that benefit from separate review.
-6. Run `scripts/validate_design.py docs/features/<slug>/design.md`. Stop for review and hand off to
-   `/kapelle:reconstruct <slug> --approve`.
+6. Run `scripts/validate_design.py docs/features/<slug>/design.md`, validate
+   `_kapelle/surface-plan.json` with `scripts/validate_json.py`, and validate every persisted
+   `_kapelle/architecture-guidance/*.json` against `architecture-guidance.schema.json`. Stop on
+   any non-zero exit; otherwise hand off to `/kapelle:reconstruct <slug> --approve`.
 
 ## Evidence review phase (`--review`)
 
@@ -125,6 +129,8 @@ generates the next phase in the same invocation.
    architecture deviations are explicit.
 4. Write `_kapelle/reconstruction-coverage.json` conforming to
    `reconstruction-coverage.schema.json`. Fingerprint every cited source and generated artifact.
+   Run `scripts/validate_json.py docs/features/<slug>/_kapelle/reconstruction-coverage.json
+   dispatcher/reconstruction-coverage.schema.json`; a non-zero exit blocks review.
 5. Use:
    - `PASS` when there are no material gaps;
    - `PASS-WITH-GAPS` when gaps are explicit and the package remains useful;

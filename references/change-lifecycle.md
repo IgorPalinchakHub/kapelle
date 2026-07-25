@@ -6,7 +6,18 @@ test, or documentation changes discovered after planning begins.
 ## Protocol
 
 1. Pause new implementation dispatch after the current atomic operation.
-2. Capture immutable revision evidence under `_kapelle/changes/<change-id>/revisions/rNNN/`.
+2. Use one canonical machine layout:
+
+```text
+_kapelle/changes/<change-id>/
+  request.json
+  state.json
+  reconciliation.json
+  artifacts/<artifact-id>.json
+  revisions/rNNN/revision.json
+```
+
+   Capture immutable revision evidence beside each `revision.json`.
 3. Classify impact across specification, design, contracts, functional tests, tasks, production
    code, unit tests, verification, diagrams, and release evidence.
 4. Fingerprint affected artifacts and propagate stale state through
@@ -31,5 +42,9 @@ keep | revalidate | rework | supersede | revert-required
 8. Update canonical human documents in place. Keep history internal.
 9. Recompute approvals/evidence only from actual current results. Never fabricate lost evidence or
    automatically revert code.
+10. Before any record affects routing, validate it with `scripts/validate_json.py` and its exact
+    dispatcher schema: `change-request`, `change-state`, `change-revision`, `artifact-state`, or
+    `reconciliation`. Structural validity does not imply route approval; semantic freshness,
+    fingerprints, and explicit human approval remain separate gates.
 
 Kapelle performs no git operations. Rejection or unexplained drift leaves the amendment blocked.

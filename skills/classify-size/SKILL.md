@@ -24,7 +24,9 @@ Classify feature size and write `_kapelle/size.json`.
 5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
 6. Write `_kapelle/size.json` as `{ "size": "XS|S|M|L|XL", "execution_depth": "...",
    "interview_depth": "lean|standard|deep", "lane": "fast|standard", "reason": "..." }`.
-7. Refresh `STATUS.md` and emit the chat handoff per
+7. Run `scripts/validate_json.py docs/features/<slug>/_kapelle/size.json
+   dispatcher/size.schema.json`. Refuse completion on non-zero exit.
+8. Refresh `STATUS.md` and emit the chat handoff per
    [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output

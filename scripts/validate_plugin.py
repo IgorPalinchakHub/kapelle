@@ -6,6 +6,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from jsonschema_lite import audit_schema, validate_file
+
 ROOT = Path(__file__).resolve().parent.parent
 errors: list[str] = []
 checks = 0
@@ -107,7 +109,12 @@ for rel in [
     'references/repository-context.md',
     'config/shapes/architecture-rules-agent.shape.md',
     'references/change-lifecycle.md',
+    'references/developer-questions.md',
+    'references/json-schema-validation.md',
     'scripts/artifact_fingerprint.py',
+    'scripts/jsonschema_lite.py',
+    'scripts/validate_json.py',
+    'scripts/test_jsonschema_lite.py',
     'scripts/validate_task_plan.py',
     'scripts/test_validate_task_plan.py',
     'scripts/feature_state.py',
@@ -118,12 +125,35 @@ for rel in [
     'scripts/test_feature_state.py',
     'scripts/validate_design.py',
     'scripts/test_validate_design.py',
+    'scripts/validate_architecture_package.py',
+    'scripts/test_validate_architecture_package.py',
     'scripts/review_gate.py',
     'scripts/test_review_gate.py',
     'scripts/migrate_workflow.py',
     'scripts/test_migrate_workflow.py',
 ]:
     check((ROOT / rel).exists(), f"missing {rel}")
+
+dispatcher_schemas = sorted((ROOT / 'dispatcher').glob('*.schema.json'))
+check(len(dispatcher_schemas) == 26,
+      'dispatcher: expected 26 canonical JSON Schemas')
+for schema_path in dispatcher_schemas:
+    for schema_error in audit_schema(schema_path):
+        check(False, f'{schema_path.relative_to(ROOT)}: unsupported schema: {schema_error}')
+
+for instance_name, schema_name in [
+    ('surface-plan.json', 'surface-plan.schema.json'),
+    ('architecture-guidance.json', 'architecture-guidance.schema.json'),
+    ('task-plan.json', 'task-plan.schema.json'),
+]:
+    for schema_error in validate_file(
+        ROOT / 'examples' / instance_name,
+        ROOT / 'dispatcher' / schema_name,
+    ):
+        check(
+            False,
+            f'examples/{instance_name}: structural validation failed: {schema_error}',
+        )
 
 skills = sorted((ROOT / 'skills').glob('*/SKILL.md'))
 check(bool(skills), 'no Claude skills found')
@@ -260,6 +290,44 @@ for required in [
     '--checkpoint=none',
 ]:
     check(required in human_control, f'human control: missing {required!r}')
+
+developer_questions = (ROOT / 'references/developer-questions.md').read_text()
+developer_questions_lower = developer_questions.lower()
+for required in [
+    'what Kapelle intends to implement',
+    'at most three real options',
+]:
+    check(required in developer_questions,
+          f'developer questions: missing contract guard {required!r}')
+for required in [
+    'raw critic, planner, validator, or subagent output',
+    'trade-offs',
+    'vague prompts',
+]:
+    check(required in developer_questions_lower,
+          f'developer questions: missing contract guard {required!r}')
+for rel in [
+    'skills/start/SKILL.md',
+    'skills/spec/SKILL.md',
+    'skills/design/SKILL.md',
+    'skills/plan/SKILL.md',
+    'skills/implement/SKILL.md',
+    'skills/amend/SKILL.md',
+]:
+    check(
+        'developer-questions.md' in (ROOT / rel).read_text(),
+        f'{rel}: missing developer-question translation contract',
+    )
+for rel in [
+    'agents/implementation-planner.md',
+    'agents/critic.md',
+    'agents/change-reconciler.md',
+]:
+    text = (ROOT / rel).read_text()
+    check(
+        'internal' in text.lower() and 'question' in text.lower(),
+        f'{rel}: must keep decision findings internal to the coordinator',
+    )
 check('<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->' in
       (ROOT / 'skills/start/SKILL.md').read_text(),
       'start: missing durable workflow recovery marker')
@@ -291,6 +359,49 @@ for required in [
 ]:
     check(required in validation_execution,
           f'validation execution: missing policy guarantee {required!r}')
+
+schema_validated_stages = {
+    'skills/start/SKILL.md': ['workflow-state.schema.json', 'size.schema.json'],
+    'skills/design/SKILL.md': [
+        'architecture-guidance.schema.json',
+        'surface-plan.schema.json',
+    ],
+    'skills/plan/SKILL.md': ['decomposition-review.schema.json'],
+    'skills/base-functional-tests/SKILL.md': ['base-functional-tests.schema.json'],
+    'skills/implement/SKILL.md': [
+        'task-context.schema.json',
+        'implementation-plan.schema.json',
+        'execution-verdict.schema.json',
+        'execution-telemetry.schema.json',
+    ],
+    'skills/unit-tests/SKILL.md': ['unit-test-run.schema.json'],
+    'skills/verify/SKILL.md': ['verification.schema.json'],
+    'skills/finalize/SKILL.md': ['release.schema.json'],
+    'skills/amend/SKILL.md': [
+        'change-request',
+        'change-revision',
+        'change-state',
+        'artifact-state',
+        'reconciliation',
+    ],
+    'skills/reconstruct/SKILL.md': [
+        'workflow-state.schema.json',
+        'reconstruction.schema.json',
+        'reconstruction-coverage.schema.json',
+    ],
+}
+for rel, schema_names in schema_validated_stages.items():
+    text = (ROOT / rel).read_text()
+    check('validate_json.py' in text,
+          f'{rel}: machine artifacts must use deterministic JSON validation')
+    for schema_name in schema_names:
+        check(schema_name in text,
+              f'{rel}: missing deterministic validation for {schema_name}')
+
+dispatcher_text = (ROOT / 'dispatcher/dispatcher.md').read_text()
+for required in ['--pointer', '--jsonl', 'Structural failure blocks dispatch']:
+    check(required in dispatcher_text,
+          f'dispatcher: missing deterministic runtime validation guard {required!r}')
 
 task_schema = load_json('dispatcher/task-context.schema.json')
 if task_schema:
@@ -509,19 +620,42 @@ for required in [
     'design-template.md',
     'design-execution.md',
     'validate_design.py',
+    'validate_architecture_package.py',
     'review_gate.py check',
 ]:
     check(required in design_skill, f'design: missing scoped architecture/surface guard {required!r}')
+check(
+    design_skill.find('### Approval route') < design_skill.find('## Generation protocol'),
+    'design: approval route must precede every generation route',
+)
+for required in [
+    'Do not read artifact bodies',
+    'edit files',
+    'dispatch agents',
+    'never ask for a second',
+    '--compact',
+    'at most one correction',
+]:
+    check(required in design_skill, f'design: approval/compaction isolation missing {required!r}')
 
 design_execution = (ROOT / 'references/design-execution.md').read_text()
 for required in [
     '2800 words',
+    '2200 words',
     'at most 12 targeted lookup batches',
     'fallback work concurrently',
     'never hand-edit',
+    'pure gate operation',
+    'no approval in that invocation',
 ]:
     check(required in design_execution,
           f'design execution: missing bounded-run guard {required!r}')
+
+review_gate_text = (ROOT / 'scripts/review_gate.py').read_text()
+check(
+    'validate_architecture_package(feature_dir)' in review_gate_text,
+    'review gate: architecture package validation must be runtime-enforced',
+)
 
 start_skill = (ROOT / 'skills/start/SKILL.md').read_text()
 for required in [

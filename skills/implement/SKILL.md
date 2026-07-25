@@ -27,6 +27,7 @@ Invoke:
 - [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 - [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
 - [`../../references/human-control.md`](../../references/human-control.md).
+- [`../../references/developer-questions.md`](../../references/developer-questions.md).
 
 ## Protocol
 
@@ -47,7 +48,7 @@ Invoke:
    - discover project skills/subagents semantically for each aspect;
    - dispatch the project's architecture-rules subagent for scoped rules;
    - dispatch `kapelle:implementation-planner` and persist its plan with current revision and
-     fingerprints;
+     fingerprints in the task run's `plan` field;
    - apply risk-based approval and bounded retries;
    - dispatch `kapelle:implementer` and fresh `kapelle:reviewer` when risk requires it;
    - write production code and production configuration only.
@@ -58,13 +59,24 @@ Invoke:
    explicitly requests them. Skipped required checks remain `validation-deferred`.
 8. After each checkpoint return: implemented business outcome, changed files, observable behavior,
    deviations/risks, and the next task or command. Keep internal agent chatter out of the packet.
+   If blocked on developer input, ask a standalone question describing what will be implemented,
+   why the choice matters, and the options with trade-offs. Do not mention task/DoD/blocker ids,
+   artifact paths, or quote planner/reviewer output.
 9. Developer feedback that changes approved behavior, design, contract, or task ownership triggers
    `/kapelle:amend`; pause remaining dispatch.
 10. Mark implemented tasks `implemented-unverified`, not `completed`. Synchronize `tasks.md`,
     `_kapelle/task-plan.json`, task-run evidence, and `STATUS.md`.
-11. When every production task is implemented, hand off to `/kapelle:unit-tests <slug>
+11. After each update to `_kapelle/task-runs/<task-id>.json`, deterministically validate every
+    present typed component using `scripts/validate_json.py --pointer`: `task` against
+    `task-context.schema.json`, `architecture_guidance` against
+    `architecture-guidance.schema.json`, `plan` against `implementation-plan.schema.json`,
+    `implementation` and `review` against `execution-verdict.schema.json`, and `validation`
+    against `validation-decision.schema.json`. Validate appended telemetry with
+    `scripts/validate_json.py docs/features/<slug>/_kapelle/telemetry/execution.jsonl
+    dispatcher/execution-telemetry.schema.json --jsonl`. A non-zero exit blocks the checkpoint.
+12. When every production task is implemented, hand off to `/kapelle:unit-tests <slug>
     --validation=ask`.
-12. Stop edit retries at `implementation.max_task_attempts` and role dispatches at
+13. Stop edit retries at `implementation.max_task_attempts` and role dispatches at
     `implementation.max_agent_runs_per_task`.
 
 ## Definition of Done

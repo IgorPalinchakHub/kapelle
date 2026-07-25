@@ -47,6 +47,12 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
     release stages. `documented` never means ship-ready.
 23. Only deterministic Kapelle scripts write review-gate JSON, `_kapelle/manifest.json`,
     `_kapelle/state.json`, and `STATUS.md`. Skills and subagents never hand-maintain those files.
+24. Every machine JSON/JSONL artifact is structurally checked by Kapelle's fail-closed schema
+    validator before it affects routing or stage completion. Stage validators add only semantic,
+    cross-file, graph, filesystem, freshness, and readiness checks.
+25. Developer questions are standalone and concise: explain the intended change, why the decision
+    matters, and the real options with trade-offs. Never forward raw subagent output or require the
+    developer to decode task, blocker, DoD, gate, acceptance-criterion, or artifact identifiers.
 
 ## Handoff
 

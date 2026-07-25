@@ -21,27 +21,33 @@ REQUIRED_HEADINGS = [
     "## 10. Validation and rollout",
     "## 11. Open questions",
 ]
+DESIGN_FORMAT_MARKER = "<!-- kapelle-design-format: high-level-v2 -->"
+TARGET_LINES = 220
+TARGET_WORDS = 2200
 MAX_LINES = 280
 MAX_WORDS = 2800
 
 
-def validate(path: Path) -> list[str]:
+def validate(path: Path, *, strict_size: bool | None = None) -> list[str]:
     if not path.is_file():
         return [f"missing design file: {path}"]
-    lines = path.read_text(errors="replace").splitlines()
+    text = path.read_text(errors="replace")
+    lines = text.splitlines()
+    if strict_size is None:
+        strict_size = DESIGN_FORMAT_MARKER in lines[:5]
     headings = [
         line.strip()
         for line in lines
         if re.match(r"^##\s+\d+\.\s+", line.strip())
     ]
     errors: list[str] = []
-    if len(lines) > MAX_LINES:
+    if strict_size and len(lines) > MAX_LINES:
         errors.append(
             f"high-level design has {len(lines)} lines; maximum is {MAX_LINES}; "
             "move boundary details under design/"
         )
-    word_count = len(path.read_text(errors="replace").split())
-    if word_count > MAX_WORDS:
+    word_count = len(text.split())
+    if strict_size and word_count > MAX_WORDS:
         errors.append(
             f"high-level design has {word_count} words; maximum is {MAX_WORDS}; "
             "move boundary details under design/"
@@ -79,13 +85,27 @@ def validate(path: Path) -> list[str]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("design")
+    parser.add_argument(
+        "--strict-size",
+        action="store_true",
+        help="Enforce size limits even when the high-level-v2 marker is absent.",
+    )
     args = parser.parse_args()
-    errors = validate(Path(args.design))
+    path = Path(args.design)
+    text = path.read_text(errors="replace") if path.is_file() else ""
+    marker_present = DESIGN_FORMAT_MARKER in text.splitlines()[:5]
+    errors = validate(path, strict_size=True if args.strict_size else None)
     if errors:
         print(f"FAILED: {len(errors)} design error(s)")
         for error in errors:
             print(f"- {error}")
         return 1
+    if not marker_present and not args.strict_size:
+        print(
+            "PASSED-WITH-WARNING: legacy design structure is valid; "
+            "size limits are not approval-blocking until explicit --compact migration"
+        )
+        return 0
     print("PASSED: design structure and high-level size are valid")
     return 0
 

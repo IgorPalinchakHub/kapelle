@@ -27,6 +27,9 @@ Produce a read-only reconciliation between two approved change revisions.
    - `revert-required`: existing changes contradict the new revision.
 4. Cite evidence and propose replacement task ids where needed.
 5. Return a document matching `dispatcher/reconciliation.schema.json`.
+   Decision needs remain internal data with intended outcome, consequence, options, and
+   trade-offs. Never address the developer or turn revision/artifact/task ids into the question;
+   the calling stage renders it in plain language.
 
 ## Constraints
 

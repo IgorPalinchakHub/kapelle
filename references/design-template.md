@@ -3,6 +3,7 @@
 Every `design.md`, including fast-lane design, uses these headings in this order:
 
 ```md
+<!-- kapelle-design-format: high-level-v2 -->
 # Design
 
 ## 1. Context and goal
@@ -20,7 +21,10 @@ Every `design.md`, including fast-lane design, uses these headings in this order
 
 For a small feature, an inapplicable section contains one sentence such as
 `Not applicable — no persistence change`; do not omit headings. Keep `design.md` high-level and
-easy to scan.
+easy to scan. New or explicitly compacted documents include the format marker within the first
+five lines, target at most 220 lines and 2200 words, and must remain below 280 lines/2800 words.
+Legacy documents without the marker keep structural validation and receive a size warning until
+the developer explicitly runs `/kapelle:design <slug> --compact`.
 
 Detailed documents under `design/` are created only for independently reviewable boundaries:
 

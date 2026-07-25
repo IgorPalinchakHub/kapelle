@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from jsonschema_lite import validate_instance
 from validate_task_plan import validate as validate_task_plan
 from validate_design import validate as validate_design
 
@@ -19,6 +20,7 @@ LAYOUT_VERSION = 2
 SCHEMA_VERSION = "1.0"
 PLUGIN_ROOT = Path(__file__).resolve().parent.parent
 ARTIFACT_DEPENDENCIES_PATH = PLUGIN_ROOT / "dispatcher" / "artifact-dependencies.json"
+SCHEMA_ROOT = PLUGIN_ROOT / "dispatcher"
 DURABLE_WORKFLOW_PATTERN = re.compile(
     r"<!--\s*kapelle-workflow:\s*human-controlled-v1(?:;\s*lane:\s*(fast|standard))?\s*-->"
 )
@@ -83,6 +85,14 @@ def read_json(path: Path) -> dict[str, Any] | None:
     except (FileNotFoundError, json.JSONDecodeError, OSError):
         return None
     return value if isinstance(value, dict) else None
+
+
+def schema_errors(value: Any, schema_name: str) -> list[str]:
+    return validate_instance(value, SCHEMA_ROOT / schema_name)
+
+
+def schema_valid(value: Any, schema_name: str) -> bool:
+    return isinstance(value, dict) and not schema_errors(value, schema_name)
 
 
 def has_durable_human_workflow_marker(feature_dir: Path) -> bool:
@@ -553,10 +563,8 @@ def human_controlled_workflow(feature_dir: Path) -> bool:
     marker = read_json(feature_dir / "_kapelle" / "workflow.json")
     return bool(
         marker
+        and schema_valid(marker, "workflow-state.schema.json")
         and marker.get("workflow") == "human-controlled"
-        and marker.get("version") == 1
-        and marker.get("created_from") in {"raw-task", "legacy-migration"}
-        and marker.get("lane", "standard") in {"fast", "standard"}
     ) or has_durable_human_workflow_marker(feature_dir)
 
 
@@ -564,15 +572,18 @@ def reconstruction_workflow(feature_dir: Path) -> bool:
     marker = read_json(feature_dir / "_kapelle" / "workflow.json")
     return bool(
         marker
+        and schema_valid(marker, "workflow-state.schema.json")
         and marker.get("workflow") == "reconstruction"
-        and marker.get("version") == 1
-        and marker.get("created_from") == "existing-code"
     ) or has_durable_reconstruction_marker(feature_dir)
 
 
 def workflow_lane(feature_dir: Path) -> str:
     marker = read_json(feature_dir / "_kapelle" / "workflow.json")
-    if marker and marker.get("lane") in {"fast", "standard"}:
+    if (
+        marker
+        and schema_valid(marker, "workflow-state.schema.json")
+        and marker.get("workflow") == "human-controlled"
+    ):
         return marker["lane"]
     return durable_workflow_lane(feature_dir) or "standard"
 
@@ -587,14 +598,8 @@ def approval_current(feature_dir: Path, gate: str) -> bool:
         return False
     return bool(
         approval
-        and _exact_keys(
-            approval,
-            {"gate", "status", "confirmation", "artifact_fingerprints"},
-        )
+        and schema_valid(approval, "review-gate.schema.json")
         and approval.get("gate") == gate
-        and approval.get("status") == "approved"
-        and isinstance(approval.get("confirmation"), str)
-        and approval["confirmation"].strip()
         and set(approval.get("artifact_fingerprints", {})) == expected_artifacts
         and _claimed_fingerprints_current(
             feature_dir, approval.get("artifact_fingerprints")
@@ -628,22 +633,8 @@ def reconstruction_scope_current(feature_dir: Path) -> bool:
     scope = read_json(feature_dir / "_kapelle" / "reconstruction.json")
     return bool(
         scope
-        and _exact_keys(
-            scope,
-            {"slug", "scope", "aspects", "entrypoints", "exclusions", "unknowns"},
-        )
+        and schema_valid(scope, "reconstruction.schema.json")
         and scope.get("slug") == feature_dir.name
-        and isinstance(scope.get("scope"), str)
-        and scope["scope"].strip()
-        and isinstance(scope.get("aspects"), list)
-        and scope["aspects"]
-        and len(scope["aspects"]) == len(set(scope["aspects"]))
-        and all(
-            isinstance(scope.get(field), list)
-            and len(scope[field]) == len(set(scope[field]))
-            and all(isinstance(item, str) and item for item in scope[field])
-            for field in ("aspects", "entrypoints", "exclusions", "unknowns")
-        )
     )
 
 
@@ -651,14 +642,6 @@ def reconstruction_review_current(feature_dir: Path) -> bool:
     evidence = read_json(
         feature_dir / "_kapelle" / "reconstruction-coverage.json"
     )
-    required = {
-        "slug",
-        "status",
-        "claims",
-        "gaps",
-        "artifact_fingerprints",
-        "source_fingerprints",
-    }
     expected_artifacts = {
         "proposal.md",
         "spec.md",
@@ -672,14 +655,9 @@ def reconstruction_review_current(feature_dir: Path) -> bool:
         expected_artifacts.add("contracts")
     if not (
         evidence
-        and _exact_keys(evidence, required)
+        and schema_valid(evidence, "reconstruction-coverage.schema.json")
         and evidence.get("slug") == feature_dir.name
         and evidence.get("status") in {"PASS", "PASS-WITH-GAPS"}
-        and isinstance(evidence.get("claims"), list)
-        and evidence["claims"]
-        and isinstance(evidence.get("gaps"), list)
-        and len(evidence["gaps"]) == len(set(evidence["gaps"]))
-        and all(isinstance(item, str) and item for item in evidence["gaps"])
         and (
             (evidence["status"] == "PASS" and not evidence["gaps"])
             or (evidence["status"] == "PASS-WITH-GAPS" and evidence["gaps"])
@@ -696,30 +674,8 @@ def reconstruction_review_current(feature_dir: Path) -> bool:
     claim_ids: set[str] = set()
     cited_paths: set[str] = set()
     source_fingerprints = evidence["source_fingerprints"]
-    required_claim_keys = {
-        "id",
-        "classification",
-        "statement",
-        "artifact",
-        "sources",
-        "confidence",
-    }
     for claim in evidence["claims"]:
-        if not (
-            isinstance(claim, dict)
-            and _exact_keys(claim, required_claim_keys)
-            and isinstance(claim.get("id"), str)
-            and re.fullmatch(r"RC-[0-9]{3,}", claim["id"])
-            and claim["id"] not in claim_ids
-            and claim.get("classification")
-            in {"observed", "inferred", "declared", "unknown"}
-            and isinstance(claim.get("statement"), str)
-            and claim["statement"].strip()
-            and isinstance(claim.get("artifact"), str)
-            and claim["artifact"].strip()
-            and claim.get("confidence") in {"high", "medium", "low"}
-            and isinstance(claim.get("sources"), list)
-        ):
+        if claim["id"] in claim_ids:
             return False
         artifact_path = (feature_dir / claim["artifact"]).resolve()
         try:
@@ -733,13 +689,8 @@ def reconstruction_review_current(feature_dir: Path) -> bool:
             return False
         for source in claim["sources"]:
             if not (
-                isinstance(source, dict)
-                and _exact_keys(source, {"path", "line_start", "line_end"})
-                and isinstance(source.get("path"), str)
-                and source["path"] in source_fingerprints
-                and isinstance(source.get("line_start"), int)
-                and isinstance(source.get("line_end"), int)
-                and 1 <= source["line_start"] <= source["line_end"]
+                source["path"] in source_fingerprints
+                and source["line_start"] <= source["line_end"]
             ):
                 return False
             source_path = (_project_root(feature_dir) / source["path"]).resolve()
@@ -763,81 +714,14 @@ def phase_evidence_current(
     accepted_statuses: set[str],
 ) -> bool:
     evidence = read_json(feature_dir / "_kapelle" / filename)
-    expected_keys = {
-        "base-functional-tests.json": {
-            "status",
-            "scope",
-            "test_files",
-            "covered_contracts",
-            "input_fingerprints",
-        },
-        "unit-tests.json": {
-            "status",
-            "planned_units",
-            "test_files",
-            "commands",
-            "input_fingerprints",
-            "implementation_fingerprints",
-        },
-        "verification.json": {
-            "status",
-            "categories",
-            "commands",
-            "input_fingerprints",
-            "implementation_fingerprints",
-        },
+    schema_names = {
+        "base-functional-tests.json": "base-functional-tests.schema.json",
+        "unit-tests.json": "unit-test-run.schema.json",
+        "verification.json": "verification.schema.json",
     }
-    if not evidence or not _exact_keys(evidence, expected_keys.get(filename, set())):
+    schema_name = schema_names.get(filename)
+    if not evidence or not schema_name or not schema_valid(evidence, schema_name):
         return False
-    if filename == "base-functional-tests.json":
-        scope = evidence.get("scope")
-        if not (
-            isinstance(scope, list)
-            and len(scope) == len(set(scope))
-            and set(scope) <= {"endpoint", "use-case", "critical-contract"}
-            and all(
-                isinstance(evidence.get(field), list)
-                and all(isinstance(item, str) and item for item in evidence[field])
-                for field in ("test_files", "covered_contracts")
-            )
-            and (
-                evidence.get("status") == "SKIPPED-confirmed"
-                or (scope and evidence["test_files"])
-            )
-        ):
-            return False
-    elif filename == "unit-tests.json":
-        if not (
-            isinstance(evidence.get("planned_units"), list)
-            and evidence["planned_units"]
-            and all(
-                isinstance(evidence.get(field), list)
-                and all(isinstance(item, str) and item for item in evidence[field])
-                for field in ("planned_units", "test_files", "commands")
-            )
-        ):
-            return False
-    elif filename == "verification.json":
-        categories = evidence.get("categories")
-        if not (
-            isinstance(categories, list)
-            and categories
-            and len(categories) == len(set(categories))
-            and set(categories)
-            <= {
-                "functional",
-                "unit",
-                "integration",
-                "contract",
-                "static-analysis",
-                "lint",
-                "build",
-            }
-            and isinstance(evidence.get("commands"), list)
-            and evidence["commands"]
-            and all(isinstance(item, str) and item for item in evidence["commands"])
-        ):
-            return False
     implementation = evidence.get("implementation_fingerprints")
     return bool(
         evidence
@@ -856,24 +740,7 @@ def release_current(feature_dir: Path) -> bool:
     release = read_json(feature_dir / "_kapelle" / "release.json")
     if not (
         release
-        and _exact_keys(
-            release,
-            {
-                "status",
-                "version",
-                "developer_confirmation",
-                "document_fingerprints",
-                "implementation_fingerprints",
-                "diagrams",
-            },
-        )
-        and release.get("status") == "completed"
-        and isinstance(release.get("version"), str)
-        and re.fullmatch(
-            r"[1-9][0-9]*\.[0-9]+(?:\.[0-9]+)?", release["version"]
-        )
-        and isinstance(release.get("developer_confirmation"), str)
-        and release["developer_confirmation"].strip()
+        and schema_valid(release, "release.schema.json")
         and approval_current(feature_dir, "final")
         and _claimed_fingerprints_current(
             feature_dir, release.get("document_fingerprints")
@@ -883,15 +750,8 @@ def release_current(feature_dir: Path) -> bool:
         )
     ):
         return False
-    diagrams = release.get("diagrams")
     return bool(
-        isinstance(diagrams, list)
-        and len(diagrams) >= 2
-        and all(
-            isinstance(item, str)
-            and (feature_dir / item).is_file()
-            for item in diagrams
-        )
+        all((feature_dir / item).is_file() for item in release["diagrams"])
     )
 
 
@@ -926,52 +786,10 @@ def _exact_keys(value: dict[str, Any], required: set[str]) -> bool:
 
 
 def validation_evidence_status(feature_dir: Path, evidence: Any) -> str | None:
-    required_keys = {
-        "task_id",
-        "policy",
-        "decision",
-        "commands",
-        "input_fingerprints",
-        "implementation_fingerprints",
-    }
-    if not isinstance(evidence, dict) or not _exact_keys(evidence, required_keys):
-        return None
-    if not isinstance(evidence.get("task_id"), str) or not evidence["task_id"]:
-        return None
-    if evidence.get("policy") not in {"ask", "allow", "skip"}:
-        return None
-    if evidence.get("decision") not in {
-        "run-all",
-        "run-selected",
-        "skip-all",
-        "cancelled",
-    }:
+    if not schema_valid(evidence, "validation-decision.schema.json"):
         return None
     commands = evidence.get("commands")
-    if not isinstance(commands, list) or not commands:
-        return None
-    allowed_command_keys = {
-        "command",
-        "kind",
-        "scope",
-        "required",
-        "status",
-        "reason",
-    }
     for command in commands:
-        if (
-            not isinstance(command, dict)
-            or not {"command", "kind", "scope", "required", "status"}.issubset(
-                command
-            )
-            or not set(command).issubset(allowed_command_keys)
-            or command.get("kind")
-            not in {"tests", "static-analysis", "lint", "build", "other"}
-            or command.get("status")
-            not in {"passed", "failed", "skipped", "cancelled"}
-            or not isinstance(command.get("required"), bool)
-        ):
-            return None
         if command["status"] in {"skipped", "cancelled"} and not command.get(
             "reason"
         ):
@@ -1188,47 +1006,11 @@ def feature_review_current(
 
 
 def change_state_error(value: Any, change_id: str) -> str | None:
-    required = {
-        "change_id",
-        "current_revision",
-        "state",
-        "paused_task",
-        "reason",
-    }
-    allowed = required | {"checkpoint_evidence"}
-    if not isinstance(value, dict):
-        return "invalid JSON object"
-    if not required.issubset(value) or not set(value).issubset(allowed):
-        return "invalid fields"
+    structural = schema_errors(value, "change-state.schema.json")
+    if structural:
+        return "schema: " + "; ".join(structural)
     if value.get("change_id") != change_id:
         return "change_id mismatch"
-    if (
-        not isinstance(value.get("current_revision"), int)
-        or value["current_revision"] < 1
-    ):
-        return "invalid current_revision"
-    if value.get("state") not in {
-        "running",
-        "paused",
-        "reconciling",
-        "waiting-approval",
-        "approved",
-        "resumable",
-        "blocked",
-        "completed",
-    }:
-        return "invalid state"
-    if value.get("paused_task") is not None and not isinstance(
-        value.get("paused_task"), str
-    ):
-        return "invalid paused_task"
-    if not isinstance(value.get("reason"), str):
-        return "invalid reason"
-    checkpoint = value.get("checkpoint_evidence", [])
-    if not isinstance(checkpoint, list) or not all(
-        isinstance(item, str) and item for item in checkpoint
-    ):
-        return "invalid checkpoint_evidence"
     return None
 
 

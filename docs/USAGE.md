@@ -40,6 +40,10 @@ Interview:
 
 Interview depth changes questions and agent runs, not coverage.
 
+When developer input is required, Kapelle explains the intended implementation and concrete
+consequence, then gives at most three options with trade-offs. It never asks the developer to
+decode task, blocker, DoD, gate, acceptance-criterion, or `_kapelle` artifact identifiers.
+
 ## 3. Fast lane
 
 One `start` invocation drafts:
@@ -76,6 +80,7 @@ Discovery of a risk trigger before approval changes the lane to standard.
 /kapelle:spec <slug> --approve
 /kapelle:design <slug>
 /kapelle:design <slug> --detail
+/kapelle:design <slug> --compact
 /kapelle:design <slug> --approve
 /kapelle:plan <slug>
 /kapelle:plan <slug> --approve
@@ -84,11 +89,17 @@ Discovery of a risk trigger before approval changes the lane to standard.
 `spec.md` remains the business overview; independently useful scenarios/rules/integrations go to
 `specs/`.
 
-`design.md` follows the stable high-level template, targets 150–220 lines, and is rejected above
-280 lines or 2800 words. The first pass reuses feature context, bounds architecture/critic
+New `design.md` files follow the stable high-level template, target at most 220 lines/2200 words,
+and are rejected above 280 lines or 2800 words. The first pass reuses feature context, bounds architecture/critic
 lookups, records ADR candidates, and avoids exhaustive implementation mechanics. `--detail`
 creates only useful component/domain/integration documents under `design/`, accepted ADRs, and
 detailed interfaces under `contracts/`.
+
+`--approve` runs only the deterministic architecture-package validator and canonical gate writer.
+It never edits artifacts or runs agents. A failure stops with a separate `--revise` route. Legacy
+designs created before the current size marker receive a warning rather than a new blocking limit;
+run `--compact` explicitly to rewrite one, with at most one correction and no same-invocation
+approval.
 
 All approvals use canonical gate files and exact full fingerprints. A stage never accepts aliases
 such as `feature-outline.json` or `business-specification.json`, and it never hand-edits generated

@@ -17,7 +17,9 @@ project-defined.
 5. The project subagent may use native rules, files, MCP, CLI, APIs, or other project capabilities.
    For high-level design, bound it to 12 focused lookup batches and request binding rules,
    collisions, and design-changing gaps rather than an exhaustive catalogue.
-6. Validate its result against `dispatcher/architecture-guidance.schema.json`.
+6. Persist the result at the stage-defined path and run `scripts/validate_json.py <result-path>
+   dispatcher/architecture-guidance.schema.json`. A non-zero exit blocks the stage; schema
+   validation is never delegated to visual LLM inspection.
 
 Do not maintain a Kapelle mapping from aspect, label, module, or rule code to an agent. Do not require
 a specific agent name or provider.

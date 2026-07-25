@@ -21,8 +21,10 @@ The normal `/kapelle:design <slug>` invocation:
    - no generic framework advice or exhaustive rule catalogue.
 4. May draft an outline while guidance runs, but does not finalize artifacts until the typed
    guidance result is collected.
-5. Writes a concise `design.md` and compact surface plan. `validate_design.py` enforces at most 280
-   lines and 2800 words. Target 150–220 lines.
+5. Writes a concise `design.md` and compact surface plan with
+   `<!-- kapelle-design-format: high-level-v2 -->` near the top. `validate_design.py` enforces at
+   most 280 lines and 2800 words for this format. Target at most 220 lines and 2200 words so normal
+   edits retain safety margin.
 6. Records consequential choices as ADR candidates in section 9. It does not create new ADR files,
    exhaustive call-site tables, field-level domain models, full endpoint payloads, or test
    mechanics.
@@ -56,6 +58,21 @@ elaboration. It creates only independently reviewable:
 
 Reuse current architecture guidance and perform only scope-delta lookup. Escalate back to
 `--revise` or `spec --revise` when detail changes the accepted direction or product behavior.
+
+## Approval mode
+
+`/kapelle:design <slug> --approve` is a pure gate operation. Route it before the high-level and
+detail protocols. It runs `validate_architecture_package.py` once and, on PASS,
+`review_gate.py approve` once. It performs no artifact reads for LLM review, repository lookup,
+capability discovery, agent dispatch, critic run, generation, compaction, or artifact edit.
+
+Validation failure ends the invocation with `REFUSED-validation` and a separate `--revise`
+command. Approval never offers to repair and continue in the same invocation.
+
+Legacy designs without the high-level-v2 marker retain structural validation but receive a
+non-blocking size warning. They become subject to the hard size gate only after explicit
+`/kapelle:design <slug> --compact`. Compaction is a separate write operation: one complete rewrite,
+at most one correction, target 220 lines/2200 words, and no approval in that invocation.
 
 ## State ownership
 

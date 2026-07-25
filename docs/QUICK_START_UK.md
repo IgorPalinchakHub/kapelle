@@ -38,6 +38,10 @@ Default `--lane=auto --interview=auto`.
 /kapelle:plan <slug> --approve
 ```
 
+`design --approve` нічого не виправляє: PASS займає один deterministic validator + запис gate,
+FAIL повертає окрему команду `design --revise`. Для старого завеликого overview спочатку явно
+запустіть `/kapelle:design <slug> --compact`, потім окремо `--approve`.
+
 Після planning обидва lanes мають однаковий процес:
 
 ```text

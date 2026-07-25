@@ -38,7 +38,11 @@ Invoke:
    `base-functional-tests.schema.json`. Its `input_fingerprints` cover the approved business,
    design, contract, test-plan, `tasks.md#structural`, and
    `_kapelle/task-plan.json#structural` inputs; task checkbox/status changes do not invalidate this
-   evidence. Refresh status and hand off to:
+   evidence.
+10. Run `scripts/validate_json.py docs/features/<slug>/_kapelle/base-functional-tests.json
+    dispatcher/base-functional-tests.schema.json`. On non-zero exit, refuse completion and correct
+    the artifact once; never validate it by visual comparison with the schema.
+11. Refresh status and hand off to:
 
 ```text
 /kapelle:implement <slug> --checkpoint=task

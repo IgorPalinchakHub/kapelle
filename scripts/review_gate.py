@@ -18,6 +18,7 @@ from feature_state import (
     review_gate_artifacts,
     workflow_lane,
 )
+from validate_architecture_package import validate as validate_architecture_package
 
 PRIOR_GATES = {
     "business-spec": "outline",
@@ -77,6 +78,12 @@ def approve(
 ) -> Path:
     feature_dir = resolve_feature_dir(feature_dir)
     require_prior_gate(feature_dir, gate)
+    if gate == "architecture":
+        errors = validate_architecture_package(feature_dir)
+        if errors:
+            raise FeatureStateError(
+                "architecture package is not approval-ready: " + "; ".join(errors)
+            )
     payload = build_gate(feature_dir, gate, confirmation)
     path = feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
     atomic_write_json(path, payload)

@@ -26,8 +26,10 @@ from feature_state import (
     release_current,
     render_status,
     resolve_feature_dir,
+    schema_errors,
     validation_statuses,
 )
+from jsonschema_lite import validate_jsonl_file
 from validate_design import validate as validate_design
 
 
@@ -40,6 +42,102 @@ def validate(feature_dir: Path) -> list[str]:
         return ["missing or invalid _kapelle/manifest.json"]
     if not state:
         return ["missing or invalid _kapelle/state.json"]
+    errors.extend(
+        f"manifest schema: {item}"
+        for item in schema_errors(manifest, "feature-manifest.schema.json")
+    )
+    errors.extend(
+        f"state schema: {item}"
+        for item in schema_errors(state, "feature-state.schema.json")
+    )
+    optional_artifacts = {
+        "workflow.json": "workflow-state.schema.json",
+        "size.json": "size.schema.json",
+        "surface-plan.json": "surface-plan.schema.json",
+        "task-plan.json": "task-plan.schema.json",
+        "decomposition-review.json": "decomposition-review.schema.json",
+        "reconstruction.json": "reconstruction.schema.json",
+        "reconstruction-coverage.json": "reconstruction-coverage.schema.json",
+        "base-functional-tests.json": "base-functional-tests.schema.json",
+        "unit-tests.json": "unit-test-run.schema.json",
+        "verification.json": "verification.schema.json",
+        "release.json": "release.schema.json",
+        "recovery.json": "recovery-report.schema.json",
+    }
+    for filename, schema_name in optional_artifacts.items():
+        path = internal / filename
+        if not path.is_file():
+            continue
+        value = read_json(path)
+        if value is None:
+            errors.append(f"{filename}: invalid JSON object")
+            continue
+        errors.extend(
+            f"{filename} schema: {item}"
+            for item in schema_errors(value, schema_name)
+        )
+    structured_patterns = {
+        "architecture-guidance/*.json": "architecture-guidance.schema.json",
+        "validation/*.json": "validation-decision.schema.json",
+        "changes/*/request.json": "change-request.schema.json",
+        "changes/*/reconciliation.json": "reconciliation.schema.json",
+        "changes/*/revisions/*/revision.json": "change-revision.schema.json",
+        "changes/*/artifacts/*.json": "artifact-state.schema.json",
+    }
+    for pattern, schema_name in structured_patterns.items():
+        for path in sorted(internal.glob(pattern)):
+            value = read_json(path)
+            relative = path.relative_to(feature_dir)
+            if value is None:
+                errors.append(f"{relative}: invalid JSON object")
+                continue
+            errors.extend(
+                f"{relative} schema: {item}"
+                for item in schema_errors(value, schema_name)
+            )
+    task_run_components = {
+        "task": "task-context.schema.json",
+        "architecture_guidance": "architecture-guidance.schema.json",
+        "plan": "implementation-plan.schema.json",
+        "implementation": "execution-verdict.schema.json",
+        "review": "execution-verdict.schema.json",
+        "validation": "validation-decision.schema.json",
+    }
+    for path in sorted((internal / "task-runs").glob("*.json")):
+        value = read_json(path)
+        relative = path.relative_to(feature_dir)
+        if value is None:
+            errors.append(f"{relative}: invalid JSON object")
+            continue
+        for component, schema_name in task_run_components.items():
+            if component not in value:
+                continue
+            errors.extend(
+                f"{relative}#{component} schema: {item}"
+                for item in schema_errors(value[component], schema_name)
+            )
+    telemetry = internal / "telemetry" / "execution.jsonl"
+    if telemetry.is_file():
+        errors.extend(
+            f"{telemetry.relative_to(feature_dir)} schema: {item}"
+            for item in validate_jsonl_file(
+                telemetry,
+                Path(__file__).resolve().parent.parent
+                / "dispatcher"
+                / "execution-telemetry.schema.json",
+            )
+        )
+    approvals_dir = internal / "approvals"
+    if approvals_dir.is_dir():
+        for path in sorted(approvals_dir.glob("*.json")):
+            value = read_json(path)
+            if value is None:
+                errors.append(f"{path.relative_to(feature_dir)}: invalid JSON object")
+                continue
+            errors.extend(
+                f"{path.relative_to(feature_dir)} schema: {item}"
+                for item in schema_errors(value, "review-gate.schema.json")
+            )
     if manifest.get("layout_version") != LAYOUT_VERSION:
         errors.append("manifest: unsupported layout_version")
     if state.get("layout_version") != LAYOUT_VERSION:

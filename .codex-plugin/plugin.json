@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.14.0+codex.20260725143153",
-  "description": "Human-controlled SDLC harness with bounded architecture design, deterministic approval gates, adaptive feature delivery, and evidence-backed reconstruction.",
+  "version": "0.16.1+codex.20260725191325",
+  "description": "Human-controlled SDLC harness with deterministic schema and approval gates, bounded architecture design, adaptive feature delivery, and evidence-backed reconstruction.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Kapelle",
     "shortDescription": "Human-controlled, reviewable SDLC",
-    "longDescription": "A human-controlled SDLC harness with bounded high-level architecture design, deterministic fingerprinted approval gates, adaptive feature delivery, progressive specifications, recoverable state, and evidence-backed reconstruction of existing behavior and architecture.",
+    "longDescription": "A human-controlled SDLC harness with fail-closed JSON Schema validation, bounded high-level architecture design, pure deterministic fingerprinted approval gates that never edit artifacts, adaptive feature delivery, progressive specifications, recoverable state, and evidence-backed reconstruction of existing behavior and architecture.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
     "capabilities": [

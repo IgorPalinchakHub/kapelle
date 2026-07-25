@@ -4,12 +4,17 @@ The dispatcher executes dependency-ordered tasks without maintaining a second ca
 It uses explicit Kapelle execution roles while Claude Code selects project skills, agents, and tools
 through native discovery and their descriptions.
 
+Developer-facing questions follow `references/developer-questions.md`. The dispatcher never
+forwards a planner, critic, reviewer, or validator message verbatim: it restates the intended
+change, concrete consequence, and options with trade-offs without internal ids.
+
 ## Protocol
 
 For each pending task:
 
 1. Validate the enclosing plan against `task-plan.schema.json`, rerun
-   `scripts/validate_task_plan.py`, and validate the task against `task-context.schema.json`.
+   `scripts/validate_task_plan.py`, and validate the task-run `task` field against
+   `task-context.schema.json` with `scripts/validate_json.py --pointer /task`.
 2. Read the referenced feature artifacts and relevant repository context from disk.
 3. Validate `_kapelle/surface-plan.json`, the complete dependency graph, aspect dependencies, shared
    contract ordering, and integration-check ownership; compute dependency-ready batches.
@@ -18,8 +23,10 @@ For each pending task:
    declared aspects. Encourage selected project subagents to discover narrower native capabilities.
    Do not resolve names from a Kapelle manifest and do not parse a routing label.
 6. Discover and dispatch the project's architecture-rules subagent for the actual task scope.
-   Validate its result against `architecture-guidance.schema.json`; missing capability or blocking
-   gaps stop planning and code-writing.
+   Persist it in the task run's `architecture_guidance` field and validate it with
+   `scripts/validate_json.py --pointer /architecture_guidance` against
+   `architecture-guidance.schema.json`; missing capability, structural failure, or blocking gaps
+   stop planning and code-writing.
 7. Before code, instruct the selected project capability to obtain applicable project guidance using any
    provider available in the project or user environment.
 8. Accept provider-neutral guidance evidence:
@@ -44,7 +51,13 @@ For each pending task:
     accept final contract or integration evidence until the dependency passes.
 16. Persist task, capability, architecture guidance, strategy, plan, approval, implementation,
     review, and validation in `_kapelle/task-runs/<task-id>.json`; append only actual available usage
-    telemetry to `_kapelle/telemetry/execution.jsonl`.
+    telemetry to `_kapelle/telemetry/execution.jsonl`. After each write, validate every present
+    typed component with `scripts/validate_json.py --pointer`: `task` → `task-context`,
+    `architecture_guidance` → `architecture-guidance`, `plan` → `implementation-plan`,
+    `implementation`/`review` → `execution-verdict`, and `validation` →
+    `validation-decision`. Validate the JSONL with `--jsonl` against `execution-telemetry`.
+    Structural failure blocks dispatch and is never resolved by reading the schema into model
+    context.
 17. If requirements, architecture, contracts, or constraints change during implementation, stop
     all change-related dispatch, checkpoint state, and enter `/kapelle:amend`. Resume only after
     the amended route has current fingerprints, reconciled tasks, and explicit developer approval.

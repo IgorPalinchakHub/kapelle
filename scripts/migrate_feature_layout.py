@@ -346,11 +346,20 @@ def apply_migration(
     if legacy_size is not None:
         size_match = re.search(r"\b(XS|XL|S|M|L)\b", legacy_size, re.IGNORECASE)
         depth_match = re.search(r"\b(lean|standard|full)\b", legacy_size, re.IGNORECASE)
+        size_value = size_match.group(1).upper() if size_match else "unknown"
         atomic_write_json(
             internal / "size.json",
             {
-                "size": size_match.group(1).upper() if size_match else "unknown",
+                "size": size_value,
                 "execution_depth": depth_match.group(1).lower() if depth_match else None,
+                "interview_depth": (
+                    "lean"
+                    if size_value in {"XS", "S"}
+                    else "standard"
+                    if size_value == "M"
+                    else "deep"
+                ),
+                "lane": "fast" if size_value in {"XS", "S"} else "standard",
                 "reason": (
                     "Migrated from legacy .size; reclassify if the extracted value is unknown."
                 ),

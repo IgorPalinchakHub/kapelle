@@ -32,6 +32,9 @@ Plan one implementation task before code changes.
 7. Write the plan and a lineage sidecar matching `dispatcher/implementation-plan.schema.json`.
    For a change request, record its current revision and `based_on` artifact fingerprints.
 8. Return `PLAN_READY` or `BLOCKED` using `dispatcher/execution-verdict.schema.json`.
+   Express any blocker as internal decision data: intended outcome, concrete consequence, viable
+   options, and trade-offs. Do not address the developer, phrase it as a question, or rely on
+   task/DoD/blocker/artifact ids for meaning; the coordinator owns the human-facing question.
 
 ## Constraints
 

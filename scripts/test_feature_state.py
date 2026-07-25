@@ -32,6 +32,24 @@ class FeatureStateTests(unittest.TestCase):
             lines.extend([heading, "", "Current evidence or not applicable.", ""])
         return "\n".join(lines)
 
+    def valid_guidance(self, aspects: list[str]) -> dict[str, object]:
+        return {
+            "status": "ARCHITECTURE_GUIDANCE_READY",
+            "capability": {
+                "name": "project-architecture-rules",
+                "kind": "project-subagent",
+            },
+            "scope": {
+                "aspects": aspects,
+                "modules": [],
+                "entrypoints": [],
+                "paths": [],
+            },
+            "rules": [],
+            "sources": [],
+            "gaps": [],
+        }
+
     def make_feature(self, root: Path, *, checked: bool = False) -> Path:
         feature = root / "docs" / "features" / "readable-feature"
         feature.mkdir(parents=True)
@@ -261,7 +279,7 @@ class FeatureStateTests(unittest.TestCase):
             guidance = internal / "architecture-guidance"
             guidance.mkdir()
             (guidance / "reconstruction.json").write_text(
-                json.dumps({"status": "available", "rules": []})
+                json.dumps(self.valid_guidance(["backend"]))
             )
             (internal / "surface-plan.json").write_text(
                 json.dumps(
@@ -666,6 +684,41 @@ class FeatureStateTests(unittest.TestCase):
             )
             self.assertEqual([], validate(feature))
 
+    def test_runtime_machine_artifacts_are_schema_validated(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            initialize_feature_state(feature)
+            internal = feature / "_kapelle"
+            task_runs = internal / "task-runs"
+            task_runs.mkdir()
+            (task_runs / "T01.json").write_text(
+                json.dumps({"plan": {"task_id": "T01"}})
+            )
+            telemetry = internal / "telemetry"
+            telemetry.mkdir()
+            (telemetry / "execution.jsonl").write_text(
+                json.dumps(
+                    {
+                        "run_id": "run-1",
+                        "slug": feature.name,
+                        "task_id": "T01",
+                        "event": "not-an-event",
+                        "status": "invalid",
+                        "agent_runs": 1,
+                        "edit_attempts": 1,
+                    }
+                )
+                + "\n"
+            )
+            change = internal / "changes" / "change-1"
+            change.mkdir(parents=True)
+            (change / "request.json").write_text(json.dumps({"change_id": "change-1"}))
+
+            errors = validate(feature)
+            self.assertTrue(any("T01.json#plan schema" in item for item in errors))
+            self.assertTrue(any("execution.jsonl schema" in item for item in errors))
+            self.assertTrue(any("request.json schema" in item for item in errors))
+
     def test_human_controlled_workflow_routes_explicit_test_phases(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -713,7 +766,9 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "contracts" / "README.md").write_text("# Contracts\n\nNone.\n")
             guidance = internal / "architecture-guidance"
             guidance.mkdir()
-            (guidance / "design.json").write_text('{"status":"ready"}\n')
+            (guidance / "design.json").write_text(
+                json.dumps(self.valid_guidance(["core"]))
+            )
             docs = document_fingerprints(feature)
             self.write_approval(
                 feature,

@@ -32,6 +32,9 @@ Clean-context critique of specs, designs, and task decompositions.
    `decomposition` mode, return an object matching
    `dispatcher/decomposition-review.schema.json`.
 6. Honor the supplied read budget and return the terminal typed result without progress chatter.
+   Findings are internal evidence, not developer-facing questions. Describe the consequence and
+   viable alternatives when a decision is needed; the calling stage translates them using the
+   developer-question contract.
 
 ## Output
 
