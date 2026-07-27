@@ -1,51 +1,64 @@
 ---
 name: amend
 description: >
-  Apply developer feedback or changed requirements during implementation, verification, or manual
-  testing by versioning the change, updating affected artifacts, and invalidating downstream state.
+  Add the next business or technical requirement as one new vertical slice, or revise the active
+  slice, while preserving already working implementation.
 ---
 
 # Skill: amend
+
+Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
+asking for input and
+[`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) before
+promoting or detailing a use case.
 
 Invoke:
 
 ```text
 /kapelle:amend <slug> "<feedback or changed requirement>"
-/kapelle:amend <slug> --change=<change-id> --revise "<additional feedback>"
 ```
-
-Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
-asking the developer to choose an impact route or behavior change.
 
 ## Protocol
 
-1. Create or update the canonical runtime records:
-   - `_kapelle/changes/<change-id>/request.json`;
-   - `_kapelle/changes/<change-id>/state.json`;
-   - `_kapelle/changes/<change-id>/revisions/rNNN/revision.json`;
-   - `_kapelle/changes/<change-id>/artifacts/*.json` for affected artifact lineage;
-   - `_kapelle/changes/<change-id>/reconciliation.json` once tasks are reconciled.
-   Capture the current canonical documents, implementation inventory, test evidence, and active
-   workflow state as immutable revision evidence beside `revision.json`.
-2. Classify the feedback as:
-   - business requirement;
-   - architecture/design;
-   - contract;
-   - implementation defect;
-   - test/documentation correction.
-3. Dispatch `kapelle:change-reconciler` to compute affected spec, design, domain model, contracts,
-   functional tests, tasks, production code, unit tests, verification, and diagrams.
-4. Show the impact route and require explicit developer approval before edits.
-   Explain the observable change and route alternatives in plain language with their trade-offs;
-   do not ask the developer to interpret revision, artifact, blocker, or task identifiers.
-5. Update canonical human documents; never create parallel versioned copies in the feature root.
-6. Invalidate every downstream approval/evidence fingerprint transitively.
-7. Preserve immutable history under `_kapelle/changes/` and `_kapelle/history/`.
-8. After each runtime write, run `scripts/validate_json.py` against the corresponding
-   `change-request`, `change-state`, `change-revision`, `artifact-state`, or `reconciliation`
-   schema. A non-zero exit blocks the lifecycle transition; never compare the JSON and schema by
-   eye.
-9. Select the earliest necessary human-controlled stage and refresh `STATUS.md`.
+1. Read the current `spec.md`, `design.md`, `tasks.md`, relevant implementation, and verification
+   result if present. Classify the request as a next feature increment, active-slice revision,
+   implementation defect, or documentation-only correction.
+2. Explain the observable impact and at most three real options with trade-offs. Ask one concise
+   question only when the developer's choice materially changes behavior.
+3. For a next increment, first inspect how the existing walking skeleton behaves in code. Promote
+   only the developer-requested capability from the high-level use-case map into committed behavior.
+   Detail just that use case in `specs/` when the trigger applies, update the high-level system
+   design, and add one smallest coherent vertical slice to `tasks.md`. Do not detail, redesign, or
+   decompose the remaining candidate map.
+4. Update `design/domain-model.md` when the slice adds or changes aggregate behavior, invariants,
+   lifecycle/status transitions, events, ownership, or persistence mapping. Update contracts,
+   aspect design, sequences, or ADRs only when their explicit trigger applies. If new detail
+   contradicts the high-level specification or system design, propose the smallest corresponding
+   correction rather than hiding the conflict.
+5. For an active-slice revision, update only affected sections and work. Fingerprints make the
+   `plan`, verification, and final approvals stale; do not build a separate revision graph.
+6. Use immutable `_kapelle/changes/` history only when the amendment follows PASS verification,
+   changes authorization/money/destructive data/public contracts/migrations, or the developer asks
+   for an audit trail. When used, validate every machine record with `scripts/validate_json.py`
+   against the applicable `change-request`, `change-revision`, `change-state`, `artifact-state`,
+   and `reconciliation` schema before it affects routing.
+7. Refresh architecture guidance only when affected modules, entrypoints, paths, or architectural
+   decisions changed. Reuse it for implementation-only corrections.
+8. Use at most one bounded read-only subagent burst when a promoted slice crosses unfamiliar
+   backend/frontend/worker/integration boundaries. Use one critic correction pass only for high
+   risk or a material contradiction. The main agent integrates and writes the documents.
+9. Preserve already correct implementation. Add or reopen only the smallest workstream needed. Do
+   not restart the feature, rewrite the base slice, or regenerate unrelated documents.
+10. Validate the progressive package with
+    `scripts/validate_progressive_docs.py docs/features/<slug>`. Documentation-only corrections
+    that do not change plan meaning may return directly to status.
+    Implementation defects return to `/kapelle:implement`. Behavior/design changes require:
 
-Use the same mutation, retry, no-git, and safe-pause guarantees as `change`. The handoff is the
-minimal stage needed to reconcile the amendment, not a full restart.
+```text
+/kapelle:start <slug> --approve
+```
+
+11. Rebuild and validate `STATUS.md`. Never fabricate prior approval/validation evidence and never
+   run git operations.
+
+Use the standard handoff block and standalone developer-question contract.

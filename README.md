@@ -1,161 +1,140 @@
 # Kapelle
 
-Kapelle is a human-controlled SDLC harness for Claude Code and Codex. It turns a raw developer
-task into reviewable business and technical artifacts, coordinates project-native skills and
-architecture rules, implements production code with human checkpoints, and completes separate
-test and verification phases. It can also reconstruct evidence-backed product and as-built
-architecture documentation for an existing feature without entering delivery.
+Kapelle is an incremental, human-controlled SDLC harness for Claude Code and Codex. It first maps
+the known feature in a high-level specification and system design, then implements the smallest
+production-shaped walking skeleton and grows it one developer-requested vertical slice at a time.
 
 ```text
-start -> spec -> design -> plan -> base-functional-tests
-      -> implement -> unit-tests -> verify -> finalize
+start base -> approve -> implement
+                          |
+              amend next slice -> approve -> implement
+                          |
+                        verify
 ```
 
-There is one public development pipeline. A separate documentation-only `reconstruct` workflow
-never hands off to planning or implementation. Legacy feature directories are routed to `migrate`;
-they never silently enter either workflow.
-
-## Existing-feature reconstruction
-
-```text
-scope -> approve -> spec -> approve -> design -> approve -> review -> approve
-```
-
-`/kapelle:reconstruct` traces existing code, tests, configuration, schemas, and project
-documentation. It produces a high-level `spec.md` with detailed `specs/*.md`, and a high-level
-`design.md` with detailed `design/*.md`. Material claims are classified as observed, inferred,
-declared, or unknown and linked to fingerprinted source evidence.
-
-Architecture reconstruction uses the project's semantically discovered skills/subagents and its
-architecture-rules subagent. Documents distinguish the as-built implementation, applicable rules,
-and deviations. Documentation completion does not imply implementation, verification, or release
-readiness.
-
-## Planning lanes
-
-`/kapelle:start` classifies size, risk, interview depth, and lane.
-
-Standard lane keeps separate business, architecture, and delivery reviews:
-
-```text
-start -> spec -> design -> plan
-```
-
-Fast lane is limited to low-risk XS/S work over an established pattern:
-
-```text
-start --lane=fast -> one combined planning approval
-```
-
-Fast lane may inline the complete specification in `spec.md`, keep technical design in one
-structured `design.md`, and place test strategy in `tasks.md`. It still requires architecture
-rules, deterministic task validation, base functional tests, production implementation, all unit
-tests, complete verification, and final developer approval.
-
-Any security, authorization, destructive data, new public-contract, unclear ownership, or
-cross-component risk escalates to standard.
-
-When Kapelle needs a decision, it asks a standalone plain-language question: what it intends to
-implement, why the choice matters, and the options with their trade-offs. Internal task, blocker,
-DoD, gate, acceptance-criterion, and artifact identifiers are not used as human-facing context.
-
-## Human-readable feature package
+The normal feature package is intentionally small:
 
 ```text
 docs/features/<slug>/
   STATUS.md
-  proposal.md
   spec.md
-  specs/                 # standard lane, only useful business subdocuments
-  design.md              # stable Arc42-inspired high-level structure
-  design/                # independently reviewable detailed designs
-  contracts/
+  specs/            # optional detailed promoted use cases
+  design.md
+  design/           # optional domain model or focused technical detail
   tasks.md
-  test-plan.md           # standard lane; fast lane may inline it
-  adr/
-  diagrams/
-  _context/
-  _kapelle/              # derived coordination and evidence
+  _kapelle/          # derived state, approvals, rules evidence, final verification
 ```
 
-`design.md` always contains Context, Constraints, Architecture rules, Building blocks, Runtime,
-Data/domain, Contracts, Cross-cutting concerns, Decisions, Validation/rollout, and Open questions.
-New-format overviews are capped at 280 lines and 2800 words, with a 220-line/2200-word target that
-leaves editing margin. Legacy overviews receive a size warning until explicit compaction. The first design pass uses
-feature-local evidence-delta discovery, one bounded architecture-rules lookup, and one bounded
-high-level critic. Detailed component/domain documents, contracts, accepted ADRs, mechanical
-call-site analysis, and test mechanics stay in `--detail`.
+ADRs, contracts, detailed design, and diagrams are optional. Kapelle creates them only when they
+remain useful to a developer after the feature is complete.
 
-Review gates have canonical names such as `outline.json` and `business-spec.json`. Stages write
-them only through the deterministic review-gate helper with exact artifact sets and full SHA-256
-fingerprints; aliases and narrative approval JSON are not accepted.
-
-All machine JSON and JSONL artifacts are checked by the bundled fail-closed JSON Schema validator
-before they affect routing or stage completion. Structural validation is centralized; specialized
-validators add only graph, filesystem, fingerprint, and readiness rules that JSON Schema cannot
-express.
-
-If `_kapelle/` is deleted, `/kapelle:status` reconstructs routing from the durable marker in
-`proposal.md`, human documents, and current code. It never invents approvals, reviews, command
-output, or validation evidence.
-
-## Commands
+## Normal commands
 
 ```text
-/kapelle:start <slug> "<raw task>" [--lane=auto|fast|standard] [--interview=auto|lean|standard|deep]
-/kapelle:spec <slug> [--interview=auto|lean|standard|deep]
-/kapelle:design <slug> [--detail|--revise "<feedback>"|--compact|--approve]
-/kapelle:plan <slug> [--revise "<feedback>"|--approve]
-/kapelle:base-functional-tests <slug> [--validation=ask|allow|skip]
-/kapelle:implement <slug> [--checkpoint=task|workstream|none] [--validation=ask|allow|skip]
-/kapelle:unit-tests <slug> [--validation=ask|allow|skip]
-/kapelle:verify <slug> [--validation=ask|allow|skip]
-/kapelle:amend <slug> "<feedback>"
-/kapelle:finalize <slug> --version=1.0
+/kapelle:start <slug> "<raw developer task>"
+/kapelle:start <slug> --revise "<feedback>"
+/kapelle:start <slug> --approve
+
+/kapelle:implement <slug> --checkpoint=workstream --validation=ask
+
+/kapelle:verify <slug> --validation=ask
+/kapelle:verify <slug> --approve
+
+/kapelle:amend <slug> "<changed requirement or feedback>"
 /kapelle:status <slug>
-/kapelle:migrate <slug> [--apply] [--lane=standard|fast]
-/kapelle:reconstruct <slug> "<feature scope>"
-/kapelle:reconstruct <slug> [--approve|--spec|--design|--review]
 ```
 
-`design --approve` is a pure deterministic gate: it performs no repository exploration, agent
-dispatch, generation, compaction, or artifact edits. On validation failure it stops and routes to
-a separate `--revise` invocation. Use `--compact` explicitly to migrate a legacy long overview;
-compaction never approves in the same invocation.
+`start` inspects existing behavior, obtains scoped project architecture rules, and writes a
+high-level map of the known feature and system boundaries. It details and plans only the smallest
+production-shaped walking skeleton. Future capabilities remain non-binding candidates. The
+developer approves this first vertical slice before code.
 
-Repository/design utilities such as `survey`, `sequences`, `data-model`, `contracts`,
-`decide-adr`, `glossary`, and `roadmap` may enrich the same pipeline. They are not an alternative
-backbone.
+`implement` builds that end-to-end slice. The main agent plans and codes directly, reusing project
+guidance. Planner/implementer/reviewer subagent chains are not the default. Focused boundary or
+characterization tests are written before risky production changes when useful.
 
-## Test timing
-
-Kapelle intentionally uses:
+After each slice, the developer chooses:
 
 ```text
-approved contracts
--> base endpoint/public-use-case functional tests
--> all production implementation
--> all unit tests
--> complete functional/integration/static/lint/build verification
+/kapelle:amend <slug> "<next business or technical requirement>"
+/kapelle:start <slug> --approve
+/kapelle:implement <slug>
+
+# or, when accumulated behavior is sufficient:
+/kapelle:verify <slug>
 ```
 
-Unit tests are not authored during `implement`. Required skipped or cancelled validation is
-`validation-deferred`, never PASS.
+`verify` reconciles the as-built feature with the docs, writes all unit tests, and runs one
+risk-based validation batch. Required failed or skipped checks cannot become PASS. A second,
+explicit approval completes the feature.
+
+Detailed use-case specifications, `design/domain-model.md`, contracts, sequences, and ADRs are
+created just in time when their documented trigger applies. A simple slice stays in `spec.md` and
+`design.md`.
+
+## Human control
+
+- Default checkpoint is one workstream, not one micro-task.
+- Start with one walking-skeleton workstream; split it into at most three checkboxes only when
+  needed for review.
+- Each requested increment becomes one coherent vertical slice and leaves the application loadable.
+- Development validation can be `ask`, `allow`, or `skip`; deferred required checks block final
+  approval.
+- Developer questions describe the intended behavior and concrete options with trade-offs. They do
+  not expose task, blocker, DoD, gate, or artifact identifiers.
+- Kapelle never runs git mutations.
 
 ## Project capabilities
 
-Kapelle discovers project skills and subagents semantically. Every project supplies a native
-subagent that returns architecture rules for the current aspects, modules, entrypoints, and paths.
-Kapelle does not prescribe its name, storage, provider, CLI, or MCP mechanism.
+Kapelle discovers relevant project skills, instructions, and the project architecture-rules
+subagent semantically. Architecture guidance is collected once during `start` and reused until the
+scope changes. Medium/large discovery may use one read-only burst of at most three agents. Agent
+Teams remain opt-in, are not used for the first skeleton, and require stable contracts plus safe,
+disjoint ownership.
 
-Sequential execution is the default. Agent Teams require configuration, runtime support, explicit
-developer approval, dependency-ready work, and pairwise-disjoint file ownership.
+## Optional utilities
 
-Kapelle never commits, pushes, merges, tags, creates branches/worktrees, or opens pull requests.
+The normal route needs only `start`, `implement`, `amend`, `verify`, and `status`. Use these
+standalone utilities only when their output is independently useful:
+
+```text
+/kapelle:survey [<slug>]          # repository baseline or feature-local architecture context
+/kapelle:decide-adr <slug>        # one durable architectural decision
+/kapelle:contracts <slug>         # human-readable boundary contracts
+/kapelle:data-model <slug>        # data/schema and domain-model impact
+/kapelle:sequences <slug>         # complex runtime flow
+/kapelle:glossary <slug>          # disputed domain terms
+/kapelle:roadmap <slug>           # project roadmap placement
+```
+
+Utilities do not form another pipeline. If one changes the approved feature package, return to
+`/kapelle:start <slug> --approve`; otherwise return to status.
+
+## Existing feature directories
+
+Old Kapelle features are not routed through the former multi-stage pipeline:
+
+```text
+/kapelle:migrate <slug>
+/kapelle:migrate <slug> --apply
+```
+
+Migration preserves human documents and historical evidence, adopts the lightweight marker, and
+never invents approvals or validation results.
+
+If `_kapelle/` is deleted, `/kapelle:status` rebuilds routing from `spec.md`, `design.md`,
+`tasks.md`, and current code. Checked work becomes `implemented-unverified` until a current
+verification PASS exists.
+
+## Documentation-only reconstruction
+
+`/kapelle:reconstruct` remains a separate workflow for explaining code that already exists. It
+classifies claims as observed, inferred, declared, or unknown and never enters implementation or
+release.
 
 ## Documentation
 
 - [Quick start (Ukrainian)](docs/QUICK_START_UK.md)
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
-- [Reverse engineering guide (Ukrainian)](docs/RECONSTRUCTION_UK.md)
 - [Usage and migration](docs/USAGE.md)
+- [Reverse engineering guide (Ukrainian)](docs/RECONSTRUCTION_UK.md)

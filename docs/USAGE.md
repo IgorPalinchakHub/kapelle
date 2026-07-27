@@ -1,196 +1,142 @@
 # Using Kapelle
 
-## 1. Development workflow
+## New feature
 
-New work begins with:
+Start from the ticket or raw task:
 
 ```text
 /kapelle:start <slug> "<raw developer task>"
 ```
 
-Existing directories without the durable human-controlled marker begin with:
+The command maps the known feature at high level, inspects the first end-to-end path in detail,
+discovers project guidance, and writes:
 
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply --lane=standard
-```
+- `spec.md` — current behavior, committed behavior, known use-case map, invariants, candidates, and
+  unknowns;
+- `design.md` — high-level system boundaries plus the technical path needed by the first slice;
+- `tasks.md` — one walking-skeleton workstream, optionally split into at most three checkpoints;
+- `_kapelle/architecture-guidance/design.json` — validated project-rule evidence;
+- generated `STATUS.md`.
 
-Migration preserves human documents and code, adds workflow routing, rebuilds derived state, and
-reports lost evidence. It does not recreate approvals or validation.
-
-## 2. Lane and interview selection
-
-```text
-/kapelle:start <slug> "<task>" --lane=auto --interview=auto
-```
-
-Lane:
-
-- `fast`: XS/S, one aspect/workstream, established pattern, at most three production tasks, no
-  risk trigger;
-- `standard`: separate spec, architecture, and plan review;
-- `auto`: fast only when every eligibility condition is evidenced.
-
-Interview:
-
-- `lean`: inline challenge and only one consolidated blocking question;
-- `standard`: business analysis and one combined critic pass;
-- `deep`: separate business analyst, critic, and devil's advocate;
-- `auto`: derived from size and risk.
-
-Interview depth changes questions and agent runs, not coverage.
-
-When developer input is required, Kapelle explains the intended implementation and concrete
-consequence, then gives at most three options with trade-offs. It never asks the developer to
-decode task, blocker, DoD, gate, acceptance-criterion, or `_kapelle` artifact identifiers.
-
-## 3. Fast lane
-
-One `start` invocation drafts:
-
-```text
-proposal.md
-spec.md
-design.md
-tasks.md
-_kapelle/surface-plan.json
-_kapelle/task-plan.json
-```
-
-The developer reviews the complete package once. If not approved immediately:
+Review those three Markdown files. Request focused changes:
 
 ```text
 /kapelle:start <slug> --revise "<feedback>"
+```
+
+Approve the unchanged package:
+
+```text
 /kapelle:start <slug> --approve
 ```
 
-After approval:
+Approval is deterministic and performs no analysis or artifact edits.
+
+The progressive document gate checks the stable headings, order, non-empty sections, optional
+use-case/domain-model shapes, and size caps. It does not claim to prove semantic design quality.
+
+## Implementation
 
 ```text
-/kapelle:base-functional-tests <slug> --validation=ask
+/kapelle:implement <slug> --checkpoint=workstream --validation=ask
 ```
 
-Discovery of a risk trigger before approval changes the lane to standard.
+`workstream` is the default and recommended checkpoint. Use `task` only when you need very tight
+control, or `none` when the slice is low risk and you want one result after all its ready work.
 
-## 4. Standard lane
+The main agent implements the end-to-end slice using relevant project-native skills. The first
+slice crosses the applicable input/auth/validation, endpoint or command, use-case service, domain,
+persistence/integration, and response boundaries. It does not scaffold empty future services. It
+may add focused functional/characterization tests before production changes. It does not write unit
+tests or run the whole static-analysis/lint suite during normal development.
+
+Validation policy:
+
+- `ask` — show the exact focused commands first;
+- `allow` — run them without an extra prompt;
+- `skip` — defer them; required checks must pass later in `verify`.
+
+## Add the next requirement
 
 ```text
-/kapelle:start <slug> "<task>"
-/kapelle:spec <slug>
-/kapelle:spec <slug> --approve
-/kapelle:design <slug>
-/kapelle:design <slug> --detail
-/kapelle:design <slug> --compact
-/kapelle:design <slug> --approve
-/kapelle:plan <slug>
-/kapelle:plan <slug> --approve
+/kapelle:amend <slug> "<feedback or changed requirement>"
 ```
 
-`spec.md` remains the business overview; independently useful scenarios/rules/integrations go to
-`specs/`.
-
-New `design.md` files follow the stable high-level template, target at most 220 lines/2200 words,
-and are rejected above 280 lines or 2800 words. The first pass reuses feature context, bounds architecture/critic
-lookups, records ADR candidates, and avoids exhaustive implementation mechanics. `--detail`
-creates only useful component/domain/integration documents under `design/`, accepted ADRs, and
-detailed interfaces under `contracts/`.
-
-`--approve` runs only the deterministic architecture-package validator and canonical gate writer.
-It never edits artifacts or runs agents. A failure stops with a separate `--revise` route. Legacy
-designs created before the current size marker receive a warning rather than a new blocking limit;
-run `--compact` explicitly to rewrite one, with at most one correction and no same-invocation
-approval.
-
-All approvals use canonical gate files and exact full fingerprints. A stage never accepts aliases
-such as `feature-outline.json` or `business-specification.json`, and it never hand-edits generated
-state or `STATUS.md`.
-
-`plan` writes outcome-oriented `tasks.md`, a standard-lane `test-plan.md`, and the deterministic
-task graph.
-
-## 5. Delivery
+Kapelle inspects the working base, promotes only the requested candidate into committed behavior,
+details that use case and its domain/contracts when triggered, and adds one smallest coherent
+vertical slice. It does not design the remaining candidate map. The previous slice remains
+documented and implemented. Approve the new slice:
 
 ```text
-/kapelle:base-functional-tests <slug> --validation=ask
-/kapelle:implement <slug> --checkpoint=task --validation=ask
-/kapelle:unit-tests <slug> --validation=ask
+/kapelle:start <slug> --approve
+```
+
+Heavy immutable revision history is reserved for post-verification or high-risk amendments.
+
+## Verification and completion
+
+When all currently approved slices are implemented and you do not want to add another requirement:
+
+```text
 /kapelle:verify <slug> --validation=ask
 ```
 
-Checkpoints:
+Invoking `verify` explicitly declares the accumulated feature scope sufficient. The command
+reconciles docs with code, writes all unit tests, and runs one applicable functional,
+unit, integration/contract, static-analysis, lint, and build batch. Categories that do not apply are
+omitted with a reason.
 
-- `task`: return after every task;
-- `workstream`: return after every coherent workstream;
-- `none`: continue through all dependency-ready production tasks.
-
-`implement` writes production code only. `unit-tests` runs after all production tasks. `verify`
-handles full functional, unit, integration, contract, static-analysis, lint, and build checks.
-
-During implementation, verification, or developer testing:
+After PASS and developer/manual review:
 
 ```text
-/kapelle:amend <slug> "<changed requirement or feedback>"
+/kapelle:verify <slug> --approve
 ```
 
-Amendment versions current state, computes impact, asks for route approval, invalidates downstream
-evidence, and returns to the earliest necessary stage.
+This is a pure final gate. Kapelle does not require diagrams, release JSON, a version number, or git
+operations.
 
-## 6. Finalization
-
-After manual testing and debugging:
-
-```text
-/kapelle:finalize <slug> --version=1.0
-```
-
-Finalization reconciles as-built behavior and design, runs fresh review, generates Mermaid feature
-flow and architecture diagrams, records final approval, and marks the feature completed.
-
-## 7. Recovery and status
+## Status and recovery
 
 ```text
 /kapelle:status <slug>
 ```
 
-`STATUS.md` is generated and is the entry point. When internal state is missing, the proposal
-marker preserves lane routing. Missing approvals and validation return the developer to the
-minimal safe gate.
+`STATUS.md` shows workstream progress, deferred validation, core files plus any present
+use-case/domain/contract detail to review, and one next command. If `_kapelle/` is gone, state is
+rebuilt without fabricating approvals or PASS evidence.
 
-## 8. Optional utilities
-
-- `survey`: shared repository baseline or feature-local architecture evidence;
-- `sequences`: unusually complex runtime flows;
-- `data-model`: complex persistence/migration analysis;
-- `contracts`: specialized interface enrichment;
-- `decide-adr`: consequential architectural decision;
-- `glossary`: domain terminology;
-- `roadmap`: feature portfolio state.
-
-Utilities enrich artifacts; they never create a second pipeline.
-
-## 9. Reconstruct an existing feature
-
-Use the separate documentation workflow when the code already exists and the goal is to explain
-current behavior and architecture:
+## Old feature directories
 
 ```text
-/kapelle:reconstruct <slug> "<feature scope>"
-
-# Example
-/kapelle:reconstruct payments-refund "Existing refund flow from API entrypoint to settlement"
-/kapelle:reconstruct payments-refund --approve
-/kapelle:reconstruct payments-refund --spec
-/kapelle:reconstruct payments-refund --approve
-/kapelle:reconstruct payments-refund --design
-/kapelle:reconstruct payments-refund --approve
-/kapelle:reconstruct payments-refund --review
-/kapelle:reconstruct payments-refund --approve
+/kapelle:migrate <slug>
+/kapelle:migrate <slug> --apply
 ```
 
-The result is a hierarchical product package (`spec.md`, `specs/*.md`) and as-built architecture
-package (`design.md`, `design/*.md`), plus an evidence index and fingerprinted coverage record.
-`--approve` always approves only the current draft shown by `STATUS.md`.
+The first command is a dry-run. Migration preserves old documents/evidence and adopts the
+lightweight workflow. Former commands such as `spec`, `design`, `plan`,
+`base-functional-tests`, `unit-tests`, and `finalize` are non-executing compatibility wrappers.
 
-This workflow writes documentation only. It does not create tasks, change production code, run
-delivery stages, or claim release readiness. See
-[the Ukrainian reconstruction guide](RECONSTRUCTION_UK.md).
+## Documentation-only reconstruction
+
+```text
+/kapelle:reconstruct <slug> "<existing feature scope>"
+```
+
+This separate route documents current code and architecture. It never routes to implementation,
+testing, or completion.
+
+## Optional utilities
+
+These commands are independent helpers, not required stages:
+
+- `/kapelle:survey [<slug>]` — bootstrap repository context or inspect feature-local architecture;
+- `/kapelle:decide-adr <slug>` — capture one durable architecture decision;
+- `/kapelle:contracts <slug>` — document a public or cross-component boundary;
+- `/kapelle:data-model <slug>` — clarify data/schema and domain-model impact;
+- `/kapelle:sequences <slug>` — document a genuinely complex runtime flow;
+- `/kapelle:glossary <slug>` — reconcile ambiguous domain terms;
+- `/kapelle:roadmap <slug>` — update project roadmap placement.
+
+Utilities never chain into each other. When one changes an approved spec, design, task list, ADR,
+or contract, review the result and renew current-slice approval with
+`/kapelle:start <slug> --approve`.

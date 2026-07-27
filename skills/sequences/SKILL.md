@@ -12,31 +12,41 @@ Enrich the technical specification with runtime flows and failure branches.
 ## Inputs
 
 - `<slug>` for feature-scoped work.
-- Reads: `design.md + _kapelle/surface-plan.json`.
-- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Reads: `spec.md + design.md + optional contracts`.
+- Utility contract: [`../../references/utility-contract.md`](../../references/utility-contract.md).
+- Progressive artifacts: [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md).
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
+1. Refuse with `Status: REFUSED-missing-input` when `spec.md` or `design.md` is missing; point to
+   `/kapelle:start <slug>`.
 2. Read artifacts directly from disk.
-3. Validate `_kapelle/surface-plan.json` and cover every declared cross-aspect handoff and failure branch.
+3. Identify only runtime flows whose ordering, retries, failure paths, or cross-component handoffs
+   are difficult to understand from the current design.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Update the runtime-flow section of `design.md`. Create `sequences.md` only when the flow cannot
-   remain readable in the design; record the skip/selection in `_kapelle/state.json`.
-7. Refresh `STATUS.md` and emit the chat handoff.
+5. Request scoped project guidance when the flow crosses an architectural boundary:
+   [`../../references/guidance.md`](../../references/guidance.md).
+6. Prefer `End-to-end flow` in `design.md`. Create `sequences.md` only when three or more components,
+   asynchronous ordering, retries, or failure branches would make that section hard to scan. Do not
+   write `_kapelle/state.json` directly.
+7. Validate a progressive package with
+   `scripts/validate_progressive_docs.py docs/features/<slug>`.
+8. Rebuild generated status with `scripts/build_feature_status.py docs/features/<slug>` and validate
+   it with `scripts/validate_feature_state.py docs/features/<slug>`.
+9. End with the standard handoff. A changed design requires `/kapelle:start <slug> --approve`;
+   otherwise return to `/kapelle:status <slug>`.
 
 ## Output
 
 - Updated `design.md`; optional `sequences.md`.
-- `Status: DONE | stage: sequences | produced: <paths>`.
+- `Status: DONE | utility: sequences | produced: <paths>`.
 
 ## Definition of Done
 
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `data-model`.
+- Handoff points to current-slice approval or status, never to another hidden stage chain.
 
 ## Anti-patterns
 

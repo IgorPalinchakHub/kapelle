@@ -1,7 +1,7 @@
 {
   "active_change": null,
   "blockers": [],
-  "current_stage": "spec",
+  "current_stage": "start",
   "deferred_validation": [],
   "document_fingerprints": {
     "adr": null,
@@ -10,7 +10,7 @@
     "design.md": "20ba5a384a969fa1e5edfac0ff884388fc28236c0569515883f665212198d402",
     "diagrams": null,
     "proposal.md": "03ba6a462caaa05639f6a0cbd659b8c727e6545c8e93c3a6ab859113c1dcfecc",
-    "spec.md": "6ae6be5187c298da8fa83f42612377d7f1d0e2689548e398988b9635a893b818",
+    "spec.md": "d25b4ac7d212909cf3ca259cf4475c15082d35c1c59a122ad750bf1b3ab588bc",
     "specs": null,
     "tasks.md": "715247a022f9cdb3ec93ba86e20a33835e7a0c0ffcfc230e1890316a3fd081d0",
     "test-plan.md": "1c1400f5a12e0c57e6d25968745bf007ff6f2ec10d8e940d41033e74a90555ec"
@@ -20,7 +20,7 @@
   "feature_review": "missing-or-stale",
   "feature_state": "awaiting-human-review",
   "layout_version": 2,
-  "next_command": "/kapelle:spec human-readable-artifacts-refactor",
+  "next_command": "/kapelle:start human-readable-artifacts-refactor --approve",
   "recovery_status": "native",
   "review_ready": false,
   "revision": null,

@@ -1,77 +1,47 @@
 ---
 name: status
 description: >
-  Show or rebuild a feature's human-readable status and recover missing `_kapelle/` state without
-  implementing code.
+  Show or rebuild concise feature status and recover disposable `_kapelle/` state without changing
+  product behavior or implementation.
 ---
 
 # Skill: status
 
-Build the feature entry point, recover disposable execution state when needed, and select the
-smallest safe next command.
+Invoke:
 
-## Inputs
-
-- `<slug>` and `docs/features/<slug>/`.
-- Human artifacts that currently exist: `proposal.md`, `spec.md`, `design.md`, `tasks.md`,
-  `test-plan.md`, contracts, ADRs, and optional sequences.
-- Optional `_kapelle/` state and current project implementation evidence.
-- Layout contract: [`../../references/feature-layout.md`](../../references/feature-layout.md).
-- Presentation contract:
-  [`../../references/artifact-presentation.md`](../../references/artifact-presentation.md).
-- Architecture guidance:
-  [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
+```text
+/kapelle:status <slug>
+```
 
 ## Protocol
 
-1. Refuse with `Status: REFUSED-missing-input` if the feature directory does not exist. Do not
-   create a speculative feature or guess a slug.
-2. Read the human artifacts directly from disk. Validate `_kapelle/manifest.json` and
-   `_kapelle/state.json` when they exist.
-3. If internal state is missing, partial, corrupt, or layout-incompatible:
-   - inspect only current implementation and tests relevant to the documented feature scope;
-   - semantically discover the project architecture-rules subagent for the affected
-     modules/entrypoints and persist current guidance under `_kapelle/architecture-guidance/`;
-   - run `scripts/rebuild_feature_state.py docs/features/<slug>`;
-   - reconcile documented tasks with current code evidence;
-   - keep checked work without trustworthy current validation as `implemented-unverified`;
-   - list approvals, reviews, command output, telemetry, or validation evidence that could not be
-     reconstructed.
-4. Recognize both durable markers:
-   `<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->` and
-   `<!-- kapelle-workflow: reconstruction-v1 -->`. Rebuild reconstruction routing from
-   `proposal.md`, `_context/evidence-index.md`, human specification/design documents, and current
-   evidence without routing it to development. When neither marker exists, route only to
-   `/kapelle:migrate <slug>`. When legacy root JSON, `_audit/`, `_review/`, `changes/`, `sad.md`,
-   `.size`, or `ship.md` is detected, also show the layout migration dry-run. Do not apply either
-   migration without explicit approval.
-5. Treat `_kapelle/approvals/feature-outline.json` and `business-specification.json` as invalid
-   aliases. Report the canonical `outline.json` or `business-spec.json` gate as missing and route
-   to its prior approval stage; never reinterpret or rename narrative evidence silently.
-6. Run `scripts/build_feature_status.py docs/features/<slug>` and then
-   `scripts/validate_feature_state.py docs/features/<slug>`.
-7. If validation finds drift, repair only generated/derived state from current evidence. Do not
-   modify product requirements or implementation code from this utility.
-8. Report the feature state, blockers/evidence gaps, readiness, and exact minimal next command.
+1. Refuse with `Status: REFUSED-missing-input` when `docs/features/<slug>/` does not exist.
+2. Treat `spec.md`, `design.md`, and `tasks.md` as the normal durable package. Optional promoted
+   use-case specs, domain model, contracts, ADRs, detailed design, and diagrams remain durable human
+   documentation and participate in approval freshness when present.
+3. Recognize `<!-- kapelle-workflow: lightweight-v1 -->` in `spec.md`. When `_kapelle/` is missing
+   or invalid, run:
 
-## Output
+```text
+scripts/rebuild_feature_state.py docs/features/<slug>
+scripts/validate_feature_state.py docs/features/<slug>
+```
 
-- Refreshed `docs/features/<slug>/STATUS.md`.
-- Rebuilt `_kapelle/manifest.json`, `_kapelle/state.json`, and `_kapelle/recovery.json` when needed.
-- `Status: DONE | stage: status | produced: <paths> | next: <command>`.
+   Recovery may infer checked work as `implemented-unverified`; it never fabricates approvals,
+   command results, reviews, or PASS evidence.
+4. A `human-controlled-v1` marker or unmarked feature routes to `/kapelle:migrate <slug>`. Keep the
+   reconstruction workflow documentation-only and use its existing marker/routing.
+5. For lightweight features, select only the earliest necessary route:
+   - new raw-task package without a valid progressive artifact format → `/kapelle:start --revise`;
+   - missing package/guidance or stale plan → `/kapelle:start`;
+   - approved slice with unchecked work → `/kapelle:implement`;
+   - implemented slice without current PASS → show the scope decision: add the next requirement
+     through `/kapelle:amend`, or run `/kapelle:verify` when accumulated behavior is sufficient;
+   - PASS without final approval → `/kapelle:verify <slug> --approve`;
+   - final approval → completed.
+6. Show current outcome, slice progress, important blockers/deferred validation, core files plus
+   any present use-case/domain/contract detail to review, the optional `amend` route when scope is
+   still evolving, and one exact routed command. Do not expose historical stage internals.
 
-## Definition of Done
-
-- `STATUS.md` matches `_kapelle/state.json`.
-- Missing historical evidence is explicit.
-- Recovery did not report unchecked evidence as validated.
-- The next command starts at the earliest genuinely missing/stale stage, not at the beginning by
-  default.
-
-## Prohibited actions
-
-- Implementation edits.
-- Tests, linters, static analysis, builds, or migrations.
-- Git operations.
-- Silent workflow or layout migration.
-- Fabricating approvals, reviews, or validation evidence.
+This utility performs no implementation edits, validation commands, git actions, or silent
+migration.

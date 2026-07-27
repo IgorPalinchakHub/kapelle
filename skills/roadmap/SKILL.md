@@ -12,29 +12,29 @@ Maintain roadmap state across Now/Next/Later/Shipped.
 
 - `<slug>` for feature-scoped work.
 - Reads: `user request or feature artifacts`.
-- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Utility contract: [`../../references/utility-contract.md`](../../references/utility-contract.md).
+- This is a project utility, not a feature backbone stage.
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
-2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
-4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `docs/roadmap.md`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+1. Require an explicit roadmap change or a feature whose current placement must be reconciled.
+2. Read `docs/roadmap.md` and only the named feature artifacts.
+3. Move or add the minimum roadmap entry requested by the developer. Do not infer commitments,
+   dates, priority, or shipped status.
+4. Write `docs/roadmap.md` and summarize the exact placement change.
+5. Do not modify feature workflow state and do not emit a feature next-stage command.
 
 ## Output
 
 - `docs/roadmap.md`.
-- `Status: DONE | stage: roadmap | produced: <paths>`.
+- `Status: DONE | utility: roadmap | produced: docs/roadmap.md`.
 
 ## Definition of Done
 
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `done`.
+- No hidden feature-stage handoff is introduced.
 
 ## Anti-patterns
 

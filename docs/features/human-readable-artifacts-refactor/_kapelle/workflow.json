@@ -1,6 +1,6 @@
 {
   "created_from": "legacy-migration",
-  "lane": "standard",
-  "version": 1,
+  "profile": "lightweight",
+  "version": 2,
   "workflow": "human-controlled"
 }

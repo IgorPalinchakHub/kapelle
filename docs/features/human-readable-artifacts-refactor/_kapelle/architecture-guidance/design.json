@@ -1,67 +1,79 @@
 {
-  "status": "ARCHITECTURE_GUIDANCE_READY",
   "capability": {
-    "name": "delegated-scoped-project-architecture-rules-subagent",
     "kind": "project-subagent",
-    "description_evidence": "A clean-context architecture-rules subagent inspected the plan, repository contracts, runtime scripts, skills, and schemas for this refactor."
+    "name": "delegated-scoped-project-architecture-rules-subagent"
   },
-  "scope": {
-    "aspects": ["contracts", "runtime", "stages", "documentation"],
-    "modules": ["references", "dispatcher", "scripts", "skills", "docs", "examples"],
-    "entrypoints": ["feature layout", "Kapelle commands", "CLI utilities"],
-    "paths": ["docs/features", "references", "dispatcher", "scripts", "skills"]
-  },
+  "gaps": [],
   "rules": [
     {
-      "id": "ARCH-01",
-      "summary": "Human Markdown is durable review state; STATUS.md is generated and machine/runtime evidence lives only under _kapelle/.",
       "source": "docs/HUMAN_READABLE_ARTIFACTS_REFACTOR_PLAN_UK.md and references/feature-layout.md",
-      "applies_to": ["contracts", "runtime", "stages", "documentation"]
+      "summary": "Human Markdown is durable review state; STATUS.md is generated and machine/runtime evidence lives only under _kapelle/.",
+      "title": "ARCH-01"
     },
     {
-      "id": "ARCH-02",
-      "summary": "Each logical artifact has one physical path; recovery reports evidence honestly and never fabricates approval, validation, review, or historical telemetry.",
       "source": "AGENTS.md and references/feature-layout.md",
-      "applies_to": ["runtime", "stages", "documentation"]
+      "summary": "Each logical artifact has one physical path; recovery reports evidence honestly and never fabricates approval, validation, review, or historical telemetry.",
+      "title": "ARCH-02"
     },
     {
-      "id": "ARCH-03",
-      "summary": "Recovered coordination graphs are provisional: validation-only is allowed for existing work, but code-writing, feature review, and ship require refreshed architecture guidance and decomposition.",
       "source": "references/feature-layout.md and skills/implement/SKILL.md",
-      "applies_to": ["runtime", "stages"]
+      "summary": "Recovered coordination graphs are provisional: validation-only is allowed for existing work, but code-writing, feature review, and ship require refreshed architecture guidance and decomposition.",
+      "title": "ARCH-03"
     },
     {
-      "id": "ARCH-04",
-      "summary": "Validation and review freshness covers human documents, normalized coordination graphs, and the actual implementation files.",
       "source": "references/validation-execution.md and dispatcher review schemas",
-      "applies_to": ["contracts", "runtime"]
+      "summary": "Validation and review freshness covers human documents, normalized coordination graphs, and the actual implementation files.",
+      "title": "ARCH-04"
     },
     {
-      "id": "ARCH-05",
-      "summary": "Migration performs complete preflight before mutation and writes its success marker only after rebuilt-state validation.",
       "source": "references/feature-layout.md",
-      "applies_to": ["runtime"]
+      "summary": "Migration performs complete preflight before mutation and writes its success marker only after rebuilt-state validation.",
+      "title": "ARCH-05"
     },
     {
-      "id": "ARCH-06",
-      "summary": "Utilities are deterministic and local: no shell, network, git mutation, or provider-specific routing.",
       "source": "AGENTS.md",
-      "applies_to": ["runtime", "stages"]
+      "summary": "Utilities are deterministic and local: no shell, network, git mutation, or provider-specific routing.",
+      "title": "ARCH-06"
     }
   ],
-  "gaps": [],
-  "precedents": [
-    {
-      "path": "scripts/validate_task_plan.py",
-      "reason": "Deterministic semantic validation precedent"
-    },
-    {
-      "path": "dispatcher/vocabulary.json",
-      "reason": "Canonical vocabulary precedent"
-    },
-    {
-      "path": "references/change-lifecycle.md",
-      "reason": "Immutable revision and safe-pause precedent"
-    }
-  ]
+  "scope": {
+    "aspects": [
+      "contracts",
+      "runtime",
+      "stages",
+      "documentation"
+    ],
+    "entrypoints": [
+      "feature layout",
+      "Kapelle commands",
+      "CLI utilities"
+    ],
+    "modules": [
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills",
+      "docs",
+      "examples"
+    ],
+    "paths": [
+      "docs/features",
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills"
+    ]
+  },
+  "sources": [
+    "docs/HUMAN_READABLE_ARTIFACTS_REFACTOR_PLAN_UK.md and references/feature-layout.md",
+    "AGENTS.md and references/feature-layout.md",
+    "references/feature-layout.md and skills/implement/SKILL.md",
+    "references/validation-execution.md and dispatcher review schemas",
+    "references/feature-layout.md",
+    "AGENTS.md",
+    "scripts/validate_task_plan.py",
+    "dispatcher/vocabulary.json",
+    "references/change-lifecycle.md"
+  ],
+  "status": "ARCHITECTURE_GUIDANCE_READY"
 }

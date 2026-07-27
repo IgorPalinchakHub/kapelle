@@ -2,7 +2,7 @@
 # Human-readable Kapelle feature artifacts
 
 Status: Awaiting developer review
-Current stage: spec
+Current stage: start
 Progress: 0/9 validated; 9 implemented-unverified
 Ready for review: No
 Completed: No
@@ -22,22 +22,18 @@ Refactor Kapelle so a user can understand and control a feature through a small 
 
 ## Workflow readiness
 
-- Planning lane: standard
-- Product specification: Current
-- Technical specification: Current
-- Base functional tests: Missing or stale
-- Unit tests: Missing, failed, or stale
+- Workflow: Lightweight human-controlled
+- Current slice: Missing or awaiting approval
+- Implementation: Complete
 - Verification: Missing, deferred, failed, or stale
-- Release: Not completed
+- Final approval: Missing or stale
 
 ## Review now
 
-- proposal.md
 - spec.md
 - design.md
 - tasks.md
-- test-plan.md
 
 ## Next action
 
-/kapelle:spec human-readable-artifacts-refactor
+/kapelle:start human-readable-artifacts-refactor --approve

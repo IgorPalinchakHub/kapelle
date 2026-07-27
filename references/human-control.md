@@ -1,134 +1,75 @@
 # Human-controlled development workflow
 
-Kapelle's preferred workflow is a progressive, reviewable decision pipeline:
+Kapelle minimizes ceremony while keeping two explicit decisions:
 
 ```text
-start -> spec -> design -> plan -> base-functional-tests
-      -> implement -> unit-tests -> verify -> finalize
+raw task
+  -> high-level feature map + high-level system design
+  -> one minimal walking skeleton
+  -> developer slice approval
+  -> production implementation
+  -> detail/promote the next use case through amend (repeat when needed)
+  -> all unit tests + complete verification
+  -> developer final approval
 ```
 
-`amend` may interrupt implementation, verification, or developer testing.
+Silence is never approval.
 
-There is no legacy runtime pipeline. Unmarked feature directories route to `migrate`.
+## Checkpoints
 
-For eligible XS/S features, `start` combines `spec + design + plan` into a fast-lane draft with one
-planning approval. Standard lane retains separate business, architecture, and delivery approvals.
-See `fast-lane.md`.
+- `--checkpoint=workstream` is the default: return after a cohesive, reviewable outcome.
+- `--checkpoint=task` is opt-in for high-risk work.
+- `--checkpoint=none` is opt-in for low-risk execution of all ready work in the approved slice.
 
-## Human control
+A checkpoint reports observable behavior, changed areas, checks, risks, and the next action. It
+does not expose agent transcripts or machine-artifact identifiers.
 
-The agent researches and proposes. The developer owns product and technical decisions.
-Whenever a decision requires developer input, follow
-[`developer-questions.md`](./developer-questions.md): ask a standalone plain-language question
-about the intended change and its trade-offs, never about internal artifact notation.
+## Agent use
 
-Standard lane has five explicit review gates:
+The main agent owns normal analysis, slice planning, coding, and first review. Additional roles are
+conditional:
 
-1. high-level feature outline;
-2. detailed business specification;
-3. architecture package;
-4. delivery plan;
-5. final as-built result.
+- explorer — unclear ownership or unfamiliar modules;
+- critic/reviewer — high risk, important ambiguity, design deviation, repeated failure, or explicit
+  request;
+- Agent Teams — explicit approval plus disjoint file ownership.
 
-Fast lane replaces the first four with one `feature-plan` gate and retains final approval.
+Normal work does not run business analyst to critic to devil's advocate or planner to implementer
+to reviewer chains.
 
-Silence is never approval. Starting the next gated phase, using its explicit approval option, or
-answering the stage's approval prompt is the required affirmative action. Persist accepted gates
-only through `scripts/review_gate.py`. Canonical gate names and exact artifact sets come from
-`dispatcher/artifact-dependencies.json`; every fingerprint is a full SHA-256.
-
-The standard outline gate fingerprints stable `proposal.md` and `_context/architecture.md`. The
-following `spec` stage expands `spec.md`, so the outline gate must not fingerprint that mutable
-draft. The later `business-spec` gate fingerprints `proposal.md`, the completed `spec.md`, and
-`specs/`. An accepted business specification therefore remains mechanically distinguishable from
-its earlier outline.
-
-`proposal.md` carries
-`<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->`. This durable marker
-lets `/kapelle:status` recover the correct route when `_kapelle/` was deleted; lost approvals and
-test output are still never fabricated.
-
-Every stage response is short and contains:
-
-- what changed;
-- decisions required from the developer, normally at most three;
-- human-readable files to review;
-- the exact next command.
-
-## Progressive artifacts
-
-Keep the feature root readable:
-
-```text
-proposal.md
-spec.md
-specs/
-design.md
-design/
-contracts/
-test-plan.md
-tasks.md
-diagrams/
-```
-
-Create subfiles only when they make an independent business process or technical boundary easier
-to review. Do not create one file per minor rule.
-
-`specs/` may contain business rules, scenarios, subprocesses, integrations, and edge cases.
-`design/` may contain bounded component designs, an optional domain model, status flows, and
-integration designs. Domain-model artifacts are created only when domain impact is `extend` or
-`new`.
+For a medium/large cross-component feature, `start` or `amend` may use one read-only parallel burst
+of at most three disjoint investigations. The main agent integrates the result and is the only
+writer of the human package. Agent Teams are an implementation optimization after contracts are
+stable, never a prerequisite for planning or the first skeleton.
 
 ## Test timing
 
-Kapelle deliberately uses this sequence:
+Focused endpoint/use-case functional tests or legacy characterization tests may precede their
+production change. All unit tests are written after production implementation. Complete functional,
+unit, integration/contract, static-analysis, lint, and build verification happens once in
+`/kapelle:verify`.
 
-```text
-contracts
--> base endpoint/use-case functional tests
--> production implementation
--> all unit tests
--> complete verification
-```
+Development checks use `ask | allow | skip`. Deferred required checks block PASS and final approval.
 
-Before implementation, create only a small executable behavioral safety net:
+## Incremental requirements
 
-- endpoint inputs, outputs, status codes, and principal validation errors;
-- public use-case method happy paths, principal business errors, and observable side effects;
-- critical boundary contracts when directly affected.
+Start with a high-level map of all known use cases and one production-shaped end-to-end path.
+Candidate capabilities are hypotheses, not approved scope. `/kapelle:amend` promotes one requested
+business or technical requirement, details only that use case and its affected design/domain/
+contracts, and adds one coherent slice. That slice receives a new approval before code. Heavy
+revision history is reserved for high-risk or post-verification changes.
 
-Do not write unit tests during production task implementation. This timing is a fixed workflow
-decision, not an adaptive TDD choice. Design must still keep business logic testable.
+## Bounded loops
 
-After all production tasks are implemented, `unit-tests` plans and writes unit tests for changed
-or new units. `verify` then runs functional, unit, integration, contract, static-analysis, lint,
-and build checks under the explicit validation policy.
+- discovery: one initial pass plus at most one targeted expansion;
+- specification/design: draft, at most one critic pass, at most one correction;
+- implementation: narrow check and at most two correction attempts before developer input;
+- final review: at most one reviewer/correction pass.
 
-## Implementation checkpoints
+Deterministic scripts own structural validation and gates. Agents do not loop until they agree.
 
-`implement` accepts:
+## Completion
 
-```text
---checkpoint=task
---checkpoint=workstream
---checkpoint=none
-```
-
-- `task`: stop after every task for developer review;
-- `workstream`: stop after each coherent workstream;
-- `none`: implement all dependency-ready work before returning.
-
-Regardless of checkpoint, each task records code paths and a short behavior summary. It does not
-claim validation completion until the later unit-test and verification phases pass.
-
-## Amendments and finalization
-
-Developer testing may invoke `amend`. The amendment captures a revision, determines affected
-business/design/contracts/tests/tasks/code, invalidates downstream evidence, and updates canonical
-human documents. History remains internal; do not create versioned copies of every document.
-
-`finalize` performs as-built convergence, fresh independent review, generates diff-friendly
-Mermaid feature-flow and architecture diagrams by default, and writes the approved release
-version. Draw.io may be added when a project capability exists and manual layout is valuable.
-
-Kapelle never performs git operations.
+Invoking `verify` explicitly means the developer considers the accumulated slices sufficient for
+the feature. Current PASS verification plus explicit final approval completes the process. Diagrams,
+release records, versions, and git operations are optional project concerns, not harness gates.

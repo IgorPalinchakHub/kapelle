@@ -8,7 +8,7 @@
     {
       "name": "kapelle",
       "source": "./",
-      "description": "Human-controlled SDLC harness with deterministic schema and approval gates, bounded architecture design, adaptive delivery, scoped project rules, recoverable state, and evidence-backed reconstruction."
+      "description": "Progressive human-controlled SDLC harness with a high-level feature map, system design, and approved vertical slices."
     }
   ]
 }

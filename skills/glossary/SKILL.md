@@ -12,29 +12,32 @@ Capture or reconcile domain terms in `CONTEXT.md`.
 
 - `<slug>` for feature-scoped work.
 - Reads: `term + optional existing CONTEXT.md`.
-- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Utility contract: [`../../references/utility-contract.md`](../../references/utility-contract.md).
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
+1. Require a feature slug and at least one ambiguous or conflicting domain term.
 2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
+3. Reconcile the term against `spec.md`, `design.md`, current code, and existing `CONTEXT.md`
+   without re-running the backbone.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `CONTEXT.md`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+5. Write only terms that materially improve future feature review. Keep `CONTEXT.md` concise and
+   update `spec.md` or `design.md` when they use a conflicting meaning.
+6. Rebuild and validate feature status when feature artifacts changed.
+7. Emit the handoff block per [`../../references/handoff.md`](../../references/handoff.md). Changed
+   scope or design returns to `/kapelle:start <slug> --approve`; otherwise return to status.
 
 ## Output
 
 - `CONTEXT.md`.
-- `Status: DONE | stage: glossary | produced: <paths>`.
+- `Status: DONE | utility: glossary | produced: <paths>`.
 
 ## Definition of Done
 
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points to `design`.
+- Handoff points to current-slice approval or status, never to deprecated `design`.
 
 ## Anti-patterns
 

@@ -1,299 +1,206 @@
-# Детальний порядок команд Kapelle
+# Kapelle: порядок виконання команд
 
-Kapelle має один human-controlled процес:
-
-```text
-start → spec → design → plan → base-functional-tests
-      → implement → unit-tests → verify → finalize
-```
-
-Для XS/S planning може пройти fast lane:
+Основний процес:
 
 ```text
-start --lane=fast → один review/approval → base-functional-tests
+start base -> approve -> implement
+                          |
+              amend next slice -> approve -> implement
+                          |
+                        verify
 ```
 
-Для документування вже реалізованої фічі є окремий documentation-only процес
-`/kapelle:reconstruct`. Він не є альтернативним development pipeline і не переходить до `plan`,
-`implement` чи release:
-
-```text
-scope → approve → spec → approve → design → approve → review → approve
-```
-
-## 1. `/kapelle:start <slug> "<raw task>"`
-
-### Що задати на вході
-
-- стабільний slug;
-- необроблений опис задачі;
-- optional `--lane=auto|fast|standard`;
-- optional `--interview=auto|lean|standard|deep`.
-
-### Що відбувається
-
-- explorer знаходить поточну поведінку або project boundary;
-- факти відділяються від requested behavior і assumptions;
-- визначаються size, risks, lane та interview depth;
-- project capabilities і architecture-rules subagent знаходяться семантично.
-
-`lean` не запускає critic/devil subagents. `standard` робить один combined critic pass. `deep`
-використовує business analyst, critic і devil's advocate.
-
-### Що отримуємо
-
-Standard:
-
-```text
-proposal.md
-spec.md
-_context/architecture.md
-_kapelle/size.json
-```
-
-Fast додатково одразу створює `design.md`, `tasks.md`, surface/task plans і просить одне approval.
-
-Правки:
-
-```text
-/kapelle:start <slug> --revise "<feedback>"
-/kapelle:start <slug> --approve
-```
-
-## 2. Standard `/kapelle:spec <slug>`
-
-### Вхід
-
-Slug, optional interview depth і feedback.
-
-### Робота
-
-Описуються actors, main/alternative flows, rules, validations, subprocesses, component reactions,
-failures, retry/idempotency, permissions, compatibility й acceptance criteria.
-
-### Результат
-
-```text
-spec.md
-specs/scenarios.md
-specs/business-rules.md
-specs/integrations.md       # лише коли потрібно
-```
-
-Approval:
-
-```text
-/kapelle:spec <slug> --approve
-```
-
-## 3. Standard `/kapelle:design <slug>`
-
-### Робота
-
-Перший виклик виконує тільки delta-discovery відносно вже зібраного `_context/`, запускає один
-bounded architecture-rules lookup і один high-level critic без паралельного inline fallback.
-Новий `design.md` має ціль до 220 рядків / 2200 слів і hard limit 280 рядків / 2800 слів.
-Для legacy overview ліміт стає blocking лише після явного `--compact`. Документ завжди має секції:
-
-1. Context and goal;
-2. Scope and constraints;
-3. Architecture rules applied;
-4. Building blocks and responsibilities;
-5. Runtime flows;
-6. Data and domain impact;
-7. Contracts and integrations;
-8. Cross-cutting concerns;
-9. Decisions and trade-offs;
-10. Validation and rollout;
-11. Open questions.
-
-Структура перевіряється `scripts/validate_design.py`.
-
-### Результат першого виклику
-
-```text
-design.md
-_kapelle/surface-plan.json
-_kapelle/architecture-guidance/design.json
-```
-
-Повні ADR, contracts, domain/status skeletons, transaction mechanics і call-site analysis тут не
-створюються. Вони з'являються лише після підтвердження напрямку:
-
-```text
-/kapelle:design <slug> --detail
-```
-
-Після `--detail` отримуємо лише потрібні:
-
-```text
-design/*.md
-contracts/*.md
-adr/*.md
-```
-
-Правки й approval:
-
-```text
-/kapelle:design <slug> --revise "<feedback>"
-/kapelle:design <slug> --compact
-/kapelle:design <slug> --approve
-```
-
-`--compact` потрібен лише для явного перенесення старого довгого overview у новий короткий формат.
-Він робить один повний rewrite, не більше однієї корекції та ніколи не виконує approval у тому ж
-запуску.
-
-`--approve` — чистий детермінований gate. Він не читає документи для LLM-ревю, не шукає код, не
-запускає subagents і не редагує design. Один validator перевіряє весь architecture package, після
-чого canonical gate helper записує точну schema, повні SHA-256 та оновлює `STATUS.md`. При помилці
-команда завершується з `REFUSED-validation` і окремим маршрутом на `--revise`.
-
-## 4. Standard `/kapelle:plan <slug>`
-
-### Робота
-
-Створюються low-coupling/high-cohesion vertical outcomes, dependencies, contract ordering,
-integration ownership, AC coverage і file ownership. Graph перевіряється Python validator.
-
-### Результат
-
-```text
-tasks.md
-test-plan.md
-_kapelle/task-plan.json
-```
-
-Production tasks не містять написання unit tests.
-
-```text
-/kapelle:plan <slug> --revise "<feedback>"
-/kapelle:plan <slug> --approve
-```
-
-## 5. `/kapelle:base-functional-tests <slug>`
-
-### Вхід
-
-Slug і `--validation=ask|allow|skip`.
-
-### Робота
-
-До production code пишуться тільки базові functional tests для endpoint inputs/outputs/errors,
-public use-case methods та critical contracts. Unit tests і exhaustive coverage виключені.
-
-### Результат
-
-Test files та `_kapelle/base-functional-tests.json`. Skip не є PASS.
-
-## 6. `/kapelle:implement <slug>`
-
-```text
-/kapelle:implement <slug> --checkpoint=task --validation=ask
-```
-
-Агент знаходить project skills/subagents, отримує scoped architecture rules, планує й реалізує
-production code. Unit tests не створюються.
-
-Checkpoint:
-
-- `task`;
-- `workstream`;
-- `none`.
-
-Після checkpoint користувач отримує outcome, changed files, observable behavior, risks і next
-action.
-
-## 7. `/kapelle:unit-tests <slug>`
-
-Запускається тільки після завершення всього production code. Аналізує changed/new units, пише всі
-потрібні unit tests і записує fingerprinted evidence.
-
-## 8. `/kapelle:verify <slug>`
-
-Формує прозорий batch:
-
-- functional;
-- unit;
-- integration;
-- contract;
-- static analysis;
-- lint;
-- build.
-
-Required skip/cancel створює `validation-deferred`.
-
-## 9. `/kapelle:amend <slug> "<feedback>"`
-
-Версіонує поточний стан, класифікує impact, просить approval маршруту, оновлює canonical artifacts
-та інвалідує downstream evidence. Повний restart не виконується.
-
-## 10. `/kapelle:finalize <slug> --version=1.0`
-
-Потребує PASS verification і підтвердження manual testing/debugging. Виконує as-built convergence,
-fresh review, створює Mermaid diagrams і записує completed release.
-
-## 11. `/kapelle:migrate <slug>`
-
-Для feature directory без human-controlled marker:
-
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply --lane=standard
-```
-
-Dry-run показує preserved files, gaps і next command. Apply додає durable marker та workflow state,
-але не вигадує approvals, reviews або validation.
-
-## 12. `/kapelle:status <slug>`
-
-Відновлює derived state і показує exact next command. Видалення `_kapelle/` не видаляє lane:
-він відновлюється з marker у `proposal.md`.
-
-## Optional utilities
-
-`survey`, `sequences`, `data-model`, `contracts`, `decide-adr`, `glossary`, `roadmap` можуть
-доповнювати артефакти, але не є альтернативним конвеєром.
-
-## 13. `/kapelle:reconstruct <slug> "<feature scope>"`
+## 1. `/kapelle:start <slug> "<опис задачі>"`
 
 ### Що задати
 
-- новий slug для документаційного пакета;
-- чітку межу існуючої фічі: entrypoints, модулі або observable flow, який треба пояснити.
+- `<slug>` — стабільна назва фічі, бажано з номером ticket;
+- короткий опис бажаного бізнес-результату;
+- відомі обмеження або важливі приклади, якщо вони є.
 
-### Послідовність
+Приклад:
 
 ```text
-/kapelle:reconstruct <slug> "<feature scope>"
-/kapelle:reconstruct <slug> --approve
-/kapelle:reconstruct <slug> --spec
-/kapelle:reconstruct <slug> --approve
-/kapelle:reconstruct <slug> --design
-/kapelle:reconstruct <slug> --approve
-/kapelle:reconstruct <slug> --review
-/kapelle:reconstruct <slug> --approve
+/kapelle:start CLS-14829-post-bulk-invoices "Додати масове створення invoice з вибраних замовлень"
+```
+
+### Що відбувається
+
+Плагін один раз досліджує релевантний існуючий код, тести й аналоги. Він знаходить проєктні skills,
+інструкції та architecture-rules subagent. Explorer додається лише коли неясна зона відповідальності;
+critic — лише для суттєвої неоднозначності або ризику.
+
+Плагін формує високорівневу карту всієї відомої фічі: actors, use cases, бізнес-правила, компоненти,
+domain/data ownership та інтеграції. У реалізаційних деталях він планує лише мінімальний
+production-shaped walking skeleton: один наскрізний flow через потрібні шари. `tasks.md` має один
+workstream, максимум три checkbox, якщо без цього slice незручно рев’ювати. Наступні можливі вимоги
+залишаються hypotheses у `Candidate capabilities`.
+
+### Результат
+
+- `spec.md` — high-level feature map, committed behavior, use cases, правила і candidates;
+- `design.md` — high-level system design і технічний шлях першого slice;
+- за тригером `specs/<use-case>.md`, `design/domain-model.md`, contract, ADR або sequence;
+- `tasks.md` — walking-skeleton workstream;
+- `STATUS.md` — поточний стан і наступна команда.
+
+За потреби попросіть точкові правки:
+
+```text
+/kapelle:start <slug> --revise "<що саме змінити>"
+```
+
+Коли три файли погоджені:
+
+```text
+/kapelle:start <slug> --approve
+```
+
+`--approve` нічого не генерує і не запускає агентів: лише перевіряє поточні fingerprints та створює
+approval для поточного slice.
+
+## 2. `/kapelle:implement <slug>`
+
+Рекомендований виклик:
+
+```text
+/kapelle:implement <slug> --checkpoint=workstream --validation=ask
+```
+
+### Що задати
+
+- `<slug>`;
+- checkpoint:
+  - `workstream` — рекомендовано, контроль після цілісного результату;
+  - `task` — частіший контроль для ризикової роботи;
+  - `none` — виконати всі готові workstream;
+- validation:
+  - `ask` — спочатку показати точні команди;
+  - `allow` — дозволити focused checks;
+  - `skip` — відкласти їх до `verify`.
+
+### Що відбувається
+
+Main agent сам реалізує погоджений end-to-end slice, застосовуючи знайдений project skill і
+закешовані architecture rules. Перший skeleton має пройти через реальний endpoint/command,
+use-case service, domain та persistence/integration boundary і дати мінімальний стабільний
+результат. Порожні майбутні endpoints/services не створюються. Обов’язкових planner → implementer
+→ reviewer subagent-циклів немає. Reviewer використовується для high-risk змін або на пряме
+прохання.
+
+Перед production-кодом можуть бути додані базові functional/characterization tests для endpoint,
+command, worker або public use-case method. Unit-тести поки не пишуться. Повний PHPStan/lint/full
+suite також не запускається під час звичайного development.
+
+### Результат
+
+- реалізований бізнес-результат workstream;
+- короткий список змінених зон;
+- observable behavior і важливий trade-off;
+- focused checks: passed або deferred;
+- два варіанти: додати наступну вимогу через `amend` або завершувати scope через `verify`.
+
+## 3. `/kapelle:amend <slug> "<feedback>"`
+
+Використовуйте як нормальний наступний крок, щоб додати бізнесову або технічну вимогу до вже
+працюючої бази, а також для зміни активного slice.
+
+### Що задати
+
+```text
+/kapelle:amend CLS-14829-post-bulk-invoices "Для archived order bulk invoice створювати не можна"
 ```
 
 ### Результат
 
+Плагін перевіряє поточну реалізацію, переносить лише запитану вимогу з candidate у committed
+behavior, за потреби створює детальний use-case spec, оновлює domain model/contracts і додає один
+найменший vertical slice. Інші candidates не деталізуються. Попередній approval стає stale, після
+чого потрібно:
+
 ```text
-proposal.md
-spec.md
-specs/*.md
-design.md
-design/*.md
-contracts/*.md                         # якщо окремий review справді корисний
-_context/evidence-index.md
-_kapelle/reconstruction.json
-_kapelle/reconstruction-coverage.json
+/kapelle:start <slug> --approve
 ```
 
-Agent сам семантично знаходить project skills/subagents. Project architecture-rules subagent
-повертає правила саме для поточних aspects, modules, entrypoints і paths. Твердження маркуються як
-`observed`, `inferred`, `declared` або `unknown`; observed/inferred мають точні посилання на код.
+Важкий revision lifecycle створюється лише після PASS verification, для high-risk зміни або на
+пряме прохання.
 
-Завершення означає лише, що product/business specification та as-built architecture design
-перевірені проти актуального evidence. Це не означає, що фіча release-ready.
+## 4. `/kapelle:verify <slug>`
 
-Повна інструкція: [RECONSTRUCTION_UK.md](RECONSTRUCTION_UK.md).
+Коли всі погоджені slices реалізовані і нових вимог поки не потрібно:
+
+```text
+/kapelle:verify <slug> --validation=ask
+```
+
+### Що задати
+
+- validation policy `ask|allow|skip`;
+- за бажанням — додаткові manual checks або конкретну команду проєкту.
+
+### Що відбувається
+
+Сам виклик `verify` означає, що developer вважає поточний накопичений scope достатнім. Плагін
+звіряє код зі spec/design, планує й пише всі unit-тести, формує один
+risk-based batch із applicable functional, unit, integration/contract, static-analysis, lint і
+build checks. Неактуальні категорії пропускаються з коротким поясненням.
+
+Failed required check дає `FAILED`. Skipped/cancelled required check дає `validation-deferred`.
+Жоден із цих станів не може бути PASS.
+
+### Результат
+
+- узгоджені `spec.md` і `design.md`;
+- написані unit-тести;
+- один `_kapelle/verification.json`;
+- короткий звіт тестів, ризиків і manual checks;
+- команда фінального підтвердження.
+
+Після PASS і ручного рев’ю:
+
+```text
+/kapelle:verify <slug> --approve
+```
+
+Ця команда лише створює final approval. Діаграми, release JSON, version number, commit або push не є
+обов’язковими для завершення Kapelle.
+
+## 5. `/kapelle:status <slug>`
+
+### Що задати
+
+Лише slug:
+
+```text
+/kapelle:status <slug>
+```
+
+### Результат
+
+Оновлений `STATUS.md`: progress по workstream, blockers/deferred validation, файли для рев’ю й одна
+точна наступна команда. Якщо `_kapelle/` видалено, state відновлюється без вигадування approvals чи
+PASS evidence.
+
+## 6. `/kapelle:migrate <slug>`
+
+Для feature directory зі старим workflow:
+
+```text
+/kapelle:migrate <slug>
+/kapelle:migrate <slug> --apply
+```
+
+Перший виклик — dry-run. Другий додає lightweight marker і routing, зберігаючи старі документи та
+history. Старі команди `spec`, `design`, `plan`, `base-functional-tests`, `unit-tests`, `finalize`
+лише показують нову команду й нічого не виконують.
+
+## 7. `/kapelle:reconstruct <slug>`
+
+Для документації функціоналу, який уже реалізований:
+
+```text
+/kapelle:reconstruct <slug> "<частина існуючого функціоналу>"
+```
+
+Це окремий documentation-only процес. Він не переходить до planning, implementation, tests або
+completion.

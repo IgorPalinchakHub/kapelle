@@ -1,8 +1,8 @@
 ---
 name: migrate
 description: >
-  Migrate a legacy Kapelle feature directory into the single human-controlled workflow without
-  fabricating approvals, validation, review, or historical evidence.
+  Adopt an existing feature into the lightweight start-implement-verify workflow while preserving
+  human documents and never fabricating historical evidence.
 ---
 
 # Skill: migrate
@@ -11,25 +11,31 @@ Invoke:
 
 ```text
 /kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply [--lane=standard|fast]
+/kapelle:migrate <slug> --apply
 ```
 
 ## Protocol
 
-1. Read the current human documents, `_kapelle/` state, current implementation, and available
-   evidence. Do not run a legacy stage.
-2. Default to standard lane. Recommend fast only when the complete eligibility contract in
-   `references/fast-lane.md` is demonstrably satisfied and the developer explicitly confirms it.
-3. Dry-run first: report preserved files, missing target artifacts, evidence gaps, collisions,
-   selected lane, and the minimal post-migration command.
-4. Before `--apply`, create or refresh `_context/architecture.md` from current, cited project
-   evidence when it is missing. Do not create an empty placeholder; the stable outline gate
-   fingerprints this context.
-5. On `--apply`, run `scripts/migrate_workflow.py <feature-dir> --apply --lane=<lane>`.
-6. Preserve canonical human documents in place. Add the durable workflow marker and
-   `_kapelle/workflow.json`; rebuild derived state.
-7. Never recreate lost approvals, agent verdicts, command output, validation evidence, or
-   telemetry. The migrated route asks for the earliest missing approval or artifact.
-8. Refresh `STATUS.md` and return the exact next human-controlled command.
+1. Dry-run first:
 
-Migration performs no production-code or git changes. Use the standard handoff block.
+```text
+scripts/migrate_workflow.py docs/features/<slug>
+```
+
+   Report preserved documents, missing `spec.md`/`design.md`/`tasks.md`, evidence that cannot be
+   reconstructed, and the next command.
+2. `spec.md` is the only migration prerequisite because it carries the durable lightweight marker.
+   If it is missing, use `/kapelle:start <slug> "<raw task or current feature intent>"`.
+3. On explicit `--apply`, run:
+
+```text
+scripts/migrate_workflow.py docs/features/<slug> --apply
+```
+
+   This adds the marker, writes workflow version 2, and rebuilds status. It preserves existing
+   `proposal.md`, detailed specs/designs, contracts, ADRs, task evidence, and history.
+4. Migration never creates plan/final approvals, validation results, agent reviews, command output,
+   or telemetry. `/kapelle:start` compacts/revises the human package only when the developer asks.
+5. Perform no production-code, validation, or git changes.
+
+Handoff to the exact command returned by the migration helper.

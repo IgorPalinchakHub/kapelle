@@ -1,7 +1,7 @@
 ---
 name: feature-review
 description: >
-  Deprecated compatibility wrapper. Use kapelle:verify followed by kapelle:finalize; this command
+  Deprecated compatibility wrapper. Use kapelle:verify; this command
   performs no former feature-review-stage work.
 ---
 

@@ -8,8 +8,8 @@ It does not register skills, agents, gates, rules, or knowledge providers.
 1. If the config does not exist, use:
    `{ "application": "<repository-name>", "artifact_root": "docs/features", "modules": [],
    "implementation": { "mode": "sequential", "max_parallel_agents": 3,
-   "approval_policy": "risk-based", "max_task_attempts": 3,
-   "max_agent_runs_per_task": 8, "telemetry": true },
+   "approval_policy": "risk-based", "checkpoint": "workstream", "max_task_attempts": 3,
+   "max_agent_runs_per_task": 3, "telemetry": false },
    "validation": { "development_policy": "ask" } }`.
 2. Validate a present config against `kapelle.config.schema.json`.
 3. Apply defaults for omitted implementation settings.

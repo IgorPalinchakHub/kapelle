@@ -1,4 +1,4 @@
-# Stage Handoff Block
+# Backbone and Utility Handoff
 
 Use this at the end of each backbone stage:
 
@@ -12,10 +12,13 @@ Use this at the end of each backbone stage:
 - `<artifact>` — what to inspect
 
 **Run next**
-1. `/clear`
-2. `/kapelle:<next-stage> <slug>`
+`/kapelle:<next-stage> <slug>`
 ```
 
-For review -> implement loopbacks, say explicitly whether `/clear` should be skipped to keep fix context.
+Recommend `/clear` only when the current context is noisy or an independent final review matters.
+Do not require it between normal workstream checkpoints.
 
-For an active change request, preserve `--change=<change-id>` in every next-stage command.
+Optional utilities use the same readable sections but label the heading `utility`. They never
+invent a second pipeline. When they change `spec.md`, `design.md`, `tasks.md`, an ADR, or a durable
+contract, their next command is `/kapelle:start <slug> --approve`; otherwise it is
+`/kapelle:status <slug>`.

@@ -1,3 +1,4 @@
+<!-- kapelle-workflow: lightweight-v1 -->
 # Human-readable artifact contract
 
 ## Summary

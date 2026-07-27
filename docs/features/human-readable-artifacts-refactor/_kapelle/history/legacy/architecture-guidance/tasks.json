@@ -1,0 +1,83 @@
+{
+  "capability": {
+    "description_evidence": "The project architecture-rules subagent returned task-scoped rules and identified runtime evidence, recovery, migration, and freshness gates requiring deterministic enforcement.",
+    "kind": "project-subagent",
+    "name": "delegated-scoped-project-architecture-rules-subagent"
+  },
+  "gaps": [],
+  "precedents": [
+    {
+      "path": "scripts/validate_task_plan.py",
+      "reason": "Semantic graph and AC coverage validation remains mandatory"
+    },
+    {
+      "path": "scripts/test_feature_state.py",
+      "reason": "Deterministic recovery, freshness, and migration regression coverage"
+    }
+  ],
+  "rules": [
+    {
+      "applies_to": [
+        "runtime",
+        "contracts"
+      ],
+      "id": "TASK-ARCH-01",
+      "source": "references/artifact-presentation.md and references/validation-execution.md",
+      "summary": "Runtime claims must be derived from schema-shaped, current evidence; checked Markdown tasks are implementation claims only."
+    },
+    {
+      "applies_to": [
+        "runtime",
+        "stages"
+      ],
+      "id": "TASK-ARCH-02",
+      "source": "references/feature-layout.md and skills/implement/SKILL.md",
+      "summary": "Recovery selects the smallest safe route and blocks new code-writing on provisional architecture or dependency ownership."
+    },
+    {
+      "applies_to": [
+        "runtime"
+      ],
+      "id": "TASK-ARCH-03",
+      "source": "references/feature-layout.md and dispatcher/change-state.schema.json",
+      "summary": "Migration collision and semantic checks occur before writes, including active change-state conversion."
+    },
+    {
+      "applies_to": [
+        "stages"
+      ],
+      "id": "TASK-ARCH-04",
+      "source": "AGENTS.md",
+      "summary": "Stage flow remains one-way and provider-neutral; project-specific behavior is discovered natively."
+    }
+  ],
+  "scope": {
+    "aspects": [
+      "contracts",
+      "runtime",
+      "stages",
+      "documentation"
+    ],
+    "entrypoints": [
+      "feature layout",
+      "Kapelle commands",
+      "CLI utilities"
+    ],
+    "modules": [
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills",
+      "docs",
+      "examples"
+    ],
+    "paths": [
+      "scripts/feature_state.py",
+      "scripts/migrate_feature_layout.py",
+      "scripts/validate_feature_state.py",
+      "dispatcher",
+      "skills"
+    ]
+  },
+  "status": "ARCHITECTURE_GUIDANCE_READY"
+}

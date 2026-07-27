@@ -9,6 +9,7 @@
     "gate": {
       "type": "string",
       "enum": [
+        "plan",
         "feature-plan",
         "outline",
         "business-spec",

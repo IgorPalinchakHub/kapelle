@@ -6,6 +6,17 @@
     {
       "type": "object",
       "additionalProperties": false,
+      "required": ["workflow", "version", "created_from", "profile"],
+      "properties": {
+        "workflow": { "const": "human-controlled" },
+        "version": { "const": 2 },
+        "created_from": { "type": "string", "enum": ["raw-task", "legacy-migration"] },
+        "profile": { "const": "lightweight" }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
       "required": ["workflow", "version", "created_from", "lane"],
       "properties": {
         "workflow": { "const": "human-controlled" },

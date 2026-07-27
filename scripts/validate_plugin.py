@@ -77,6 +77,7 @@ for rel in [
     'dispatcher/reconciliation.schema.json',
     'dispatcher/implementation-plan.schema.json',
     'dispatcher/artifact-dependencies.json',
+    'dispatcher/schema-lifecycle.json',
     'dispatcher/feature-manifest.schema.json',
     'dispatcher/feature-state.schema.json',
     'dispatcher/recovery-report.schema.json',
@@ -92,6 +93,7 @@ for rel in [
     'dispatcher/verification.schema.json',
     'dispatcher/release.schema.json',
     'references/agent-orchestration.md',
+    'references/utility-contract.md',
     'references/project-capabilities.md',
     'references/architecture-guidance.md',
     'references/execution-depth.md',
@@ -104,6 +106,7 @@ for rel in [
     'references/interview-depth.md',
     'references/design-template.md',
     'references/design-execution.md',
+    'references/progressive-artifacts.md',
     'references/reconstruction.md',
     'references/deprecated-legacy-stages.md',
     'references/repository-context.md',
@@ -125,6 +128,8 @@ for rel in [
     'scripts/test_feature_state.py',
     'scripts/validate_design.py',
     'scripts/test_validate_design.py',
+    'scripts/validate_progressive_docs.py',
+    'scripts/test_validate_progressive_docs.py',
     'scripts/validate_architecture_package.py',
     'scripts/test_validate_architecture_package.py',
     'scripts/review_gate.py',
@@ -135,8 +140,47 @@ for rel in [
     check((ROOT / rel).exists(), f"missing {rel}")
 
 dispatcher_schemas = sorted((ROOT / 'dispatcher').glob('*.schema.json'))
-check(len(dispatcher_schemas) == 26,
-      'dispatcher: expected 26 canonical JSON Schemas')
+schema_lifecycle = load_json('dispatcher/schema-lifecycle.json')
+schema_names = {path.name for path in dispatcher_schemas}
+expected_schema_groups = {
+    'core-runtime',
+    'optional-agent-runtime',
+    'reconstruction',
+    'migration-compatibility',
+}
+classified_schema_names: list[str] = []
+if schema_lifecycle:
+    check(schema_lifecycle.get('version') == 1,
+          'schema lifecycle: version must be 1')
+    schema_groups = schema_lifecycle.get('groups', {})
+    check(set(schema_groups) == expected_schema_groups,
+          'schema lifecycle: groups must match the canonical lifecycle groups')
+    for group_name in sorted(expected_schema_groups):
+        group = schema_groups.get(group_name, [])
+        check(isinstance(group, list) and bool(group),
+              f'schema lifecycle: {group_name} must be a non-empty array')
+        if isinstance(group, list):
+            classified_schema_names.extend(group)
+    check(len(classified_schema_names) == len(set(classified_schema_names)),
+          'schema lifecycle: a schema may belong to only one group')
+    check(set(classified_schema_names) == schema_names,
+          'schema lifecycle: every dispatcher schema must be classified exactly once')
+    policy = schema_lifecycle.get('policy', {})
+    check(set(policy) == expected_schema_groups,
+          'schema lifecycle: every group must have a policy')
+
+compatibility_schemas = set()
+if schema_lifecycle:
+    compatibility_schemas = set(
+        schema_lifecycle.get('groups', {}).get('migration-compatibility', [])
+    )
+backbone_text = '\n'.join(
+    (ROOT / 'skills' / name / 'SKILL.md').read_text()
+    for name in ('start', 'implement', 'verify', 'amend', 'status')
+)
+for schema_name in sorted(compatibility_schemas):
+    check(schema_name not in backbone_text,
+          f'schema lifecycle: lightweight backbone must not require compatibility schema {schema_name}')
 for schema_path in dispatcher_schemas:
     for schema_error in audit_schema(schema_path):
         check(False, f'{schema_path.relative_to(ROOT)}: unsupported schema: {schema_error}')
@@ -235,12 +279,14 @@ if config:
           'config: invalid implementation.approval_policy')
     check(props.get('checkpoint', {}).get('enum') == ['task', 'workstream', 'none'],
           'config: invalid implementation.checkpoint')
-    check(props.get('checkpoint', {}).get('default') == 'task',
-          'config: implementation.checkpoint default must be task')
+    check(props.get('checkpoint', {}).get('default') == 'workstream',
+          'config: implementation.checkpoint default must be workstream')
     check(props.get('max_task_attempts', {}).get('default') == 3,
           'config: max_task_attempts default must be 3')
-    check(props.get('max_agent_runs_per_task', {}).get('default') == 8,
-          'config: max_agent_runs_per_task default must be 8')
+    check(props.get('max_agent_runs_per_task', {}).get('default') == 3,
+          'config: max_agent_runs_per_task default must be 3')
+    check(props.get('telemetry', {}).get('default') is False,
+          'config: telemetry default must be false')
     validation = config.get('properties', {}).get('validation', {})
     validation_policy = validation.get('properties', {}).get('development_policy', {})
     check(validation_policy.get('enum') == ['ask', 'allow', 'skip'],
@@ -250,44 +296,48 @@ if config:
 
 implementation_skill = (ROOT / 'skills/implement/SKILL.md').read_text()
 for required in [
-    'kapelle:implementation-planner',
-    'kapelle:implementer',
-    'kapelle:reviewer',
-    'PLAN -> APPROVE',
-    'max_task_attempts',
-    'max_agent_runs_per_task',
     '--validation=ask|allow|skip',
-    'validation-deferred',
-    '--checkpoint=task|workstream|none',
-    'Do not create unit tests',
-    '/kapelle:unit-tests',
+    '--checkpoint=workstream|task|none',
+    'Default to `--checkpoint=workstream`',
+    'Do not write unit tests',
+    '/kapelle:verify',
+    'Do not create per-task run narratives',
+    'Do not dispatch planner and implementer subagents by default',
 ]:
     check(required in implementation_skill, f'implement: missing orchestration guard {required!r}')
 check('dispatch `kapelle:test-author`' not in implementation_skill,
       'implement: must not dispatch test-author during production implementation')
+for required in [
+    'next business or technical requirement',
+    'when the developer considers the current scope complete',
+]:
+    check(required in implementation_skill,
+          f'implement: missing incremental-slice handoff {required!r}')
+
+amend_skill = (ROOT / 'skills/amend/SKILL.md').read_text()
+for required in [
+    'next feature increment',
+    'developer-requested capability',
+    'one smallest coherent vertical slice',
+]:
+    check(required in amend_skill,
+          f'amend: missing incremental-slice guard {required!r}')
 
 for rel in [
     'skills/start/SKILL.md',
-    'skills/spec/SKILL.md',
-    'skills/plan/SKILL.md',
-    'skills/base-functional-tests/SKILL.md',
-    'skills/unit-tests/SKILL.md',
+    'skills/implement/SKILL.md',
     'skills/verify/SKILL.md',
     'skills/amend/SKILL.md',
-    'skills/finalize/SKILL.md',
 ]:
     check((ROOT / rel).exists(), f'human-controlled workflow: missing {rel}')
 
 human_control = (ROOT / 'references/human-control.md').read_text().lower()
 for required in [
     'human-controlled development workflow',
-    'base endpoint/use-case functional tests',
     'production implementation',
     'all unit tests',
     'complete verification',
-    '--checkpoint=task',
     '--checkpoint=workstream',
-    '--checkpoint=none',
 ]:
     check(required in human_control, f'human control: missing {required!r}')
 
@@ -308,9 +358,6 @@ for required in [
           f'developer questions: missing contract guard {required!r}')
 for rel in [
     'skills/start/SKILL.md',
-    'skills/spec/SKILL.md',
-    'skills/design/SKILL.md',
-    'skills/plan/SKILL.md',
     'skills/implement/SKILL.md',
     'skills/amend/SKILL.md',
 ]:
@@ -328,14 +375,15 @@ for rel in [
         'internal' in text.lower() and 'question' in text.lower(),
         f'{rel}: must keep decision findings internal to the coordinator',
     )
-check('<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->' in
+check('<!-- kapelle-workflow: lightweight-v1 -->' in
       (ROOT / 'skills/start/SKILL.md').read_text(),
       'start: missing durable workflow recovery marker')
 
-unit_skill = (ROOT / 'skills/unit-tests/SKILL.md').read_text()
-check('never during `/kapelle:implement`' in unit_skill,
-      'unit-tests: must enforce post-implementation timing')
 verify_skill = (ROOT / 'skills/verify/SKILL.md').read_text()
+check('write all unit tests now' in verify_skill,
+      'verify: must enforce end-of-implementation unit-test timing')
+check("developer's explicit statement" in verify_skill,
+      'verify: invocation must explicitly close the evolving feature scope')
 for required in [
     'functional',
     'unit',
@@ -361,22 +409,11 @@ for required in [
           f'validation execution: missing policy guarantee {required!r}')
 
 schema_validated_stages = {
-    'skills/start/SKILL.md': ['workflow-state.schema.json', 'size.schema.json'],
-    'skills/design/SKILL.md': [
+    'skills/start/SKILL.md': [
+        'workflow-state.schema.json',
         'architecture-guidance.schema.json',
-        'surface-plan.schema.json',
     ],
-    'skills/plan/SKILL.md': ['decomposition-review.schema.json'],
-    'skills/base-functional-tests/SKILL.md': ['base-functional-tests.schema.json'],
-    'skills/implement/SKILL.md': [
-        'task-context.schema.json',
-        'implementation-plan.schema.json',
-        'execution-verdict.schema.json',
-        'execution-telemetry.schema.json',
-    ],
-    'skills/unit-tests/SKILL.md': ['unit-test-run.schema.json'],
     'skills/verify/SKILL.md': ['verification.schema.json'],
-    'skills/finalize/SKILL.md': ['release.schema.json'],
     'skills/amend/SKILL.md': [
         'change-request',
         'change-revision',
@@ -524,16 +561,9 @@ if dependencies:
         'proposal.md',
         'spec.md',
         'design.md',
-        '_kapelle/surface-plan.json',
         'tasks.md',
-        '_kapelle/task-plan.json',
-        'test-plan.md',
-        '_kapelle/validation',
-        '_kapelle/approvals/feature-plan.json',
-        '_kapelle/base-functional-tests.json',
-        '_kapelle/unit-tests.json',
+        '_kapelle/approvals/plan.json',
         '_kapelle/verification.json',
-        '_kapelle/release.json',
         '_kapelle/state.json',
         'STATUS.md',
     ]:
@@ -553,18 +583,11 @@ if dependencies:
         in dependencies.get('_kapelle/approvals/architecture.json', []),
         'artifact graph: architecture approval must fingerprint scoped guidance',
     )
-    for gate in ['feature-plan', 'delivery-plan']:
-        gate_dependencies = dependencies.get(
-            f'_kapelle/approvals/{gate}.json', []
-        )
-        check(
-            'tasks.md#structural' in gate_dependencies,
-            f'artifact graph: {gate} must use structural tasks fingerprint',
-        )
-        check(
-            '_kapelle/task-plan.json#structural' in gate_dependencies,
-            f'artifact graph: {gate} must use structural task-plan fingerprint',
-        )
+    plan_dependencies = dependencies.get('_kapelle/approvals/plan.json', [])
+    check('tasks.md#structural' in plan_dependencies,
+          'artifact graph: plan must use structural tasks fingerprint')
+    check('_kapelle/architecture-guidance/design.json' in plan_dependencies,
+          'artifact graph: plan must fingerprint architecture guidance')
     for legacy in ['sad.md', 'surface-plan.json', 'tasks.json', 'ship.md']:
         check(legacy not in dependencies, f'artifact graph: legacy key {legacy}')
 
@@ -611,85 +634,41 @@ for skill in skills:
     check('docs/features/<slug>/changes/' not in text,
           f'{skill.relative_to(ROOT)}: writes legacy change path')
 
-design_skill = (ROOT / 'skills/design/SKILL.md').read_text()
-for required in [
-    'architecture-rules subagent',
-    'architecture-guidance.schema.json',
-    'surface-plan.schema.json',
-    'execution-depth.md',
-    'design-template.md',
-    'design-execution.md',
-    'validate_design.py',
-    'validate_architecture_package.py',
-    'review_gate.py check',
-]:
-    check(required in design_skill, f'design: missing scoped architecture/surface guard {required!r}')
-check(
-    design_skill.find('### Approval route') < design_skill.find('## Generation protocol'),
-    'design: approval route must precede every generation route',
-)
-for required in [
-    'Do not read artifact bodies',
-    'edit files',
-    'dispatch agents',
-    'never ask for a second',
-    '--compact',
-    'at most one correction',
-]:
-    check(required in design_skill, f'design: approval/compaction isolation missing {required!r}')
-
-design_execution = (ROOT / 'references/design-execution.md').read_text()
-for required in [
-    '2800 words',
-    '2200 words',
-    'at most 12 targeted lookup batches',
-    'fallback work concurrently',
-    'never hand-edit',
-    'pure gate operation',
-    'no approval in that invocation',
-]:
-    check(required in design_execution,
-          f'design execution: missing bounded-run guard {required!r}')
-
 review_gate_text = (ROOT / 'scripts/review_gate.py').read_text()
 check(
     'validate_architecture_package(feature_dir)' in review_gate_text,
     'review gate: architecture package validation must be runtime-enforced',
 )
+check(
+    'validate_progressive_docs(feature_dir)' in review_gate_text,
+    'review gate: progressive documents must be runtime-enforced',
+)
 
 start_skill = (ROOT / 'skills/start/SKILL.md').read_text()
 for required in [
-    '--lane=auto|fast|standard',
-    '--interview=auto|lean|standard|deep',
-    'at most three production tasks',
-    'architecture rules',
-    'feature-plan.json',
-    'validate_task_plan.py',
+    'walking-skeleton workstream',
+    'at most three checkboxes',
+    'candidate capabilities',
+    'progressive-map-v1',
+    'validate_progressive_docs.py',
+    'design/domain-model.md',
+    'production-shaped',
+    'default business-analyst/critic/devil',
+    '_kapelle/architecture-guidance/design.json',
+    'review_gate.py approve',
+    'pure gate action',
 ]:
-    check(required in start_skill, f'start: missing adaptive-planning guard {required!r}')
-
-spec_skill = (ROOT / 'skills/spec/SKILL.md').read_text()
-for required in ['lean', 'standard', 'deep', 'Never reduce behavioral coverage']:
-    check(required in spec_skill, f'spec: missing interview-depth guard {required!r}')
-
-plan_skill = (ROOT / 'skills/plan/SKILL.md').read_text()
-for required in [
-    'low coupling',
-    'high cohesion',
-    'validate_task_plan.py',
-    'Production tasks do not include writing unit tests',
-]:
-    check(required in plan_skill, f'plan: missing decomposition guard {required!r}')
+    check(required in start_skill, f'start: missing lightweight-planning guard {required!r}')
 
 for rel in [
+    'skills/start/SKILL.md',
     'skills/implement/SKILL.md',
     'dispatcher/dispatcher.md',
     'dispatcher/execution-contract.md',
 ]:
     text = (ROOT / rel).read_text()
-    check('architecture-rules subagent' in text,
+    check('architecture-rules' in text,
           f'{rel}: missing project architecture-rules capability')
-    check('surface-plan' in text, f'{rel}: missing multi-aspect coordination')
 
 survey_skill = (ROOT / 'skills/survey/SKILL.md').read_text()
 for required in [
@@ -734,12 +713,9 @@ for rel in ['AGENTS.md', 'CLAUDE.md']:
 usage = (ROOT / 'docs/USAGE.md').read_text()
 for required in [
     '/kapelle:start <slug>',
-    '--lane=auto',
-    '--interview=auto',
-    '/kapelle:base-functional-tests',
-    '/kapelle:unit-tests',
+    '/kapelle:implement <slug>',
     '/kapelle:verify',
-    '/kapelle:finalize',
+    '/kapelle:verify <slug> --approve',
     '/kapelle:migrate',
     '/kapelle:status <slug>',
     '/kapelle:reconstruct <slug>',
@@ -749,17 +725,9 @@ for required in [
 command_guide = (ROOT / 'docs/COMMAND_EXECUTION_UK.md').read_text()
 for required in [
     '/kapelle:start <slug>',
-    '--lane=auto|fast|standard',
-    '--interview=auto|lean|standard|deep',
-    '/kapelle:spec <slug>',
-    '/kapelle:design <slug>',
-    '/kapelle:plan <slug>',
-    '/kapelle:base-functional-tests <slug>',
     '/kapelle:implement <slug>',
-    '/kapelle:unit-tests <slug>',
     '/kapelle:verify <slug>',
     '/kapelle:amend <slug>',
-    '/kapelle:finalize <slug>',
     '/kapelle:migrate <slug>',
     '/kapelle:status <slug>',
     '/kapelle:reconstruct <slug>',
@@ -778,14 +746,8 @@ if vocabulary:
           'vocabulary: legacy backbone must not exist')
     check(vocabulary.get('backbone_stages') == [
         'start',
-        'spec',
-        'design',
-        'plan',
-        'base-functional-tests',
         'implement',
-        'unit-tests',
         'verify',
-        'finalize',
     ], 'vocabulary: human-controlled backbone drifted')
 
     if task_schema:
@@ -860,6 +822,13 @@ if vocabulary:
           'vocabulary: every change route stage must be a bundled skill')
 
 deprecated_skills = {
+    'classify-size',
+    'spec',
+    'design',
+    'plan',
+    'base-functional-tests',
+    'unit-tests',
+    'finalize',
     'specify',
     'clarify',
     'decompose',
@@ -883,6 +852,7 @@ if workflow_schema:
             item for item in workflow_variants
             if item.get('properties', {}).get('workflow', {}).get('const')
             == 'human-controlled'
+            and item.get('properties', {}).get('version', {}).get('const') == 2
         ),
         {},
     )
@@ -894,9 +864,9 @@ if workflow_schema:
         ),
         {},
     )
-    check(human_variant.get('properties', {}).get('lane', {}).get('enum')
-          == ['fast', 'standard'],
-          'workflow state: lane must be fast or standard')
+    check(human_variant.get('properties', {}).get('profile', {}).get('const')
+          == 'lightweight',
+          'workflow state: version 2 profile must be lightweight')
     check(
         reconstruction_variant.get('properties', {})
         .get('created_from', {})
@@ -917,6 +887,7 @@ if review_gate_schema:
         .get('enum', [])
     )
     for required in [
+        'plan',
         'outline',
         'business-spec',
         'architecture',
@@ -932,10 +903,7 @@ if review_gate_schema:
 
 for rel in [
     'skills/start/SKILL.md',
-    'skills/spec/SKILL.md',
-    'skills/design/SKILL.md',
-    'skills/plan/SKILL.md',
-    'skills/finalize/SKILL.md',
+    'skills/verify/SKILL.md',
     'skills/reconstruct/SKILL.md',
 ]:
     text = (ROOT / rel).read_text()
@@ -944,7 +912,7 @@ for rel in [
         f'{rel}: approval-capable stage must use deterministic review gate helper',
     )
     check(
-        bool(re.search(r'construct (?:gate|approval)\s+JSON', text)),
+        bool(re.search(r'(?:construct (?:gate|approval)\s+JSON|approval JSON manually)', text)),
         f'{rel}: must forbid hand-written review gate JSON',
     )
 

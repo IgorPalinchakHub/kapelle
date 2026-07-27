@@ -6,10 +6,10 @@
     "mode": "sequential",
     "max_parallel_agents": 3,
     "approval_policy": "risk-based",
-    "checkpoint": "task",
+    "checkpoint": "workstream",
     "max_task_attempts": 3,
-    "max_agent_runs_per_task": 8,
-    "telemetry": true
+    "max_agent_runs_per_task": 3,
+    "telemetry": false
   },
   "validation": {
     "//": "ask shows the exact test/PHPStan/linter batch; use allow to run automatically or skip to defer during development.",
@@ -25,30 +25,18 @@
     "claude": {
       "//": "Example adapter: maps provider-neutral role profiles to concrete Claude models. Omit a binding to inherit the session default.",
       "roles": {
-        "business-analyst": { "model": "opus", "effort": "high" },
         "explorer": { "model": "haiku", "effort": "low" },
         "critic": { "model": "opus", "effort": "high" },
-        "devils-advocate": { "model": "opus", "effort": "high" },
-        "implementation-planner": { "model": "opus", "effort": "high" },
         "change-reconciler": { "model": "opus", "effort": "high" },
-        "test-author": { "model": "sonnet", "effort": "medium" },
-        "implementer": { "model": "sonnet", "effort": "medium" },
         "reviewer": { "model": "opus", "effort": "high" }
       },
       "stages": {
         "start": { "model": "opus", "effort": "high" },
-        "spec": { "model": "opus", "effort": "high" },
-        "plan": { "model": "sonnet", "effort": "medium" },
-        "base-functional-tests": { "model": "sonnet", "effort": "medium" },
-        "unit-tests": { "model": "sonnet", "effort": "medium" },
         "verify": { "model": "sonnet", "effort": "medium" },
         "amend": { "model": "opus", "effort": "high" },
-        "finalize": { "model": "opus", "effort": "high" },
         "migrate": { "model": "sonnet", "effort": "medium" },
-        "design": { "model": "opus", "effort": "high" },
         "decide-adr": { "model": "opus", "effort": "high" },
         "implement": { "effort": "high" },
-        "classify-size": { "model": "haiku", "effort": "low" },
         "glossary": { "model": "haiku", "effort": "low" }
       }
     }

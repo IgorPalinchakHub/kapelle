@@ -13,7 +13,7 @@
     "spec.md": {
       "exists": true,
       "path": "spec.md",
-      "sha256": "6ae6be5187c298da8fa83f42612377d7f1d0e2689548e398988b9635a893b818"
+      "sha256": "d25b4ac7d212909cf3ca259cf4475c15082d35c1c59a122ad750bf1b3ab588bc"
     },
     "tasks.md": {
       "exists": true,
@@ -33,5 +33,5 @@
   },
   "schema_version": "1.0",
   "slug": "human-readable-artifacts-refactor",
-  "state_built_at": "2026-07-25T18:01:06Z"
+  "state_built_at": "2026-07-26T10:48:20Z"
 }

@@ -6,28 +6,37 @@ description: >
 
 # Skill: contracts
 
+Follow [`../../references/utility-contract.md`](../../references/utility-contract.md).
+Use the trigger and boundary rules in
+[`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md).
+
 ## Inputs
 
 - Gate: `docs/features/<slug>/design.md`.
-- `docs/features/<slug>/design.md`, `_kapelle/surface-plan.json`, and optional `sequences.md` with declared interfaces,
-  aspect providers/consumers, or entrypoints.
+- `spec.md`, `design.md`, and optional `sequences.md` or coordination graphs when they already
+  exist.
 - Native project capabilities and project instructions.
 
 ## Protocol
 
 1. Refuse if `design.md` or required interface declarations are missing. Data/schema impact must be
    explicit in `design.md`, including a confirmed no-schema-change result.
-2. Validate `_kapelle/surface-plan.json`, then read `stages/contracts/contracts.stage.md` and
-   `stages/contracts/drift-gate.md`.
-3. Describe the required contract artifact and its design context.
+2. Describe the smallest durable contract artifact needed to make a public or cross-component
+   boundary unambiguous. Do not require `_kapelle/surface-plan.json` for a normal lightweight slice.
+3. When an optional coordination graph exists, validate and use it as supporting evidence rather
+   than as a gate.
 4. Let Claude Code select the applicable native project capability semantically.
 5. Ask that capability to obtain project guidance through any available project mechanism.
-6. Generate the contract and run its project-defined validation.
-7. Run the generic drift check against the shared data model and sequences. Require each shared
-   contract to identify its provider aspect and all consumer aspects from `_kapelle/surface-plan.json`.
-8. Write human contracts under `docs/features/<slug>/contracts/` and internal validation metadata
-   under `_kapelle/validation/contracts.json`.
-9. Refresh `STATUS.md` and emit the chat handoff.
+6. Write human contracts under `docs/features/<slug>/contracts/`. Generate project code only during
+   `/kapelle:implement`; this utility documents the boundary.
+7. Check the contract against `spec.md`, the shared data model, runtime flows, and named
+   provider/consumer boundaries. Report unknown consumers instead of inventing them.
+8. Validate a progressive package with
+   `scripts/validate_progressive_docs.py docs/features/<slug>`.
+9. Rebuild generated status with `scripts/build_feature_status.py docs/features/<slug>` and validate
+   it with `scripts/validate_feature_state.py docs/features/<slug>`.
+10. A changed contract or design requires `/kapelle:start <slug> --approve`; otherwise return to
+   `/kapelle:status <slug>`.
 
 ## Anti-patterns
 

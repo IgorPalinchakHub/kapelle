@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Migrate a feature to the single human-controlled workflow marker and routing."""
+"""Migrate a feature to the lightweight human-controlled workflow."""
 
 from __future__ import annotations
 
@@ -16,19 +16,97 @@ from feature_state import (
     read_json,
     refresh_feature_status,
     resolve_feature_dir,
+    schema_errors,
 )
 
 MARKER_PATTERN = re.compile(
-    r"<!--\s*kapelle-workflow:\s*human-controlled-v1(?:;\s*lane:\s*(fast|standard))?\s*-->"
+    r"<!--\s*kapelle-workflow:\s*lightweight-v1\s*-->"
 )
 
 
-def plan(feature_dir: Path, lane: str) -> dict[str, object]:
-    proposal = feature_dir / "proposal.md"
-    if not proposal.is_file():
-        raise FeatureStateError(
-            "proposal.md is required; create a factual proposal from existing documents first"
+def normalize_architecture_guidance(value: dict[str, object]) -> dict[str, object] | None:
+    """Convert the pre-lightweight guidance shape without inventing new evidence."""
+    if not schema_errors(value, "architecture-guidance.schema.json"):
+        return value
+
+    capability = value.get("capability")
+    scope = value.get("scope")
+    rules = value.get("rules")
+    if not isinstance(capability, dict) or not isinstance(scope, dict):
+        return None
+    if not isinstance(rules, list):
+        return None
+
+    normalized_rules: list[dict[str, str]] = []
+    sources: list[str] = []
+    for rule in rules:
+        if not isinstance(rule, dict):
+            return None
+        title = rule.get("title") or rule.get("id")
+        summary = rule.get("summary")
+        source = rule.get("source")
+        if not all(isinstance(item, str) and item for item in (title, summary, source)):
+            return None
+        normalized_rules.append(
+            {"title": title, "summary": summary, "source": source}
         )
+        if source not in sources:
+            sources.append(source)
+
+    declared_sources = value.get("sources", [])
+    if isinstance(declared_sources, list):
+        for source in declared_sources:
+            if isinstance(source, str) and source and source not in sources:
+                sources.append(source)
+    precedents = value.get("precedents", [])
+    if isinstance(precedents, list):
+        for precedent in precedents:
+            if not isinstance(precedent, dict):
+                continue
+            source = precedent.get("path")
+            if isinstance(source, str) and source and source not in sources:
+                sources.append(source)
+
+    normalized: dict[str, object] = {
+        "status": value.get("status"),
+        "capability": {
+            "name": capability.get("name"),
+            "kind": capability.get("kind"),
+        },
+        "scope": {
+            key: scope.get(key, [])
+            for key in ("aspects", "modules", "entrypoints", "paths")
+        },
+        "rules": normalized_rules,
+        "sources": sources,
+        "gaps": value.get("gaps", []),
+    }
+    if schema_errors(normalized, "architecture-guidance.schema.json"):
+        return None
+    return normalized
+
+
+def guidance_migration_plan(feature_dir: Path) -> tuple[list[str], list[str]]:
+    normalized: list[str] = []
+    blocked: list[str] = []
+    guidance_dir = feature_dir / "_kapelle" / "architecture-guidance"
+    if not guidance_dir.is_dir():
+        return normalized, blocked
+    for path in sorted(guidance_dir.glob("*.json")):
+        value = read_json(path)
+        relative = str(path.relative_to(feature_dir))
+        if value is None:
+            blocked.append(relative)
+        elif schema_errors(value, "architecture-guidance.schema.json"):
+            if normalize_architecture_guidance(value) is None:
+                blocked.append(relative)
+            else:
+                normalized.append(relative)
+    return normalized, blocked
+
+
+def plan(feature_dir: Path, lane: str | None = None) -> dict[str, object]:
+    del lane
     preserved = [
         relative
         for relative in (
@@ -49,23 +127,23 @@ def plan(feature_dir: Path, lane: str) -> dict[str, object]:
         for relative in ("spec.md", "design.md", "tasks.md")
         if not (feature_dir / relative).is_file()
     ]
+    guidance = feature_dir / "_kapelle" / "architecture-guidance" / "design.json"
+    normalized_guidance, blocked_guidance = guidance_migration_plan(feature_dir)
+    missing.extend(blocked_guidance)
     next_command = (
         f"/kapelle:start {feature_dir.name} --approve"
-        if lane == "fast" and not missing
-        else f"/kapelle:spec {feature_dir.name}"
-        if (feature_dir / "spec.md").is_file()
-        else f'/kapelle:start {feature_dir.name} "<raw task>"'
+        if not missing and guidance.is_file()
+        else f'/kapelle:start {feature_dir.name} "<raw task or revision request>"'
     )
     return {
         "slug": feature_dir.name,
-        "lane": lane,
+        "profile": "lightweight",
         "preserved": preserved,
         "missing_target_artifacts": missing,
-        "missing_migration_prerequisites": [
-            relative
-            for relative in ("_context/architecture.md",)
-            if not (feature_dir / relative).is_file()
-        ],
+        "normalized_architecture_guidance": normalized_guidance,
+        "missing_migration_prerequisites": (
+            [] if (feature_dir / "spec.md").is_file() else ["spec.md"]
+        ),
         "evidence_not_recreated": [
             "approvals",
             "agent and review verdicts",
@@ -76,40 +154,71 @@ def plan(feature_dir: Path, lane: str) -> dict[str, object]:
     }
 
 
-def apply(feature_dir: Path, lane: str) -> dict[str, object]:
+def apply(feature_dir: Path, lane: str | None = None) -> dict[str, object]:
     migration = plan(feature_dir, lane)
     missing_prerequisites = migration["missing_migration_prerequisites"]
     if missing_prerequisites:
         raise FeatureStateError(
-            "migration requires factual feature context before approval routing: "
+            "migration requires a durable product specification: "
             + ", ".join(missing_prerequisites)
         )
-    proposal = feature_dir / "proposal.md"
-    text = proposal.read_text(errors="replace")
-    marker = f"<!-- kapelle-workflow: human-controlled-v1; lane: {lane} -->"
+    blocked_guidance = [
+        item
+        for item in migration["missing_target_artifacts"]
+        if str(item).startswith("_kapelle/architecture-guidance/")
+    ]
+    if blocked_guidance:
+        raise FeatureStateError(
+            "architecture guidance cannot be migrated safely: "
+            + ", ".join(blocked_guidance)
+        )
+    guidance_writes: list[
+        tuple[Path, dict[str, object], Path, dict[str, object]]
+    ] = []
+    for relative in migration["normalized_architecture_guidance"]:
+        path = feature_dir / relative
+        value = read_json(path)
+        if value is None:
+            raise FeatureStateError(f"invalid architecture guidance: {relative}")
+        normalized = normalize_architecture_guidance(value)
+        if normalized is None:
+            raise FeatureStateError(
+                f"architecture guidance cannot be normalized: {relative}"
+            )
+        archive = (
+            feature_dir
+            / "_kapelle"
+            / "history"
+            / "legacy"
+            / "architecture-guidance"
+            / path.name
+        )
+        if archive.is_file() and read_json(archive) != value:
+            raise FeatureStateError(
+                f"legacy guidance archive collision: {archive.relative_to(feature_dir)}"
+            )
+        guidance_writes.append((path, normalized, archive, value))
+    for path, normalized, archive, value in guidance_writes:
+        if not archive.is_file():
+            atomic_write_json(archive, value)
+        atomic_write_json(path, normalized)
+    spec = feature_dir / "spec.md"
+    text = spec.read_text(errors="replace")
+    marker = "<!-- kapelle-workflow: lightweight-v1 -->"
     if MARKER_PATTERN.search(text):
         text = MARKER_PATTERN.sub(marker, text, count=1)
     else:
         text = f"{marker}\n{text}"
-    atomic_write_text(proposal, text)
+    atomic_write_text(spec, text)
     atomic_write_json(
         feature_dir / "_kapelle" / "workflow.json",
         {
             "workflow": "human-controlled",
-            "version": 1,
+            "version": 2,
             "created_from": "legacy-migration",
-            "lane": lane,
+            "profile": "lightweight",
         },
     )
-    size_path = feature_dir / "_kapelle" / "size.json"
-    size = read_json(size_path)
-    if size:
-        value = size.get("size", "unknown")
-        size["lane"] = lane
-        size["interview_depth"] = (
-            "lean" if value in {"XS", "S"} else "standard" if value == "M" else "deep"
-        )
-        atomic_write_json(size_path, size)
     _, state, _ = refresh_feature_status(feature_dir)
     migration["next_command"] = state["next_command"]
     migration["status"] = "migrated"
@@ -119,7 +228,11 @@ def apply(feature_dir: Path, lane: str) -> dict[str, object]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("feature_dir")
-    parser.add_argument("--lane", choices=["fast", "standard"], default="standard")
+    parser.add_argument(
+        "--lane",
+        choices=["fast", "standard"],
+        help="Deprecated compatibility option; lightweight migration has no lane.",
+    )
     parser.add_argument("--apply", action="store_true")
     args = parser.parse_args()
     try:

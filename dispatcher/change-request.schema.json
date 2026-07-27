@@ -85,15 +85,10 @@
       "items": {
         "type": "string",
         "enum": [
-          "spec",
-          "design",
-          "plan",
-          "base-functional-tests",
+          "start",
           "implement",
-          "unit-tests",
           "verify",
-          "amend",
-          "finalize"
+          "amend"
         ]
       }
     },

@@ -111,7 +111,7 @@ class JsonSchemaLiteTests(unittest.TestCase):
                 "test_plan": "review",
                 "tasks": "review",
             },
-            "route": ["spec"],
+            "route": ["start"],
             "approval": "pending",
             "status": "assessed",
         }

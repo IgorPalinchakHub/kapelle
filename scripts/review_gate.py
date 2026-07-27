@@ -11,14 +11,24 @@ from feature_state import (
     FeatureStateError,
     approval_current,
     atomic_write_json,
+    feature_review_gate_artifacts,
+    has_durable_lightweight_marker,
     refresh_feature_status,
     reconstruction_review_current,
     relative_fingerprint,
     resolve_feature_dir,
-    review_gate_artifacts,
+    schema_valid,
+    lightweight_workflow,
+    phase_evidence_current,
+    parse_tasks,
+    read_json,
     workflow_lane,
 )
 from validate_architecture_package import validate as validate_architecture_package
+from validate_progressive_docs import (
+    progressive_format,
+    validate as validate_progressive_docs,
+)
 
 PRIOR_GATES = {
     "business-spec": "outline",
@@ -30,10 +40,46 @@ PRIOR_GATES = {
 }
 
 
+def plan_readiness_errors(feature_dir: Path) -> list[str]:
+    errors: list[str] = []
+    guidance_path = (
+        feature_dir / "_kapelle" / "architecture-guidance" / "design.json"
+    )
+    guidance = read_json(guidance_path)
+    workflow = read_json(feature_dir / "_kapelle" / "workflow.json")
+    if not has_durable_lightweight_marker(feature_dir):
+        errors.append("missing lightweight workflow marker in spec.md")
+    if not parse_tasks(feature_dir / "tasks.md"):
+        errors.append("at least one workstream task is required")
+    if not (
+        guidance
+        and schema_valid(guidance, "architecture-guidance.schema.json")
+        and guidance.get("status") == "ARCHITECTURE_GUIDANCE_READY"
+        and guidance.get("gaps") == []
+    ):
+        errors.append("ready scoped architecture guidance without gaps is required")
+
+    new_raw_task = bool(
+        workflow
+        and workflow.get("version") == 2
+        and workflow.get("profile") == "lightweight"
+        and workflow.get("created_from") == "raw-task"
+    )
+    if new_raw_task or progressive_format(feature_dir):
+        errors.extend(validate_progressive_docs(feature_dir))
+    return errors
+
+
 def require_prior_gate(feature_dir: Path, gate: str) -> None:
     prior = PRIOR_GATES.get(gate)
     if gate == "final":
-        prior = "feature-plan" if workflow_lane(feature_dir) == "fast" else "delivery-plan"
+        prior = (
+            None
+            if lightweight_workflow(feature_dir)
+            else "feature-plan"
+            if workflow_lane(feature_dir) == "fast"
+            else "delivery-plan"
+        )
     if prior and not approval_current(feature_dir, prior):
         raise FeatureStateError(
             f"gate {gate} requires current prior gate {prior}"
@@ -42,13 +88,21 @@ def require_prior_gate(feature_dir: Path, gate: str) -> None:
         raise FeatureStateError(
             "gate reconstruction requires current PASS reconstruction review"
         )
+    if (
+        gate == "final"
+        and lightweight_workflow(feature_dir)
+        and not phase_evidence_current(feature_dir, "verification.json", {"PASS"})
+    ):
+        raise FeatureStateError(
+            "gate final requires current PASS feature verification"
+        )
 
 
 def build_gate(feature_dir: Path, gate: str, confirmation: str) -> dict[str, object]:
     confirmation = confirmation.strip()
     if not confirmation:
         raise FeatureStateError("approval confirmation must be non-empty")
-    artifacts = review_gate_artifacts(gate)
+    artifacts = feature_review_gate_artifacts(feature_dir, gate)
     fingerprints: dict[str, str] = {}
     missing: list[str] = []
     for relative in artifacts:
@@ -78,6 +132,18 @@ def approve(
 ) -> Path:
     feature_dir = resolve_feature_dir(feature_dir)
     require_prior_gate(feature_dir, gate)
+    if gate == "plan":
+        errors = plan_readiness_errors(feature_dir)
+        if errors:
+            raise FeatureStateError(
+                "gate plan is not approval-ready: " + "; ".join(errors)
+            )
+    if gate == "final" and progressive_format(feature_dir):
+        errors = validate_progressive_docs(feature_dir)
+        if errors:
+            raise FeatureStateError(
+                "gate final has invalid progressive documents: " + "; ".join(errors)
+            )
     if gate == "architecture":
         errors = validate_architecture_package(feature_dir)
         if errors:
@@ -114,7 +180,10 @@ def main() -> int:
     try:
         feature_dir = resolve_feature_dir(args.feature_dir)
         if args.action == "check":
-            if approval_current(feature_dir, args.gate):
+            ready = not (
+                args.gate == "plan" and plan_readiness_errors(feature_dir)
+            )
+            if approval_current(feature_dir, args.gate) and ready:
                 print(f"CURRENT: review gate {args.gate}")
                 return 0
             print(f"STALE-OR-MISSING: review gate {args.gate}")

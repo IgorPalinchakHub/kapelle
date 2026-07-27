@@ -12,29 +12,32 @@ Write or update an ADR for an architectural decision.
 
 - `<slug>` for feature-scoped work.
 - Reads: `decision context`.
-- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Utility contract: [`../../references/utility-contract.md`](../../references/utility-contract.md).
 
 ## Protocol
 
-1. Validate required inputs. If missing, refuse with the named producing stage.
+1. Require a concrete decision, alternatives, and the affected feature slug. Refuse rather than
+   inventing missing decision context.
 2. Read artifacts directly from disk.
-3. Perform this stage's work without re-running prior stages.
+3. Read the current `design.md` and relevant scoped architecture guidance when they exist.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
-5. For any code-writing path, request provider-neutral project guidance: [`../../references/guidance.md`](../../references/guidance.md).
-6. Write outputs: `adr/*.md`.
-7. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+5. Write one concise `adr/*.md` containing context, decision, rejected alternatives, consequences,
+   and revisit trigger. Update `design.md` only when it would otherwise contradict the decision.
+6. Rebuild and validate feature status when feature artifacts changed.
+7. Emit the handoff block per [`../../references/handoff.md`](../../references/handoff.md). A
+   changed design returns to `/kapelle:start <slug> --approve`; otherwise return to status.
 
 ## Output
 
 - `adr/*.md`.
-- `Status: DONE | stage: decide-adr | produced: <paths>`.
+- `Status: DONE | utility: decide-adr | produced: <paths>`.
 
 ## Definition of Done
 
 - Inputs were read from disk.
 - Outputs exist and link to upstream artifacts instead of duplicating them.
 - Skips are explicit.
-- Handoff points back to `design` when architecture approval is pending, otherwise to `plan`.
+- Handoff points to current-slice approval or status, never to deprecated `design` or `plan`.
 
 ## Anti-patterns
 

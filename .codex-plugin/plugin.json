@@ -1,7 +1,7 @@
 {
   "name": "kapelle",
-  "version": "0.16.1+codex.20260725191325",
-  "description": "Human-controlled SDLC harness with deterministic schema and approval gates, bounded architecture design, adaptive feature delivery, and evidence-backed reconstruction.",
+  "version": "0.19.0+codex.20260726173724",
+  "description": "Progressive human-controlled SDLC harness with a high-level feature map, system design, and approved vertical-slice delivery.",
   "author": {
     "name": "Ihor Pal"
   },
@@ -10,7 +10,7 @@
   "interface": {
     "displayName": "Kapelle",
     "shortDescription": "Human-controlled, reviewable SDLC",
-    "longDescription": "A human-controlled SDLC harness with fail-closed JSON Schema validation, bounded high-level architecture design, pure deterministic fingerprinted approval gates that never edit artifacts, adaptive feature delivery, progressive specifications, recoverable state, and evidence-backed reconstruction of existing behavior and architecture.",
+    "longDescription": "A progressive human-controlled SDLC harness that maps known feature behavior and system boundaries at high level, implements one production-shaped walking skeleton, details use cases and domain behavior just in time, writes unit tests at the end, and completes one risk-based verification pass.",
     "developerName": "Ihor Pal",
     "category": "Developer Tools",
     "capabilities": [
@@ -19,9 +19,10 @@
     ],
     "defaultPrompt": [
       "Start a new feature from my raw task with Kapelle.",
-      "Plan a small feature through Kapelle's fast lane.",
-      "Expand and review a feature business specification with Kapelle.",
-      "Plan and implement a feature with human checkpoints.",
+      "Map a feature specification and high-level system design with Kapelle.",
+      "Create a production-shaped walking skeleton with Kapelle.",
+      "Add the next business or technical requirement as a vertical slice.",
+      "Write final unit tests and verify a feature with Kapelle.",
       "Survey this repository with Kapelle.",
       "Show or recover a feature status with Kapelle.",
       "Amend an in-progress feature safely with Kapelle.",

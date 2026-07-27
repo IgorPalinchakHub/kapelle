@@ -1,84 +1,84 @@
-# Kapelle: короткий порядок
+# Kapelle: швидкий старт
 
-Якщо фіча вже реалізована і потрібно відновити її product specification та as-built architecture:
+Kapelle має три основні команди:
 
 ```text
-/kapelle:reconstruct <slug> "<feature scope>"
+start base -> implement -> amend next slice (за потреби) -> verify
 ```
 
-Далі виконуйте exact next command із `STATUS.md`. Повна інструкція:
-[RECONSTRUCTION_UK.md](RECONSTRUCTION_UK.md).
-
-## Нова фіча
+## 1. Підготувати план
 
 ```text
-/kapelle:start configurable-invoice-status-in-pipe \
-  "Allow invoice status in Pipe to be configured"
+/kapelle:start <slug> "<опис задачі>"
 ```
 
-Default `--lane=auto --interview=auto`.
+Отримаєте компактну карту фічі та перший slice:
 
-Якщо задача XS/S і без risk triggers, Kapelle запропонує fast lane: `spec.md`, структурований
-`design.md` і `tasks.md` створюються за один виклик та мають одне planning approval.
+- `spec.md` — високорівнева карта відомих use cases, committed behavior і candidates;
+- `design.md` — високорівневий системний дизайн та детальний шлях першого slice;
+- `tasks.md` — один walking-skeleton workstream.
+
+Для доменної поведінки, складного use case або публічного контракту плагін за потреби додає
+`design/domain-model.md`, `specs/<use-case>.md` або `contracts/`. Candidate use cases наперед не
+деталізуються.
+
+Правки:
 
 ```text
-/kapelle:start <slug> --revise "<feedback>"
+/kapelle:start <slug> --revise "<що змінити>"
+```
+
+Підтвердження плану:
+
+```text
 /kapelle:start <slug> --approve
 ```
 
-Для M/L/XL або ризикової задачі використовується standard lane:
+## 2. Реалізувати
 
 ```text
-/kapelle:spec <slug>
-/kapelle:spec <slug> --approve
-/kapelle:design <slug>
-/kapelle:design <slug> --detail
-/kapelle:design <slug> --approve
-/kapelle:plan <slug>
-/kapelle:plan <slug> --approve
+/kapelle:implement <slug> --checkpoint=workstream --validation=ask
 ```
 
-`design --approve` нічого не виправляє: PASS займає один deterministic validator + запис gate,
-FAIL повертає окрему команду `design --revise`. Для старого завеликого overview спочатку явно
-запустіть `/kapelle:design <slug> --compact`, потім окремо `--approve`.
+Плагін реалізує перший справжній наскрізний slice: endpoint/command, use-case service, domain та
+persistence/integration boundary і мінімальний стабільний результат. Порожні майбутні endpoints і
+services не створюються. Unit-тести на цьому етапі не пишуться.
 
-Після planning обидва lanes мають однаковий процес:
+Наступну вимогу додавайте так:
 
 ```text
-/kapelle:base-functional-tests <slug> --validation=ask
-/kapelle:implement <slug> --checkpoint=task --validation=ask
-/kapelle:unit-tests <slug> --validation=ask
+/kapelle:amend <slug> "<наступна бізнесова або технічна вимога>"
+/kapelle:start <slug> --approve
+/kapelle:implement <slug>
+```
+
+## 3. Написати unit-тести і перевірити
+
+```text
 /kapelle:verify <slug> --validation=ask
 ```
 
-Після manual testing:
+Після PASS і ручної перевірки:
 
 ```text
-/kapelle:finalize <slug> --version=1.0
+/kapelle:verify <slug> --approve
 ```
 
-Зміни вимог або дизайну:
+## Якщо активна вимога змінилась
 
 ```text
-/kapelle:amend <slug> "<feedback>"
+/kapelle:amend <slug> "<нова вимога або feedback>"
 ```
 
-## Існуюча legacy feature directory
-
-Старий pipeline не запускається. Спочатку:
-
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply --lane=standard
-```
-
-Після міграції виконайте exact next command із `STATUS.md`.
-
-## Відновлення
+## Статус або відновлення
 
 ```text
 /kapelle:status <slug>
 ```
 
-Якщо `_kapelle/` видалено, lane відновлюється з marker у `proposal.md`. Approvals і validation
-evidence не вигадуються.
+Для старої фічі Kapelle:
+
+```text
+/kapelle:migrate <slug>
+/kapelle:migrate <slug> --apply
+```

@@ -15,7 +15,7 @@ state.
 - Optional `<slug>` for feature-scoped work.
 - Optional `--refresh-baseline`, requiring explicit user confirmation.
 - Reads: `repo`.
-- Shared contract: [`../../references/stage-contract.md`](../../references/stage-contract.md).
+- Utility contract: [`../../references/utility-contract.md`](../../references/utility-contract.md).
 - Agent contract: [`../../references/agent-orchestration.md`](../../references/agent-orchestration.md).
 - Architecture-guidance contract:
   [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md).
@@ -42,14 +42,14 @@ state.
 7. Use native project capabilities when project-specific behavior is needed:
    [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 8. Merge only cited findings and record unknowns instead of guessing.
-9. Emit the stage-handoff block per [`../../references/handoff.md`](../../references/handoff.md).
+9. Emit the utility handoff block per [`../../references/handoff.md`](../../references/handoff.md).
 
 ## Output
 
 - Bootstrap: `docs/architecture-map.md`.
 - Feature scope: `docs/features/<slug>/_context/architecture.md`.
 - Existing baseline without slug: no write.
-- `Status: DONE | stage: survey | produced: <paths>`.
+- `Status: DONE | utility: survey | produced: <paths>`.
 
 ## Definition of Done
 

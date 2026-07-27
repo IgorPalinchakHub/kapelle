@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "groups": {
+    "core-runtime": [
+      "architecture-guidance.schema.json",
+      "feature-manifest.schema.json",
+      "feature-state.schema.json",
+      "recovery-report.schema.json",
+      "review-gate.schema.json",
+      "verification.schema.json",
+      "workflow-state.schema.json"
+    ],
+    "optional-agent-runtime": [
+      "decomposition-review.schema.json",
+      "execution-telemetry.schema.json",
+      "execution-verdict.schema.json",
+      "implementation-plan.schema.json",
+      "reconciliation.schema.json",
+      "task-context.schema.json",
+      "validation-decision.schema.json"
+    ],
+    "reconstruction": [
+      "reconstruction-coverage.schema.json",
+      "reconstruction.schema.json"
+    ],
+    "migration-compatibility": [
+      "artifact-state.schema.json",
+      "base-functional-tests.schema.json",
+      "change-request.schema.json",
+      "change-revision.schema.json",
+      "change-state.schema.json",
+      "release.schema.json",
+      "size.schema.json",
+      "surface-plan.schema.json",
+      "task-plan.schema.json",
+      "unit-test-run.schema.json"
+    ]
+  },
+  "policy": {
+    "core-runtime": "Required by the lightweight start/implement/verify/status runtime.",
+    "optional-agent-runtime": "Loaded only when a bounded optional subagent or audited execution path is selected.",
+    "reconstruction": "Required only by the documentation-only reconstruction workflow.",
+    "migration-compatibility": "Accepted only for migration, recovery, or one-release compatibility; never required by the lightweight backbone."
+  }
+}

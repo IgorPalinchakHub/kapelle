@@ -11,6 +11,7 @@ from typing import Any
 from feature_state import (
     HUMAN_ARTIFACTS,
     LAYOUT_VERSION,
+    approval_current,
     choose_next_command,
     change_state_error,
     coordination_integrity,
@@ -18,6 +19,7 @@ from feature_state import (
     document_fingerprints,
     feature_review_current,
     human_controlled_workflow,
+    lightweight_workflow,
     reconstruction_review_current,
     reconstruction_workflow,
     parse_tasks,
@@ -31,6 +33,10 @@ from feature_state import (
 )
 from jsonschema_lite import validate_jsonl_file
 from validate_design import validate as validate_design
+from validate_progressive_docs import (
+    progressive_format,
+    validate as validate_progressive_docs,
+)
 
 
 def validate(feature_dir: Path) -> list[str]:
@@ -148,10 +154,15 @@ def validate(feature_dir: Path) -> list[str]:
     fingerprints = document_fingerprints(feature_dir)
     if (
         human_controlled_workflow(feature_dir) or reconstruction_workflow(feature_dir)
-    ) and (feature_dir / "design.md").is_file():
+    ) and not lightweight_workflow(feature_dir) and (feature_dir / "design.md").is_file():
         errors.extend(
             f"design structure: {error}"
             for error in validate_design(feature_dir / "design.md")
+        )
+    if lightweight_workflow(feature_dir) and progressive_format(feature_dir):
+        errors.extend(
+            f"progressive documents: {error}"
+            for error in validate_progressive_docs(feature_dir)
         )
     manifest_artifacts = manifest.get("human_artifacts", {})
     for name in HUMAN_ARTIFACTS:
@@ -203,10 +214,11 @@ def validate(feature_dir: Path) -> list[str]:
             if planned.get("status") != state_tasks.get(task_id):
                 errors.append(f"task {task_id}: state drift between task plan and feature state")
     surface_errors, task_plan_errors, provisional = coordination_integrity(feature_dir)
-    if (feature_dir / "design.md").is_file():
+    if not lightweight_workflow(feature_dir) and (feature_dir / "design.md").is_file():
         errors.extend(f"coordination: {error}" for error in surface_errors)
     if (
         not reconstruction_workflow(feature_dir)
+        and not lightweight_workflow(feature_dir)
         and (
             (feature_dir / "tasks.md").is_file()
             or (internal / "task-plan.json").is_file()
@@ -222,13 +234,23 @@ def validate(feature_dir: Path) -> list[str]:
         errors.append("task_counts do not match state tasks")
 
     validation = validation_statuses(feature_dir, fingerprints)
+    lightweight_pass = lightweight_workflow(feature_dir) and phase_evidence_current(
+        feature_dir, "verification.json", {"PASS"}
+    )
     for task_id, status in state_tasks.items():
-        if status == "completed" and validation.get(task_id) != "completed":
+        if (
+            status == "completed"
+            and validation.get(task_id) != "completed"
+            and not lightweight_pass
+        ):
             errors.append(f"task {task_id}: completed without current PASS evidence")
 
     if reconstruction_workflow(feature_dir):
         convergence_current = reconstruction_review_current(feature_dir)
         review_current = convergence_current
+    elif lightweight_workflow(feature_dir):
+        convergence_current = lightweight_pass
+        review_current = lightweight_pass
     else:
         convergence_current = documentation_convergence_current(feature_dir, state_tasks)
         review_current = feature_review_current(feature_dir, state_tasks)
@@ -259,7 +281,11 @@ def validate(feature_dir: Path) -> list[str]:
         errors.append("review_ready is inconsistent with tasks/blockers/validation")
     if human_controlled_workflow(feature_dir):
         expected_ship_ready = (
-            release_current(feature_dir)
+            (
+                approval_current(feature_dir, "final")
+                if lightweight_workflow(feature_dir)
+                else release_current(feature_dir)
+            )
             and not incomplete
             and not blockers
             and not deferred

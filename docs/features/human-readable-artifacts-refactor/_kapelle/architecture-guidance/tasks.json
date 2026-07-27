@@ -1,51 +1,66 @@
 {
-  "status": "ARCHITECTURE_GUIDANCE_READY",
   "capability": {
-    "name": "delegated-scoped-project-architecture-rules-subagent",
     "kind": "project-subagent",
-    "description_evidence": "The project architecture-rules subagent returned task-scoped rules and identified runtime evidence, recovery, migration, and freshness gates requiring deterministic enforcement."
+    "name": "delegated-scoped-project-architecture-rules-subagent"
   },
-  "scope": {
-    "aspects": ["contracts", "runtime", "stages", "documentation"],
-    "modules": ["references", "dispatcher", "scripts", "skills", "docs", "examples"],
-    "entrypoints": ["feature layout", "Kapelle commands", "CLI utilities"],
-    "paths": ["scripts/feature_state.py", "scripts/migrate_feature_layout.py", "scripts/validate_feature_state.py", "dispatcher", "skills"]
-  },
+  "gaps": [],
   "rules": [
     {
-      "id": "TASK-ARCH-01",
-      "summary": "Runtime claims must be derived from schema-shaped, current evidence; checked Markdown tasks are implementation claims only.",
       "source": "references/artifact-presentation.md and references/validation-execution.md",
-      "applies_to": ["runtime", "contracts"]
+      "summary": "Runtime claims must be derived from schema-shaped, current evidence; checked Markdown tasks are implementation claims only.",
+      "title": "TASK-ARCH-01"
     },
     {
-      "id": "TASK-ARCH-02",
-      "summary": "Recovery selects the smallest safe route and blocks new code-writing on provisional architecture or dependency ownership.",
       "source": "references/feature-layout.md and skills/implement/SKILL.md",
-      "applies_to": ["runtime", "stages"]
+      "summary": "Recovery selects the smallest safe route and blocks new code-writing on provisional architecture or dependency ownership.",
+      "title": "TASK-ARCH-02"
     },
     {
-      "id": "TASK-ARCH-03",
-      "summary": "Migration collision and semantic checks occur before writes, including active change-state conversion.",
       "source": "references/feature-layout.md and dispatcher/change-state.schema.json",
-      "applies_to": ["runtime"]
+      "summary": "Migration collision and semantic checks occur before writes, including active change-state conversion.",
+      "title": "TASK-ARCH-03"
     },
     {
-      "id": "TASK-ARCH-04",
-      "summary": "Stage flow remains one-way and provider-neutral; project-specific behavior is discovered natively.",
       "source": "AGENTS.md",
-      "applies_to": ["stages"]
+      "summary": "Stage flow remains one-way and provider-neutral; project-specific behavior is discovered natively.",
+      "title": "TASK-ARCH-04"
     }
   ],
-  "gaps": [],
-  "precedents": [
-    {
-      "path": "scripts/validate_task_plan.py",
-      "reason": "Semantic graph and AC coverage validation remains mandatory"
-    },
-    {
-      "path": "scripts/test_feature_state.py",
-      "reason": "Deterministic recovery, freshness, and migration regression coverage"
-    }
-  ]
+  "scope": {
+    "aspects": [
+      "contracts",
+      "runtime",
+      "stages",
+      "documentation"
+    ],
+    "entrypoints": [
+      "feature layout",
+      "Kapelle commands",
+      "CLI utilities"
+    ],
+    "modules": [
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills",
+      "docs",
+      "examples"
+    ],
+    "paths": [
+      "scripts/feature_state.py",
+      "scripts/migrate_feature_layout.py",
+      "scripts/validate_feature_state.py",
+      "dispatcher",
+      "skills"
+    ]
+  },
+  "sources": [
+    "references/artifact-presentation.md and references/validation-execution.md",
+    "references/feature-layout.md and skills/implement/SKILL.md",
+    "references/feature-layout.md and dispatcher/change-state.schema.json",
+    "AGENTS.md",
+    "scripts/validate_task_plan.py",
+    "scripts/test_feature_state.py"
+  ],
+  "status": "ARCHITECTURE_GUIDANCE_READY"
 }

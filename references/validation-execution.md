@@ -59,7 +59,7 @@ Any required `skipped` or `cancelled` command makes the task `validation-deferre
 - is not equivalent to `completed` or `PASS`;
 - is selected first by a later `/kapelle:implement <slug> --validation=allow` run, which executes
   outstanding validation without repeating implementation;
-- blocks `finalize` until all required checks pass.
+- blocks final `/kapelle:verify --approve` until all required checks pass.
 
 For development readiness, a dependent task may consume code from a `validation-deferred`
 dependency, but its plan and audit record must list that inherited validation risk. It may not
@@ -72,8 +72,8 @@ An omitted task-validation `required` field means `true`.
 ## Final gate
 
 `/kapelle:verify` reports deferred required validation as `validation-deferred`.
-`/kapelle:finalize` refuses with `Status: REFUSED-validation-incomplete` while any task or integration
-check has required validation in `skipped`, `cancelled`, `failed`, or missing state.
+`/kapelle:verify <slug> --approve` refuses with `Status: REFUSED-validation-incomplete` while feature
+verification has a required check in `skipped`, `cancelled`, `failed`, or missing state.
 
 Final readiness is deliberately not configurable: development may defer checks, but Kapelle never
 claims the feature is validated or complete without passing evidence.

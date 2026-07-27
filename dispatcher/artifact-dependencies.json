@@ -1,5 +1,11 @@
 {
   "proposal.md": [],
+  "_kapelle/approvals/plan.json": [
+    "spec.md",
+    "design.md",
+    "tasks.md#structural",
+    "_kapelle/architecture-guidance/design.json"
+  ],
   "_context/evidence-index.md": ["proposal.md"],
   "_kapelle/reconstruction.json": ["proposal.md", "_context/evidence-index.md"],
   "_kapelle/approvals/reconstruction-scope.json": [
@@ -101,7 +107,12 @@
     "contracts",
     "_kapelle/verification.json"
   ],
-  "_kapelle/approvals/final.json": ["diagrams", "_kapelle/verification.json"],
+  "_kapelle/approvals/final.json": [
+    "spec.md",
+    "design.md",
+    "tasks.md#structural",
+    "_kapelle/verification.json"
+  ],
   "_kapelle/release.json": [
     "_kapelle/approvals/final.json",
     "diagrams",

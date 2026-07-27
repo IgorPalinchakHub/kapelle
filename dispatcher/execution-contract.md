@@ -1,61 +1,34 @@
-# Human-controlled implementation contract
+# Execution contract
 
-Kapelle separates production implementation from test-authoring phases:
+## Inputs
 
-```text
-APPROVED CONTRACTS
-  -> BASE FUNCTIONAL TESTS
-  -> PRODUCTION IMPLEMENTATION
-  -> ALL UNIT TESTS
-  -> COMPLETE VERIFICATION
-```
+- current `spec.md`, `design.md`, and `tasks.md`;
+- current vertical-slice approval;
+- cached scoped architecture guidance;
+- repository code, tests, and project-native instructions/skills.
 
-The intentional timing rule is strict: `/kapelle:implement` never authors unit tests. Unit tests
-are planned and written in one post-implementation `/kapelle:unit-tests` phase.
+## Workstream execution
 
-## Production task lifecycle
+1. Select unchecked work only from the current approved vertical slice.
+2. Confirm that cached architecture-rules scope covers the actual modules, entrypoints, and paths;
+   refresh only on scope drift.
+3. Use one relevant project capability when available.
+4. Add focused boundary/characterization coverage when appropriate.
+5. Implement the thinnest complete end-to-end outcome without speculative future abstractions.
+6. Run the smallest useful development check under `ask | allow | skip`.
+7. Review inline; dispatch a fresh reviewer only on risk or request.
+8. Update the checkbox and short result, then rebuild status.
 
-```text
-UNDERSTAND -> SELECT-CAPABILITY -> GUIDANCE
--> PLAN -> APPROVE -> IMPLEMENT -> REVIEW -> SUMMARIZE
-```
+`task`, `workstream`, and `none` checkpoints control only how often control returns to the
+developer. Workstream is the default.
 
-For every dependency-ready task:
+## Bounds
 
-1. Read approved business, design, contract, task, and base-functional-test artifacts.
-   Read `_kapelle/surface-plan.json` so backend, frontend, data, worker, and integration aspects
-   remain coordinated.
-2. Discover native project skills/subagents semantically.
-3. Obtain scoped architecture rules from the project-provided architecture-rules subagent.
-4. Persist a fingerprinted implementation plan. Apply risk-based approval and bounded retries.
-5. Dispatch the implementer for production code only.
-6. Run fresh review where task risk requires it.
-7. Optionally run existing focused base functional tests under `ask | allow | skip`.
-8. Record `implemented-unverified`, changed files, observable behavior, deviations, and risks.
-
-If planning or implementation needs developer input, the coordinator must translate the internal
-finding using `references/developer-questions.md`. Never forward planner/reviewer prose, artifact
-references, task/blocker ids, or DoD wording as the question.
-
-`task`, `workstream`, and `none` checkpoints control how often control returns to the developer.
-They do not weaken amendment, verification, or final approval gates.
-
-## Deferred validation
-
-During implementation, a skipped or cancelled focused check remains `validation-deferred`; it is
-never PASS. Full unit, functional, integration, contract, static-analysis, lint, and build
-verification belongs to `/kapelle:unit-tests` and `/kapelle:verify`.
-
-## Amendments
-
-Developer feedback that changes business behavior, architecture, contracts, or approved task
-ownership pauses remaining work and routes through `/kapelle:amend`. The reconciler versions the
-change, invalidates dependent evidence, and selects the earliest necessary stage.
-
-## Execution modes and limits
-
-Sequential mode is the default. Agent-team mode may parallelize only approved, dependency-ready
-production tasks with explicit pairwise-disjoint ownership, runtime support, configuration, and
-developer approval. Edit-attempt and agent-run caps always apply.
-
-Kapelle never creates worktrees, branches, commits, pull requests, or unofficial workflow tools.
+- Maximum normal attempts come from config.
+- Optional role runs are bounded; no role loop may self-escalate.
+- Agent Teams require explicit developer approval and pairwise-disjoint ownership.
+- Requirement/design changes pause remaining work and route to `amend`.
+- A completed slice returns control: `amend` adds the next requirement; `verify` explicitly closes
+  the current feature scope.
+- Unit tests wait for `verify`.
+- No git mutations.

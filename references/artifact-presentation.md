@@ -19,11 +19,15 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
 
 - `STATUS.md`: generated entry point, normally at most 100 lines.
 - `proposal.md`: problem, goal, scope, non-goals, impact, risks, and product decisions.
-- `spec.md`: observable behavior, actors, requirements, ACs, edge cases, constraints, compatibility.
-- `specs/*.md`: independent scenarios, business rules, subprocesses, and integration reactions.
-- `design.md`: affected components, boundaries, flows, contracts, data, security, decisions, ADRs,
-  validation, and as-built deviations.
-- `design/*.md`: only genuinely independent component, domain/status-model, or integration designs.
+- `spec.md`: the high-level feature map, current behavior, committed observable behavior, use cases,
+  rules/invariants, candidate capabilities, exclusions, and unknowns.
+- `specs/*.md`: only promoted use cases whose alternatives, failures, business rules, subprocesses,
+  or integration reactions need independent review.
+- `design.md`: high-level system context, boundaries, responsibilities, flows, domain/data,
+  contracts, security, decisions, risks, deferrals, and the current walking skeleton.
+- `design/domain-model.md`: aggregate ownership, behavior, invariants, state transitions, events,
+  and persistence mapping when the domain trigger applies.
+- other `design/*.md`: only genuinely independent component or integration designs.
 - `tasks.md`: workstream checklist with task id, outcome, meaningful dependency, AC coverage,
   blocker, and validation state.
 - `test-plan.md`: strategy, AC/integration coverage, required/optional commands, manual checks,
@@ -31,8 +35,8 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
 - `_context/evidence-index.md`: reconstruction claim ids, classifications, cited source ranges,
   confidence, and unresolved evidence gaps.
 
-Keep the package proportional. Prefer a few vertical workstreams and outcome-oriented tasks; do
-not create one document per rule, class, or layer.
+Keep the package proportional. The high-level map may cover the known feature, but detail only the
+current vertical slice. Do not create one document per rule, class, or layer.
 
 ## Generated status
 
@@ -63,7 +67,9 @@ Before finalization, reconcile:
 ```text
 proposal <-> final scope
 spec <-> observable implementation
+specs <-> implemented use-case behavior
 design <-> technical implementation
+domain model <-> owned behavior and state
 contracts <-> providers and consumers
 tasks <-> implemented work
 test-plan <-> performed validation

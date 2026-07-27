@@ -8,9 +8,23 @@ from pathlib import Path
 
 from feature_state import FeatureStateError, approval_current, choose_next_command
 from review_gate import approve, build_gate
+from validate_progressive_docs import (
+    ARTIFACT_MARKER,
+    DESIGN_HEADINGS,
+    DOMAIN_HEADINGS,
+    SPEC_HEADINGS,
+    USE_CASE_HEADINGS,
+    WORKFLOW_MARKER,
+)
 
 
 class ReviewGateTests(unittest.TestCase):
+    def structured_document(self, title: str, headings: list[str]) -> str:
+        lines = [title, ""]
+        for heading in headings:
+            lines.extend([heading, "", "Concrete content.", ""])
+        return "\n".join(lines)
+
     def make_feature(self, root: Path) -> Path:
         feature = root / "docs" / "features" / "gate-test"
         feature.mkdir(parents=True)
@@ -65,6 +79,126 @@ class ReviewGateTests(unittest.TestCase):
                     "Developer approved business specification.",
                     refresh=False,
                 )
+
+    def test_lightweight_plan_requires_ready_guidance_and_final_requires_pass(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            (feature / "spec.md").write_text(
+                "<!-- kapelle-workflow: lightweight-v1 -->\n# Spec\n"
+            )
+            (feature / "design.md").write_text("# Design\n")
+            (feature / "tasks.md").write_text(
+                "# Tasks\n\n## Delivery\n\n- [ ] **W1 Deliver behavior**\n"
+            )
+            guidance = feature / "_kapelle" / "architecture-guidance"
+            guidance.mkdir(parents=True)
+            (guidance / "design.json").write_text(
+                json.dumps(
+                    {
+                        "status": "ARCHITECTURE_GUIDANCE_READY",
+                        "capability": {
+                            "name": "project-architecture-rules",
+                            "kind": "project-subagent",
+                        },
+                        "scope": {
+                            "aspects": ["feature"],
+                            "modules": [],
+                            "entrypoints": [],
+                            "paths": [],
+                        },
+                        "rules": [],
+                        "sources": [],
+                        "gaps": [],
+                    }
+                )
+            )
+            approve(
+                feature,
+                "plan",
+                "Developer explicitly approved the feature plan.",
+                refresh=False,
+            )
+            self.assertTrue(approval_current(feature, "plan"))
+            with self.assertRaises(FeatureStateError):
+                approve(
+                    feature,
+                    "final",
+                    "Developer explicitly approved the feature.",
+                    refresh=False,
+                )
+
+    def test_new_raw_task_requires_progressive_docs_and_fingerprints_details(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            internal = feature / "_kapelle"
+            internal.mkdir()
+            (internal / "workflow.json").write_text(
+                json.dumps(
+                    {
+                        "workflow": "human-controlled",
+                        "version": 2,
+                        "created_from": "raw-task",
+                        "profile": "lightweight",
+                    }
+                )
+            )
+            (feature / "spec.md").write_text(
+                f"{WORKFLOW_MARKER}\n# Incomplete specification\n"
+            )
+            (feature / "design.md").write_text("# Incomplete design\n")
+            (feature / "tasks.md").write_text(
+                "# Tasks\n\n## Delivery\n\n- [ ] **W1 Deliver behavior**\n"
+            )
+            guidance = internal / "architecture-guidance"
+            guidance.mkdir()
+            (guidance / "design.json").write_text(
+                json.dumps(
+                    {
+                        "status": "ARCHITECTURE_GUIDANCE_READY",
+                        "capability": {
+                            "name": "project-architecture-rules",
+                            "kind": "project-subagent",
+                        },
+                        "scope": {
+                            "aspects": ["feature"],
+                            "modules": [],
+                            "entrypoints": [],
+                            "paths": [],
+                        },
+                        "rules": [],
+                        "sources": [],
+                        "gaps": [],
+                    }
+                )
+            )
+            with self.assertRaises(FeatureStateError):
+                approve(feature, "plan", "Developer approved.", refresh=False)
+
+            (feature / "spec.md").write_text(
+                f"{WORKFLOW_MARKER}\n{ARTIFACT_MARKER}\n"
+                + self.structured_document("# Feature specification", SPEC_HEADINGS)
+            )
+            (feature / "design.md").write_text(
+                self.structured_document("# System design", DESIGN_HEADINGS)
+            )
+            specs = feature / "specs"
+            use_case = specs / "scenarios.md"
+            use_case.write_text(
+                self.structured_document("# Deliver", USE_CASE_HEADINGS)
+            )
+            detail = feature / "design"
+            detail.mkdir()
+            (detail / "domain-model.md").write_text(
+                self.structured_document("# Domain model", DOMAIN_HEADINGS)
+            )
+            path = approve(feature, "plan", "Developer approved.", refresh=False)
+            payload = json.loads(path.read_text())
+            self.assertIn("specs", payload["artifact_fingerprints"])
+            self.assertIn("design", payload["artifact_fingerprints"])
+            self.assertTrue(approval_current(feature, "plan"))
+
+            use_case.write_text("# Changed\n")
+            self.assertFalse(approval_current(feature, "plan"))
 
     def test_outline_stays_current_when_spec_is_expanded(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -126,7 +260,7 @@ class ReviewGateTests(unittest.TestCase):
                     json.dumps({"gate": gate, "status": "accepted"})
                 )
             self.assertEqual(
-                ("spec", f"/kapelle:spec {feature.name}"),
+                ("migrate", f"/kapelle:migrate {feature.name}"),
                 choose_next_command(feature.name, feature, {}, False, False),
             )
             approve(feature, "outline", "Developer accepted outline.", refresh=False)
@@ -137,7 +271,7 @@ class ReviewGateTests(unittest.TestCase):
                 refresh=False,
             )
             self.assertEqual(
-                ("design", f"/kapelle:design {feature.name}"),
+                ("migrate", f"/kapelle:migrate {feature.name}"),
                 choose_next_command(feature.name, feature, {}, False, False),
             )
 

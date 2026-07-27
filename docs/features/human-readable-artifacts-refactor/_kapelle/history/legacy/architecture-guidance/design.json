@@ -1,0 +1,109 @@
+{
+  "capability": {
+    "description_evidence": "A clean-context architecture-rules subagent inspected the plan, repository contracts, runtime scripts, skills, and schemas for this refactor.",
+    "kind": "project-subagent",
+    "name": "delegated-scoped-project-architecture-rules-subagent"
+  },
+  "gaps": [],
+  "precedents": [
+    {
+      "path": "scripts/validate_task_plan.py",
+      "reason": "Deterministic semantic validation precedent"
+    },
+    {
+      "path": "dispatcher/vocabulary.json",
+      "reason": "Canonical vocabulary precedent"
+    },
+    {
+      "path": "references/change-lifecycle.md",
+      "reason": "Immutable revision and safe-pause precedent"
+    }
+  ],
+  "rules": [
+    {
+      "applies_to": [
+        "contracts",
+        "runtime",
+        "stages",
+        "documentation"
+      ],
+      "id": "ARCH-01",
+      "source": "docs/HUMAN_READABLE_ARTIFACTS_REFACTOR_PLAN_UK.md and references/feature-layout.md",
+      "summary": "Human Markdown is durable review state; STATUS.md is generated and machine/runtime evidence lives only under _kapelle/."
+    },
+    {
+      "applies_to": [
+        "runtime",
+        "stages",
+        "documentation"
+      ],
+      "id": "ARCH-02",
+      "source": "AGENTS.md and references/feature-layout.md",
+      "summary": "Each logical artifact has one physical path; recovery reports evidence honestly and never fabricates approval, validation, review, or historical telemetry."
+    },
+    {
+      "applies_to": [
+        "runtime",
+        "stages"
+      ],
+      "id": "ARCH-03",
+      "source": "references/feature-layout.md and skills/implement/SKILL.md",
+      "summary": "Recovered coordination graphs are provisional: validation-only is allowed for existing work, but code-writing, feature review, and ship require refreshed architecture guidance and decomposition."
+    },
+    {
+      "applies_to": [
+        "contracts",
+        "runtime"
+      ],
+      "id": "ARCH-04",
+      "source": "references/validation-execution.md and dispatcher review schemas",
+      "summary": "Validation and review freshness covers human documents, normalized coordination graphs, and the actual implementation files."
+    },
+    {
+      "applies_to": [
+        "runtime"
+      ],
+      "id": "ARCH-05",
+      "source": "references/feature-layout.md",
+      "summary": "Migration performs complete preflight before mutation and writes its success marker only after rebuilt-state validation."
+    },
+    {
+      "applies_to": [
+        "runtime",
+        "stages"
+      ],
+      "id": "ARCH-06",
+      "source": "AGENTS.md",
+      "summary": "Utilities are deterministic and local: no shell, network, git mutation, or provider-specific routing."
+    }
+  ],
+  "scope": {
+    "aspects": [
+      "contracts",
+      "runtime",
+      "stages",
+      "documentation"
+    ],
+    "entrypoints": [
+      "feature layout",
+      "Kapelle commands",
+      "CLI utilities"
+    ],
+    "modules": [
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills",
+      "docs",
+      "examples"
+    ],
+    "paths": [
+      "docs/features",
+      "references",
+      "dispatcher",
+      "scripts",
+      "skills"
+    ]
+  },
+  "status": "ARCHITECTURE_GUIDANCE_READY"
+}

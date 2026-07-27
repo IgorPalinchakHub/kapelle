@@ -1,8 +1,8 @@
 ---
 name: start
 description: >
-  Start a feature from a raw developer task, discover current behavior, select fast or standard
-  planning and interview depth, and produce the smallest complete human-reviewable draft.
+  Map the known feature at high level, design one production-shaped walking-skeleton slice, and
+  obtain approval before implementation.
 ---
 
 # Skill: start
@@ -10,72 +10,125 @@ description: >
 Invoke:
 
 ```text
-/kapelle:start <slug> "<raw task>" [--lane=auto|fast|standard] [--interview=auto|lean|standard|deep]
-/kapelle:start <slug> --approve
+/kapelle:start <slug> "<raw task>"
 /kapelle:start <slug> --revise "<developer feedback>"
+/kapelle:start <slug> --approve
 ```
 
-Read [`../../references/fast-lane.md`](../../references/fast-lane.md),
-[`../../references/interview-depth.md`](../../references/interview-depth.md), and
-[`../../references/design-template.md`](../../references/design-template.md). Any developer
-question must follow
-[`../../references/developer-questions.md`](../../references/developer-questions.md).
+Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
+asking a question and [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md)
+before recording project rules. Follow
+[`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) for the
+durable specification, system-design, use-case, and domain-model format.
 
-## Protocol
+## Draft or revise
 
-1. Require a stable slug and raw task for a new feature. Ask only one consolidated question when
-   intended behavior or plausible project ownership cannot be established. Describe the intended
-   outcome and options with trade-offs; never make the developer resolve internal ids.
-2. Dispatch `kapelle:explorer` read-only to discover current behavior, actors, entrypoints,
-   business flows, data, integrations, tests, precedents, and the project boundary.
-3. Separate observed behavior, requested behavior, assumptions, and unresolved decisions.
-4. Classify `XS|S|M|L|XL`, risk triggers, interview depth, and lane. `auto` is default. A requested
-   fast lane never overrides a risk trigger.
-5. Apply interview depth:
-   - lean: inline challenge, no critic/devil subagent;
-   - standard: business analysis plus one combined critic pass;
-   - deep: business analyst, one fresh critic, one fresh devil's advocate.
-   Allow at most one correction pass.
-6. Write `proposal.md` beginning with:
+1. Require a stable slug and a raw task for a new feature. Build a bounded high-level map of the
+   known feature: current behavior, actors and outcomes, entrypoints, use cases, affected
+   components, domain/data ownership, integrations, nearby tests, and precedents. Investigate only
+   the first usable end-to-end path in implementation detail. Keep unknowns explicit.
+2. The main agent integrates the map. Use an explorer only when ownership is unclear or relevant
+   code spans unfamiliar modules. For a genuinely medium/large cross-component feature, it may run
+   one bounded parallel read-only burst of at most three disjoint investigations: existing
+   behavior, project architecture/rules, and contracts/tests/integrations. Subagents return concise
+   evidence and do not write the human package.
+   Use one critic pass only for material ambiguity or high risk: authorization, money, destructive
+   data change, public contract, migration, concurrency, or cross-system side effects. Do not run a
+   default business-analyst/critic/devil's-advocate chain.
+3. Ask at most one consolidated developer question when a decision changes observable behavior.
+   State the intended change and real options with trade-offs. Do not mention internal artifact,
+   gate, task, blocker, or acceptance-criterion identifiers.
+4. Discover relevant project skills, instructions, and the project architecture-rules capability.
+   The binding guidance scope must cover the first slice; broader candidate boundaries in the
+   high-level design remain directional until a later amendment refreshes their rules. Persist the
+   current result in
+   `_kapelle/architecture-guidance/design.json` and validate it:
 
 ```text
-<!-- kapelle-workflow: human-controlled-v1; lane: fast|standard -->
+scripts/validate_json.py docs/features/<slug>/_kapelle/architecture-guidance/design.json dispatcher/architecture-guidance.schema.json
 ```
 
-   Also write `spec.md`, `_context/architecture.md`, `_kapelle/workflow.json`, and
-   `_kapelle/size.json`. Validate the two machine artifacts with:
+5. Create the minimum progressive human package:
+   - `spec.md`: the full known high-level product map, with committed behavior clearly separated
+     from candidate capabilities and unknowns. Begin it with:
+
+```md
+<!-- kapelle-workflow: lightweight-v1 -->
+<!-- kapelle-artifacts: progressive-map-v1 -->
+```
+
+   - `design.md`: the high-level system context, likely component boundaries, responsibilities,
+     end-to-end flow, domain/data ownership, contracts, decisions, risks, and deferrals. Design only
+     the first committed slice in implementation detail; label candidate architecture directional.
+   - `tasks.md`: one initial walking-skeleton workstream, split into at most three checkboxes only
+     when the slice cannot remain reviewable as one checkbox. Do not place candidate capabilities here.
+6. Add `specs/<use-case>.md` for the first slice only when alternatives, authorization, failures, or
+   system reactions need independent review. Create `design/domain-model.md` when the slice changes
+   an aggregate, lifecycle/status transition, money or authorization invariant, domain event,
+   ownership boundary, or non-trivial relationship. Create contracts, other detailed design, an
+   ADR, or a diagram only when its trigger in `progressive-artifacts.md` applies.
+7. Keep documents easy to scan. Prefer roughly 250 lines for `spec.md`, 180 for `design.md`, and
+   120 for `tasks.md` as soft ceilings. Validate the package:
 
 ```text
-scripts/validate_json.py docs/features/<slug>/_kapelle/workflow.json dispatcher/workflow-state.schema.json
-scripts/validate_json.py docs/features/<slug>/_kapelle/size.json dispatcher/size.schema.json
+scripts/validate_progressive_docs.py docs/features/<slug>
 ```
 
-   A non-zero exit blocks the stage.
-7. In `standard`, stop after the concise outline and hand off to `/kapelle:spec <slug>`.
-8. In `fast`, complete the bounded planning package in this invocation:
-   - complete the small specification inside `spec.md`;
-   - obtain scoped project architecture rules;
-   - write `design.md` using every required design-template heading;
-   - write vertical `tasks.md` with an inline Test strategy section;
-   - write `_kapelle/surface-plan.json` and `_kapelle/task-plan.json`, validate the surface with
-     `scripts/validate_json.py`, then run `scripts/validate_design.py` and
-     `scripts/validate_task_plan.py`;
-   - create at most three production tasks and no unit-test-writing task;
-   - do not require `specs/`, `design/`, `contracts/`, or `test-plan.md` unless evidence makes one
-     necessary, in which case escalate to standard.
-9. Present the complete fast package and require one explicit approval. On `--approve`, validate
-   the existing package and run `scripts/review_gate.py approve docs/features/<slug> feature-plan
-   --confirmation "Developer explicitly approved the fast feature plan."`. Never construct gate
-   JSON manually. The helper owns canonical
-   `_kapelle/approvals/feature-plan.json`. `--approve` may not generate missing artifacts.
-10. On `--revise`, update the current lane's draft and invalidate downstream evidence.
-11. Refresh `STATUS.md` once when the review-gate helper has not already refreshed it. Never
-    hand-edit manifest, state, status, or approval JSON. A standard handoff is `spec`; an approved
-    fast handoff is `base-functional-tests`.
+   A non-zero result blocks approval. This validation checks structure, not semantic correctness.
+8. The walking skeleton must be production-shaped, observable, and safe to extend; it is not a
+   throwaway mock. It may return a deliberately narrow result, but must cross every boundary needed
+   to prove the flow: input/authorization/validation, endpoint or command, use-case service, domain
+   and persistence/integration boundary, stable minimal response, and focused boundary evidence as
+   applicable. Do not scaffold every future endpoint or empty service. It must leave the project
+   loadable and internally coherent. Do not plan a knowingly broken intermediate state such as an
+   enum/schema rename separated from required readers and migrations.
+9. Plan basic functional/characterization tests before production changes only for affected
+   endpoints, commands, workers, or public use-case methods. Keep this work inside its owning
+   workstream. Do not plan or write unit tests until `/kapelle:verify`.
+10. For a new feature, write `_kapelle/workflow.json` as:
 
-## Review packet
+```json
+{
+  "workflow": "human-controlled",
+  "version": 2,
+  "created_from": "raw-task",
+  "profile": "lightweight"
+}
+```
 
-Return observed current behavior, selected size/lane/depth with reason, proposed outcome, at most
-three decisions, files to review, and the exact revise/approve/next command. Hide agent chatter.
+   Preserve `created_from: legacy-migration` when revising a migrated feature.
+   Validate it with `workflow-state.schema.json`, then rebuild generated state with
+   `scripts/build_feature_status.py docs/features/<slug>` and
+   `scripts/validate_feature_state.py docs/features/<slug>`.
+11. On revision, correct the high-level map or active slice without detailing candidate use cases.
+    Any plan, verification, or final approval whose fingerprints no longer match becomes stale
+    automatically. Do not promote candidate capabilities into committed behavior until the
+    developer requests them through `/kapelle:amend`.
 
-Use the standard backbone handoff block from `references/handoff.md`. Never run git operations.
+## Approve
+
+`--approve` is a pure gate action: do not inspect the repository, dispatch agents, or edit the
+human package. Run `validate_progressive_docs.py`, validate architecture guidance and the existing
+documents, then run:
+
+```text
+scripts/review_gate.py approve docs/features/<slug> plan \
+  --confirmation "Developer explicitly approved the current vertical slice."
+```
+
+The internal gate keeps the compatibility name `plan`, but human-facing output calls it the
+current-slice approval. Never write approval JSON manually. Missing or invalid inputs produce
+`Status: REFUSED-missing-input` and the exact correction command.
+
+## Handoff
+
+Show the high-level feature outcome, the usable outcome of the first slice, what remains candidate
+or unknown, important trade-offs, files to review, and no more than three unresolved decisions.
+After approval, the next command is:
+
+```text
+/kapelle:implement <slug> --checkpoint=workstream --validation=ask
+```
+
+Refresh `STATUS.md`, use the standard handoff block, hide agent chatter, and never run git
+operations.

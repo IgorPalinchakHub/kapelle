@@ -1,24 +1,8 @@
-# Interview depth
+# Question depth
 
-Interview depth controls questions and adversarial agent runs, never coverage.
+Interview flags were removed. `start` asks no question when repository evidence and the raw task
+support a safe plan. When one material decision remains, it asks one consolidated, standalone
+question describing intended behavior and at most three options with trade-offs.
 
-`--interview=auto|lean|standard|deep` is accepted by `start` and `spec`. `auto` is the default:
-
-| Evidence | Depth |
-|---|---|
-| XS/S, established pattern, no risk trigger | `lean` |
-| M or moderate ambiguity | `standard` |
-| L/XL or any risk trigger | `deep` |
-
-## Behavior
-
-- `lean`: inline consistency challenge; ask only one consolidated blocking question; do not
-  dispatch critic or devil's advocate.
-- `standard`: business analysis plus one combined critic pass; ask at most three material
-  questions; one correction pass.
-- `deep`: business analyst, separate fresh critic, separate devil's advocate, at most one
-  consolidated question round and one correction pass.
-
-Every depth still covers actors, main and alternative flows, rules, failures, permissions,
-compatibility, integrations, and measurable acceptance criteria. New evidence may escalate depth;
-the stage must state why. It never silently reduces an explicitly requested depth.
+High-risk ambiguity may trigger one critic pass before that question. The agent never runs a fixed
+question quota or a default business-analyst/critic/devil's-advocate sequence.

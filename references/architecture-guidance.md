@@ -1,22 +1,25 @@
 # Project architecture-rules capability
 
-Kapelle requires each project to provide a native subagent capable of finding the architectural
-rules applicable to a scoped part of a feature. The subagent name and its rule provider are
-project-defined.
+Kapelle expects project-native architecture guidance for the scoped part of a feature. Prefer the
+project's dedicated architecture-rules subagent when available; project skills and instructions may
+help locate it. The subagent name and rule provider are project-defined.
 
 ## Discovery
 
 1. Inspect native project and installed-plugin agent descriptions semantically.
 2. Select a subagent whose description says it can find or resolve project architecture rules for
-   a supplied scope.
+   a supplied scope. If the project has no such capability, report the gap instead of repeatedly
+   searching or inventing rules.
 3. Give it only the feature slug, artifact paths, affected aspects/modules/entrypoints, task paths
    when applicable, and the decision being planned or implemented.
 4. Require a source-affinity check before an external index is used. If its indexed repository,
    modules, or framework do not match the current project, discard that source immediately and use
    applicable project-native sources.
 5. The project subagent may use native rules, files, MCP, CLI, APIs, or other project capabilities.
-   For high-level design, bound it to 12 focused lookup batches and request binding rules,
-   collisions, and design-changing gaps rather than an exhaustive catalogue.
+   Run it once for the current vertical slice and request only binding rules, collisions, and
+   design-changing gaps rather than an exhaustive catalogue. A high-level feature map may name
+   likely future boundaries, but their rules remain directional and cannot authorize code until
+   the boundary is promoted and falls inside refreshed guidance.
 6. Persist the result at the stage-defined path and run `scripts/validate_json.py <result-path>
    dispatcher/architecture-guidance.schema.json`. A non-zero exit blocks the stage; schema
    validation is never delegated to visual LLM inspection.
@@ -24,19 +27,20 @@ project-defined.
 Do not maintain a Kapelle mapping from aspect, label, module, or rule code to an agent. Do not require
 a specific agent name or provider.
 
-## Required gates
+## Lifecycle
 
-- `survey` records whether the project capability was discovered; absence is a readiness gap.
-- `design` refuses architecture decisions until the capability returns
+- `start` refuses current-slice approval until the capability returns
   `ARCHITECTURE_GUIDANCE_READY` without blocking gaps.
-- `implement` refreshes the result for each task's actual aspects and file scope before planning.
-- `finalize` verifies the implementation against the scoped rules evidence in fresh context.
+- `implement` reuses this result for the current slice inside its recorded scope.
+- `amend` refreshes it only when the next slice leaves the recorded scope.
+- Refresh it only when the actual scope or design leaves the recorded modules, entrypoints, or
+  paths.
+- `verify` reconciles the implementation against this cached evidence.
 
 Write evidence to:
 
 ```text
 docs/features/<slug>/_kapelle/architecture-guidance/design.json
-docs/features/<slug>/_kapelle/architecture-guidance/<task-id>.json
 ```
 
 Missing capability:
@@ -44,7 +48,7 @@ Missing capability:
 ```text
 Status: REFUSED-missing-project-capability
 capability: project architecture-rules subagent
-needed-for: <design|task-id>
+needed-for: current vertical slice
 ```
 
 Kapelle may explain the required input/output contract, but it must not generate project rules or
