@@ -15,6 +15,7 @@ from feature_state import (
     normalized_task_plan_fingerprint,
     normalized_tasks_fingerprint,
     parse_tasks,
+    phase_evidence_current,
     rebuild_feature_state,
     refresh_feature_status,
     relative_fingerprint,
@@ -173,6 +174,37 @@ class FeatureStateTests(unittest.TestCase):
                             "scope": "feature",
                             "required": True,
                             "status": "passed",
+                        }
+                    ],
+                    "input_fingerprints": input_fingerprints(feature),
+                    "implementation_fingerprints": {
+                        "src/feature.txt": file_fingerprint(implementation)
+                    },
+                }
+            )
+        )
+        return path
+
+    def write_deferred_validation(
+        self, feature: Path, task_id: str = "T01"
+    ) -> Path:
+        path = feature / "_kapelle" / "validation" / f"{task_id}.json"
+        path.parent.mkdir(exist_ok=True)
+        implementation = feature.parent.parent.parent / "src" / "feature.txt"
+        path.write_text(
+            json.dumps(
+                {
+                    "task_id": task_id,
+                    "policy": "skip",
+                    "decision": "skip-all",
+                    "commands": [
+                        {
+                            "command": "project-test",
+                            "kind": "tests",
+                            "scope": "feature",
+                            "required": True,
+                            "status": "skipped",
+                            "reason": "Developer ran verification outside Kapelle",
                         }
                     ],
                     "input_fingerprints": input_fingerprints(feature),
@@ -1172,6 +1204,68 @@ class FeatureStateTests(unittest.TestCase):
             self.assertEqual("completed", state["current_stage"])
             self.assertTrue(state["ship_ready"])
             self.assertEqual([], validate(feature))
+
+    def test_developer_attested_pass_supersedes_deferred_lightweight_validation(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            feature = self.make_feature(root, checked=True)
+            internal = feature / "_kapelle"
+            (feature / "spec.md").write_text(
+                f"{WORKFLOW_MARKER}\n{ARTIFACT_MARKER}\n"
+                + self.progressive_document("# Feature specification", SPEC_HEADINGS)
+            )
+            (feature / "design.md").write_text(
+                self.progressive_document(
+                    "# System design", PROGRESSIVE_DESIGN_HEADINGS
+                )
+            )
+            guidance = internal / "architecture-guidance"
+            guidance.mkdir()
+            (guidance / "design.json").write_text(
+                json.dumps(self.valid_guidance(["core"]))
+            )
+            self.write_deferred_validation(feature)
+            _, deferred_state, _ = refresh_feature_status(feature)
+            self.assertEqual(
+                "validation-deferred", deferred_state["tasks"]["T01"]
+            )
+
+            implementation = root / "src" / "feature.txt"
+            (internal / "verification.json").write_text(
+                json.dumps(
+                    {
+                        "status": "PASS",
+                        "evidence_source": "developer-attested",
+                        "developer_confirmation": (
+                            "I manually tested and verified the complete planned batch; "
+                            "all checks pass."
+                        ),
+                        "categories": ["functional", "unit", "lint"],
+                        "commands": [
+                            "Developer completed the complete planned verification batch"
+                        ],
+                        "input_fingerprints": input_fingerprints(feature),
+                        "implementation_fingerprints": {
+                            "src/feature.txt": file_fingerprint(implementation)
+                        },
+                    }
+                )
+            )
+            self.assertTrue(
+                phase_evidence_current(feature, "verification.json", {"PASS"})
+            )
+            _, verified_state, _ = refresh_feature_status(feature)
+            self.assertEqual("completed", verified_state["tasks"]["T01"])
+            self.assertEqual(
+                f"/kapelle:verify {feature.name} --approve",
+                verified_state["next_command"],
+            )
+            self.assertIn(
+                "developer-confirmed; command output not captured by Kapelle",
+                (feature / "STATUS.md").read_text(),
+            )
 
     def test_lightweight_recovery_needs_no_machine_coordination_graph(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

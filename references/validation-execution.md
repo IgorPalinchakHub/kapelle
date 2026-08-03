@@ -34,6 +34,7 @@ Under `ask`, accept:
 
 - `run-all`;
 - `run-selected`, naming the approved commands;
+- `developer-verified`, with an explicit statement of what passed;
 - `skip-all`.
 
 Silence is not permission. Do not replace a skipped command with a different command unless the
@@ -61,6 +62,20 @@ Any required `skipped` or `cancelled` command makes the task `validation-deferre
   outstanding validation without repeating implementation;
 - blocks final `/kapelle:verify --approve` until all required checks pass.
 
+## Developer-attested verification
+
+Kapelle accepts a developer's explicit report that verification was completed outside the current
+agent session. The report does not need copied terminal output. It must state a passing result and
+either cover the complete applicable batch or identify the selected checks that passed.
+
+Use the `developer-attested` evidence source when Kapelle observed no output, `agent-observed` when
+it did, and `mixed` when both sources contribute. Preserve the developer's statement in
+`developer_confirmation`. A complete developer attestation may replace earlier deferred checks and
+produce current `PASS`; a partial attestation leaves uncovered required checks deferred.
+
+This is evidence, not final feature approval. Status and the verify summary must say when PASS is
+developer-confirmed and command output was not captured by Kapelle.
+
 For development readiness, a dependent task may consume code from a `validation-deferred`
 dependency, but its plan and audit record must list that inherited validation risk. It may not
 produce final contract, integration, verification, or completion evidence until the dependency
@@ -72,8 +87,10 @@ An omitted task-validation `required` field means `true`.
 ## Final gate
 
 `/kapelle:verify` reports deferred required validation as `validation-deferred`.
-`/kapelle:verify <slug> --approve` refuses with `Status: REFUSED-validation-incomplete` while feature
-verification has a required check in `skipped`, `cancelled`, `failed`, or missing state.
+`/kapelle:verify <slug> --approve` refuses with `Status: REFUSED-validation-incomplete` while
+feature verification has a required check in `skipped`, `cancelled`, `failed`, or missing state
+that is not covered by a later complete developer attestation.
 
 Final readiness is deliberately not configurable: development may defer checks, but Kapelle never
-claims the feature is validated or complete without passing evidence.
+claims the feature is validated or complete without current passing evidence. That evidence may be
+agent-observed or explicitly developer-attested; its source always remains visible.

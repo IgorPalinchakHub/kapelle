@@ -123,6 +123,7 @@ for rel in [
     'scripts/feature_state.py',
     'scripts/build_feature_status.py',
     'scripts/rebuild_feature_state.py',
+    'scripts/record_verification.py',
     'scripts/validate_feature_state.py',
     'scripts/migrate_feature_layout.py',
     'scripts/test_feature_state.py',
@@ -392,6 +393,9 @@ for required in [
     'static-analysis',
     'lint',
     'build',
+    '--developer-verified',
+    'developer-attested',
+    'record_verification.py',
 ]:
     check(required in verify_skill, f'verify: missing category {required!r}')
 
@@ -401,8 +405,10 @@ for required in [
     '`allow`',
     '`skip`',
     '`run-selected`',
+    '`developer-verified`',
     '`cancelled`',
     '`validation-deferred`',
+    '`developer-attested`',
     'REFUSED-validation-incomplete',
 ]:
     check(required in validation_execution,

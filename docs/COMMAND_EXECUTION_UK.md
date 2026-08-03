@@ -137,6 +137,7 @@ behavior, за потреби створює детальний use-case spec, �
 
 - validation policy `ask|allow|skip`;
 - за бажанням — додаткові manual checks або конкретну команду проєкту.
+- якщо перевірки вже виконані вручну — явне підтвердження, що саме перевірено і що результат PASS.
 
 ### Що відбувається
 
@@ -146,14 +147,22 @@ risk-based batch із applicable functional, unit, integration/contract, static-
 build checks. Неактуальні категорії пропускаються з коротким поясненням.
 
 Failed required check дає `FAILED`. Skipped/cancelled required check дає `validation-deferred`.
-Жоден із цих станів не може бути PASS.
+Якщо developer пізніше явно підтверджує, що весь applicable verification batch пройдено поза
+поточною сесією, Kapelle приймає це без terminal output і записує PASS як `developer-attested`.
+Часткове підтвердження не закриває решту required checks.
+
+Приклад:
+
+```text
+/kapelle:verify <slug> --developer-verified "Я вручну перевірив увесь запланований batch; усі перевірки пройшли."
+```
 
 ### Результат
 
 - узгоджені `spec.md` і `design.md`;
 - написані unit-тести;
 - один `_kapelle/verification.json`;
-- короткий звіт тестів, ризиків і manual checks;
+- короткий звіт тестів, ризиків, manual checks і джерела evidence;
 - команда фінального підтвердження.
 
 Після PASS і ручного рев’ю:

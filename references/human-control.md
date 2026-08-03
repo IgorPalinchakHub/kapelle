@@ -49,7 +49,10 @@ production change. All unit tests are written after production implementation. C
 unit, integration/contract, static-analysis, lint, and build verification happens once in
 `/kapelle:verify`.
 
-Development checks use `ask | allow | skip`. Deferred required checks block PASS and final approval.
+Development checks use `ask | allow | skip`. Deferred required checks block PASS and final approval
+until they run successfully or the developer explicitly confirms that the complete applicable
+verification passed outside Kapelle. Such a PASS is labeled developer-attested; it is never
+presented as agent-observed.
 
 ## Incremental requirements
 

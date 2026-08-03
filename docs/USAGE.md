@@ -86,6 +86,16 @@ reconciles docs with code, writes all unit tests, and runs one applicable functi
 unit, integration/contract, static-analysis, lint, and build batch. Categories that do not apply are
 omitted with a reason.
 
+If you already ran and reviewed the complete applicable verification outside Kapelle:
+
+```text
+/kapelle:verify <slug> --developer-verified "I manually verified the complete planned batch; all checks pass."
+```
+
+Kapelle accepts this as PASS without requiring terminal output, but records and displays it as
+developer-attested rather than agent-observed. A partial confirmation covers only the named checks;
+remaining required checks stay deferred.
+
 After PASS and developer/manual review:
 
 ```text

@@ -58,6 +58,14 @@ services не створюються. Unit-тести на цьому етапі
 /kapelle:verify <slug> --validation=ask
 ```
 
+Якщо всі applicable перевірки вже виконані вручну або в іншій сесії:
+
+```text
+/kapelle:verify <slug> --developer-verified "Увесь запланований verification batch пройдено."
+```
+
+Такий PASS буде явно позначено як підтверджений developer-ом без captured output.
+
 Після PASS і ручної перевірки:
 
 ```text

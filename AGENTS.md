@@ -41,8 +41,9 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 18. `docs/architecture-map.md` is a shared baseline. Feature worktree drift is recorded under the
     feature `_context/` directory and never triggers an automatic shared-map rewrite.
 19. Development validation commands use an explicit `ask | allow | skip` policy. Skipped or
-    cancelled required checks become `validation-deferred`; they are never reported as `PASS` and
-    block ship readiness.
+    cancelled required checks become `validation-deferred` unless the developer later explicitly
+    confirms that the complete applicable verification passed outside Kapelle. Developer-attested
+    PASS is accepted for ship readiness but is always labeled as attested, never agent-observed.
 20. `STATUS.md` is the generated human entry point. Every backbone stage refreshes it; missing or
     invalid `_kapelle/` state triggers recovery and the minimal safe next route.
 21. Product `spec.md` and technical `design.md` converge with the as-built implementation during

@@ -38,6 +38,7 @@ remain useful to a developer after the feature is complete.
 /kapelle:implement <slug> --checkpoint=workstream --validation=ask
 
 /kapelle:verify <slug> --validation=ask
+/kapelle:verify <slug> --developer-verified "<what passed>"
 /kapelle:verify <slug> --approve
 
 /kapelle:amend <slug> "<changed requirement or feedback>"
@@ -65,8 +66,9 @@ After each slice, the developer chooses:
 ```
 
 `verify` reconciles the as-built feature with the docs, writes all unit tests, and runs one
-risk-based validation batch. Required failed or skipped checks cannot become PASS. A second,
-explicit approval completes the feature.
+risk-based validation batch. If the developer already completed that batch manually or in another
+session, Kapelle accepts an explicit passing confirmation without requiring copied output and
+labels the result `developer-attested`. A second, explicit approval completes the feature.
 
 Detailed use-case specifications, `design/domain-model.md`, contracts, sequences, and ADRs are
 created just in time when their documented trigger applies. A simple slice stays in `spec.md` and
@@ -79,7 +81,7 @@ created just in time when their documented trigger applies. A simple slice stays
   needed for review.
 - Each requested increment becomes one coherent vertical slice and leaves the application loadable.
 - Development validation can be `ask`, `allow`, or `skip`; deferred required checks block final
-  approval.
+  approval until they pass or the developer explicitly confirms complete external verification.
 - Developer questions describe the intended behavior and concrete options with trade-offs. They do
   not expose task, blocker, DoD, gate, or artifact identifiers.
 - Kapelle never runs git mutations.

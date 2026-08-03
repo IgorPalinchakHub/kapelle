@@ -11,6 +11,7 @@ Invoke:
 
 ```text
 /kapelle:verify <slug> [--validation=ask|allow|skip]
+/kapelle:verify <slug> --developer-verified "<what was checked and the result>"
 /kapelle:verify <slug> --approve
 ```
 
@@ -30,15 +31,38 @@ Invoke:
 4. Build one exact, risk-based validation batch from project-native commands. Include applicable
    functional, unit, integration/contract, static-analysis, lint/format, and build checks. Omit
    categories that genuinely do not apply and explain why in the review summary.
-5. Under `ask`, show the exact commands once and ask whether to run all, run selected, or defer.
-   Under `allow`, run them. Under `skip`, execute none. A failed required check yields `FAILED`; a
-   skipped or cancelled required check yields `validation-deferred`; neither can become PASS.
-6. Use a fresh reviewer only for high-risk features, material architecture deviations, repeated
+5. Under `ask`, show the exact commands once and ask whether to run all, run selected, accept the
+   developer's completed verification, or defer. Under `allow`, run them. Under `skip`, execute
+   none. A failed required check yields `FAILED`; a skipped or cancelled required check yields
+   `validation-deferred` unless the developer later explicitly confirms that the complete
+   applicable verification batch passed outside Kapelle.
+6. Treat an unambiguous developer statement such as "I manually tested and verified everything;
+   all planned checks pass" as valid verification evidence. Do not demand captured command output.
+   Record it as `developer-attested`, preserve the developer's wording, and state clearly that
+   Kapelle did not observe the output. If the statement covers only selected behavior, mark only
+   those categories as covered and keep the remaining required checks deferred. Ask one concise
+   standalone question only when the reported coverage or result is genuinely unclear.
+7. Use a fresh reviewer only for high-risk features, material architecture deviations, repeated
    failures, or explicit developer request. Keep one review/correction pass. Do not run a
    multi-agent review chain.
-7. Run `scripts/validate_progressive_docs.py docs/features/<slug>` for progressive packages. Write
-   one `_kapelle/verification.json` with current input and implementation fingerprints and
-   validate it:
+8. Run `scripts/validate_progressive_docs.py docs/features/<slug>` for progressive packages.
+   Record one `_kapelle/verification.json` with the deterministic writer, passing every affected
+   implementation/test/config/migration file through `--implementation-file`:
+
+```text
+scripts/record_verification.py docs/features/<slug> \
+  --status PASS \
+  --evidence-source agent-observed|developer-attested|mixed \
+  --category <covered-category> \
+  --check "<exact command or concise manual check>" \
+  --implementation-file <project-relative-file> \
+  [--developer-confirmation "<explicit developer statement>"]
+```
+
+   The writer fingerprints current inputs and implementation, validates against
+   `dispatcher/verification.schema.json`, writes the evidence, and refreshes `STATUS.md`.
+   `developer-attested` and `mixed` require `--developer-confirmation`.
+   For an independent structural check, run:
 
 ```text
 scripts/validate_json.py docs/features/<slug>/_kapelle/verification.json dispatcher/verification.schema.json
@@ -46,13 +70,14 @@ scripts/validate_json.py docs/features/<slug>/_kapelle/verification.json dispatc
 
    Do not create per-task validation JSON, separate unit-test-run state, diagrams, release notes, or
    agent transcripts unless independently useful to the developer.
-8. On PASS, rebuild status and present: implemented flow, test coverage, commands/results, remaining
+9. On PASS, present: implemented flow, test coverage, commands/results, evidence source, remaining
    manual checks, risks, and the exact final approval command.
 
 ## Final approval
 
 `--approve` is a pure gate action. Do not edit code/docs, run commands, or dispatch agents. Require
-current PASS verification and explicit developer confirmation, then run:
+current PASS verification—agent-observed, developer-attested, or mixed—and explicit final developer
+confirmation, then run:
 
 ```text
 scripts/review_gate.py approve docs/features/<slug> final \

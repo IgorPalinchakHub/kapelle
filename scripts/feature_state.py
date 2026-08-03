@@ -787,6 +787,13 @@ def phase_evidence_current(
     schema_name = schema_names.get(filename)
     if not evidence or not schema_name or not schema_valid(evidence, schema_name):
         return False
+    if filename == "verification.json":
+        evidence_source = evidence.get("evidence_source", "agent-observed")
+        if evidence_source in {"developer-attested", "mixed"} and not (
+            isinstance(evidence.get("developer_confirmation"), str)
+            and evidence["developer_confirmation"].strip()
+        ):
+            return False
     implementation = evidence.get("implementation_fingerprints")
     return bool(
         evidence
@@ -1282,7 +1289,11 @@ def derive_state(
         feature_dir, "verification.json", {"PASS"}
     ):
         for task in parsed_tasks:
-            if task["checked"] and task_states.get(task["id"]) == "implemented-unverified":
+            task_id = task["id"]
+            if task["checked"] and (
+                task_states.get(task_id) == "implemented-unverified"
+                or evidence.get(task_id) in {"validation-deferred", "blocked"}
+            ):
                 task_states[task["id"]] = "completed"
 
     counts = Counter(task_states.values())
@@ -1631,6 +1642,11 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
             ]
         )
     elif lightweight_workflow(feature_dir):
+        verification = read_json(feature_dir / "_kapelle" / "verification.json") or {}
+        verification_source = verification.get("evidence_source", "agent-observed")
+        verification_pass = phase_evidence_current(
+            feature_dir, "verification.json", {"PASS"}
+        )
         lines.extend(
             [
                 "- Workflow: Lightweight human-controlled",
@@ -1650,8 +1666,15 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
                     else "- Implementation: In progress"
                 ),
                 (
-                    "- Verification: PASS"
-                    if phase_evidence_current(feature_dir, "verification.json", {"PASS"})
+                    "- Verification: PASS "
+                    + (
+                        "(developer-confirmed; command output not captured by Kapelle)"
+                        if verification_source == "developer-attested"
+                        else "(agent-observed plus developer-confirmed)"
+                        if verification_source == "mixed"
+                        else "(agent-observed)"
+                    )
+                    if verification_pass
                     else "- Verification: Missing, deferred, failed, or stale"
                 ),
                 (
