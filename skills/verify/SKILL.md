@@ -7,6 +7,9 @@ description: >
 
 # Skill: verify
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Invoke:
 
 ```text
@@ -45,12 +48,17 @@ Invoke:
 7. Use a fresh reviewer only for high-risk features, material architecture deviations, repeated
    failures, or explicit developer request. Keep one review/correction pass. Do not run a
    multi-agent review chain.
-8. Run `scripts/validate_progressive_docs.py docs/features/<slug>` for progressive packages.
+8. Run the progressive validator for progressive packages:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
+
    Record one `_kapelle/verification.json` with the deterministic writer, passing every affected
    implementation/test/config/migration file through `--implementation-file`:
 
 ```text
-scripts/record_verification.py docs/features/<slug> \
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/record_verification.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" \
   --status PASS \
   --evidence-source agent-observed|developer-attested|mixed \
   --category <covered-category> \
@@ -65,7 +73,7 @@ scripts/record_verification.py docs/features/<slug> \
    For an independent structural check, run:
 
 ```text
-scripts/validate_json.py docs/features/<slug>/_kapelle/verification.json dispatcher/verification.schema.json
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/verification.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/verification.schema.json"
 ```
 
    Do not create per-task validation JSON, separate unit-test-run state, diagrams, release notes, or
@@ -80,7 +88,7 @@ current PASS verification—agent-observed, developer-attested, or mixed—and e
 confirmation, then run:
 
 ```text
-scripts/review_gate.py approve docs/features/<slug> final \
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" final \
   --confirmation "Developer explicitly approved the verified feature."
 ```
 

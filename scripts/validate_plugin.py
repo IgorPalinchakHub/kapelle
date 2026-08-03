@@ -114,6 +114,7 @@ for rel in [
     'references/change-lifecycle.md',
     'references/developer-questions.md',
     'references/json-schema-validation.md',
+    'references/script-execution.md',
     'scripts/artifact_fingerprint.py',
     'scripts/jsonschema_lite.py',
     'scripts/validate_json.py',
@@ -202,6 +203,7 @@ for instance_name, schema_name in [
 
 skills = sorted((ROOT / 'skills').glob('*/SKILL.md'))
 check(bool(skills), 'no Claude skills found')
+script_skills: list[Path] = []
 for skill in skills:
     txt = skill.read_text()
     name = skill.parent.name
@@ -215,6 +217,37 @@ for skill in skills:
         f'{skill}: missing handoff wording',
     )
     check(not re.search(r'^agents:', txt, re.M), f'{skill}: unsupported agents frontmatter')
+    if re.search(r'\$\{CLAUDE_PLUGIN_ROOT\}/scripts/[A-Za-z0-9_.-]+\.py', txt):
+        script_skills.append(skill)
+        check(
+            'script-execution.md' in txt,
+            f'{skill}: bundled helpers must reference the canonical execution contract',
+        )
+        check(
+            'python3 "${CLAUDE_PLUGIN_ROOT}/scripts/' in txt,
+            f'{skill}: bundled helpers must use a direct python3 invocation',
+        )
+
+check(bool(script_skills), 'skills: no canonical bundled-script invocations found')
+script_execution = (ROOT / 'references/script-execution.md').read_text()
+for required in [
+    'python3 "${CLAUDE_PLUGIN_ROOT}/scripts/<script>.py"',
+    '`Bash(python3:*)`',
+    'Never prefix a helper with `cd`',
+    'environment-variable assignment',
+    '`;`, `&&`, `||`, or a pipe',
+]:
+    check(required in script_execution,
+          f'script execution: missing command-shape guard {required!r}')
+for forbidden in [
+    r'(?m)^\s*cd\s+',
+    r'(?m)^\s*[A-Z][A-Z0-9_]*=.*scripts/',
+]:
+    for skill in script_skills:
+        check(
+            not re.search(forbidden, skill.read_text()),
+            f'{skill}: compound bundled-script setup is forbidden',
+        )
 
 agent_names = {p.stem for p in (ROOT / 'agents').glob('*.md')}
 orchestration_text = '\n'.join(
@@ -661,10 +694,13 @@ for required in [
     'production-shaped',
     'default business-analyst/critic/devil',
     '_kapelle/architecture-guidance/design.json',
-    'review_gate.py approve',
     'pure gate action',
 ]:
     check(required in start_skill, f'start: missing lightweight-planning guard {required!r}')
+check(
+    'review_gate.py approve' in start_skill or 'review_gate.py" approve' in start_skill,
+    "start: missing lightweight-planning guard 'review_gate.py approve'",
+)
 
 for rel in [
     'skills/start/SKILL.md',

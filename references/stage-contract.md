@@ -28,7 +28,7 @@ phase evidence. An unmarked feature is routed to `migrate`, never to a second st
 checkbox/status changes use structural fingerprints so progress does not invalidate an approved
 plan. Amendments use revision fingerprints and the dependency graph.
 
-Review gates are written only by `scripts/review_gate.py`. It derives the exact canonical filename
+Review gates are written only by the bundled `review_gate.py`. It derives the exact canonical filename
 and artifact set from `dispatcher/artifact-dependencies.json`, writes the strict
 `review-gate.schema.json` shape with full SHA-256 values, and refreshes generated status. Stages
 must check the required gate through this helper and must never accept aliases or narrative gate

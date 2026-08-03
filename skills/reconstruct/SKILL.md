@@ -9,6 +9,9 @@ description: >
 
 # Skill: reconstruct
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Document an existing feature from current code without changing production behavior.
 
 ## Commands
@@ -57,8 +60,11 @@ generates the next phase in the same invocation.
    stable `RC-NNN` id and cite exact repository-relative source lines where evidence exists.
 8. Write only under `docs/features/<slug>/`. Never edit implementation, tests, configuration, or
    migrations; never run development validation commands; never perform git operations.
-9. Rebuild `STATUS.md` with `scripts/build_feature_status.py docs/features/<slug>` after every
-   phase or approval.
+9. Rebuild `STATUS.md` after every phase or approval:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
 
 ## Initial scope phase
 
@@ -70,8 +76,14 @@ generates the next phase in the same invocation.
    - `_context/evidence-index.md` with the claim/source index;
    - `_kapelle/workflow.json` conforming to `workflow-state.schema.json`;
    - `_kapelle/reconstruction.json` conforming to `reconstruction.schema.json`.
-4. Validate both JSON artifacts with `scripts/validate_json.py` and their named schemas. A
-   non-zero exit blocks the stage; do not compare the artifact and schema by eye.
+4. Validate both JSON artifacts with separate direct commands and their named schemas:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/workflow.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/workflow-state.schema.json"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/reconstruction.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/reconstruction.schema.json"
+```
+
+   A non-zero exit blocks the stage; do not compare the artifact and schema by eye.
 5. Stop for scope review. Handoff to `/kapelle:reconstruct <slug> --approve`.
 
 ## Approval mode
@@ -79,9 +91,14 @@ generates the next phase in the same invocation.
 1. Read `_kapelle/state.json` and approve only its current reconstruction gate:
    `reconstruction-scope`, `reconstruction-spec`, `reconstruction-design`, or `reconstruction`.
 2. Require explicit confirmation in this invocation.
-3. Run `scripts/review_gate.py approve docs/features/<slug> <gate> --confirmation "<explicit
-   developer confirmation>"`. The helper derives the canonical filename and exact artifact set,
-   writes the strict gate schema, and refreshes status. Never construct approval JSON manually.
+3. Run:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" <gate> --confirmation "<explicit developer confirmation>"
+```
+
+   The helper derives the canonical filename and exact artifact set, writes the strict gate schema,
+   and refreshes status. Never construct approval JSON manually.
 4. Refuse final approval when reconstruction review is missing, stale, or `BLOCKED`.
 5. Rebuild status and hand off to the next reconstruction command. Never hand off to development.
 
@@ -113,10 +130,15 @@ generates the next phase in the same invocation.
    Rule, and Deviation statements.
 5. Write at least one independently useful `design/*.md` detail document. Add `contracts/*.md` only
    for interfaces that benefit from separate review.
-6. Run `scripts/validate_design.py docs/features/<slug>/design.md`, validate
-   `_kapelle/surface-plan.json` with `scripts/validate_json.py`, and validate every persisted
-   `_kapelle/architecture-guidance/*.json` against `architecture-guidance.schema.json`. Stop on
-   any non-zero exit; otherwise hand off to `/kapelle:reconstruct <slug> --approve`.
+6. Run each applicable validator as a separate direct command:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_design.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/design.md"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/surface-plan.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/surface-plan.schema.json"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-guidance-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/architecture-guidance.schema.json"
+```
+
+   Stop on any non-zero exit; otherwise hand off to `/kapelle:reconstruct <slug> --approve`.
 
 ## Evidence review phase (`--review`)
 
@@ -129,8 +151,13 @@ generates the next phase in the same invocation.
    architecture deviations are explicit.
 4. Write `_kapelle/reconstruction-coverage.json` conforming to
    `reconstruction-coverage.schema.json`. Fingerprint every cited source and generated artifact.
-   Run `scripts/validate_json.py docs/features/<slug>/_kapelle/reconstruction-coverage.json
-   dispatcher/reconstruction-coverage.schema.json`; a non-zero exit blocks review.
+   Run:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/reconstruction-coverage.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/reconstruction-coverage.schema.json"
+```
+
+   A non-zero exit blocks review.
 5. Use:
    - `PASS` when there are no material gaps;
    - `PASS-WITH-GAPS` when gaps are explicit and the package remains useful;

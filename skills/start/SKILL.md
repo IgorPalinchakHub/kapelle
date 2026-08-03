@@ -20,6 +20,8 @@ asking a question and [`../../references/architecture-guidance.md`](../../refere
 before recording project rules. Follow
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) for the
 durable specification, system-design, use-case, and domain-model format.
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
 
 ## Draft or revise
 
@@ -45,7 +47,7 @@ durable specification, system-design, use-case, and domain-model format.
    `_kapelle/architecture-guidance/design.json` and validate it:
 
 ```text
-scripts/validate_json.py docs/features/<slug>/_kapelle/architecture-guidance/design.json dispatcher/architecture-guidance.schema.json
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/architecture-guidance/design.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/architecture-guidance.schema.json"
 ```
 
 5. Create the minimum progressive human package:
@@ -71,7 +73,7 @@ scripts/validate_json.py docs/features/<slug>/_kapelle/architecture-guidance/des
    120 for `tasks.md` as soft ceilings. Validate the package:
 
 ```text
-scripts/validate_progressive_docs.py docs/features/<slug>
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
 
    A non-zero result blocks approval. This validation checks structure, not semantic correctness.
@@ -97,9 +99,12 @@ scripts/validate_progressive_docs.py docs/features/<slug>
 ```
 
    Preserve `created_from: legacy-migration` when revising a migrated feature.
-   Validate it with `workflow-state.schema.json`, then rebuild generated state with
-   `scripts/build_feature_status.py docs/features/<slug>` and
-   `scripts/validate_feature_state.py docs/features/<slug>`.
+   Validate it with `workflow-state.schema.json`, then run these as separate commands:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
 11. On revision, correct the high-level map or active slice without detailing candidate use cases.
     Any plan, verification, or final approval whose fingerprints no longer match becomes stale
     automatically. Do not promote candidate capabilities into committed behavior until the
@@ -112,7 +117,7 @@ human package. Run `validate_progressive_docs.py`, validate architecture guidanc
 documents, then run:
 
 ```text
-scripts/review_gate.py approve docs/features/<slug> plan \
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" plan \
   --confirmation "Developer explicitly approved the current vertical slice."
 ```
 

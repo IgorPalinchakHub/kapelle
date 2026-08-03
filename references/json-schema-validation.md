@@ -1,16 +1,17 @@
 # Deterministic JSON artifact validation
 
 Kapelle never asks an LLM to decide whether a machine artifact conforms to JSON Schema.
+Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 ## Structural validation
 
 Run:
 
 ```text
-scripts/validate_json.py <artifact.json> dispatcher/<artifact>.schema.json
-scripts/validate_json.py <task-run.json> dispatcher/<component>.schema.json --pointer /<component>
-scripts/validate_json.py <events.jsonl> dispatcher/execution-telemetry.schema.json --jsonl
-scripts/validate_json.py ignored dispatcher/<artifact>.schema.json --schema-only
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-artifact-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<artifact>.schema.json"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-task-run-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<component>.schema.json" --pointer /<component>
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-events-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/execution-telemetry.schema.json" --jsonl
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" ignored "${CLAUDE_PLUGIN_ROOT}/dispatcher/<artifact>.schema.json" --schema-only
 ```
 
 The bundled validator implements exactly the JSON Schema subset used by Kapelle. It audits every
@@ -34,5 +35,5 @@ Machine artifacts may be used for routing or stage completion only after both la
 
 JSON Schema is the single source of truth for structure. Python stage validators must call the
 shared engine and contain only cross-file, graph, filesystem, freshness, or readiness semantics.
-`scripts/validate_plugin.py` audits every dispatcher schema so schema-language drift fails plugin
+`validate_plugin.py` audits every dispatcher schema so schema-language drift fails plugin
 validation immediately.

@@ -115,6 +115,18 @@ operations.
 use-case/domain/contract detail to review, and one next command. If `_kapelle/` is gone, state is
 rebuilt without fabricating approvals or PASS evidence.
 
+## Claude Code helper permissions
+
+Kapelle invokes every bundled validator as one direct command:
+
+```text
+python3 "<absolute-kapelle-plugin-path>/scripts/<validator>.py" "<absolute-project-path>/docs/features/<slug>"
+```
+
+It does not prepend `cd`, create a `K=...` variable, or join helpers with shell operators. This
+keeps commands compatible with a narrow Claude Code permission such as `Bash(python3:*)`. Kapelle
+does not install a broad auto-allow hook.
+
 ## Old feature directories
 
 ```text

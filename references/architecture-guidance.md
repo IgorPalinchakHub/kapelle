@@ -3,6 +3,7 @@
 Kapelle expects project-native architecture guidance for the scoped part of a feature. Prefer the
 project's dedicated architecture-rules subagent when available; project skills and instructions may
 help locate it. The subagent name and rule provider are project-defined.
+Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 ## Discovery
 
@@ -20,9 +21,14 @@ help locate it. The subagent name and rule provider are project-defined.
    design-changing gaps rather than an exhaustive catalogue. A high-level feature map may name
    likely future boundaries, but their rules remain directional and cannot authorize code until
    the boundary is promoted and falls inside refreshed guidance.
-6. Persist the result at the stage-defined path and run `scripts/validate_json.py <result-path>
-   dispatcher/architecture-guidance.schema.json`. A non-zero exit blocks the stage; schema
-   validation is never delegated to visual LLM inspection.
+6. Persist the result at the stage-defined path and run:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-result-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/architecture-guidance.schema.json"
+```
+
+   A non-zero exit blocks the stage; schema validation is never delegated to visual LLM
+   inspection.
 
 Do not maintain a Kapelle mapping from aspect, label, module, or rule code to an agent. Do not require
 a specific agent name or provider.

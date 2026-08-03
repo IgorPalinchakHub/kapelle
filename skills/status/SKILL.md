@@ -7,6 +7,9 @@ description: >
 
 # Skill: status
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Invoke:
 
 ```text
@@ -23,8 +26,8 @@ Invoke:
    or invalid, run:
 
 ```text
-scripts/rebuild_feature_state.py docs/features/<slug>
-scripts/validate_feature_state.py docs/features/<slug>
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/rebuild_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
 
    Recovery may infer checked work as `implemented-unverified`; it never fabricates approvals,

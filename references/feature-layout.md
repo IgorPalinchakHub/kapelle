@@ -1,6 +1,7 @@
 # Feature layout contract
 
 Kapelle layout version 2 separates durable human documentation from derived execution state.
+Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 ## Human-readable durable state
 
@@ -107,12 +108,12 @@ under a legacy path.
 
 Unmarked or `human-controlled-v1` feature directories are never silently routed through old
 stages. First use
-`/kapelle:migrate <slug>` or `scripts/migrate_workflow.py`. Physical layout-v1 directories may
+`/kapelle:migrate <slug>` or the bundled `migrate_workflow.py`. Physical layout-v1 directories may
 also require:
 
 ```text
-scripts/migrate_feature_layout.py <feature-dir> --dry-run
-scripts/migrate_feature_layout.py <feature-dir> --apply
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "<absolute-feature-dir>" --dry-run
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "<absolute-feature-dir>" --apply
 ```
 
 Migration parses and semantically validates legacy coordination and change state before writing,

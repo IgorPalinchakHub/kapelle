@@ -6,6 +6,9 @@ description: >
 
 # Skill: contracts
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Follow [`../../references/utility-contract.md`](../../references/utility-contract.md).
 Use the trigger and boundary rules in
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md).
@@ -31,10 +34,14 @@ Use the trigger and boundary rules in
    `/kapelle:implement`; this utility documents the boundary.
 7. Check the contract against `spec.md`, the shared data model, runtime flows, and named
    provider/consumer boundaries. Report unknown consumers instead of inventing them.
-8. Validate a progressive package with
-   `scripts/validate_progressive_docs.py docs/features/<slug>`.
-9. Rebuild generated status with `scripts/build_feature_status.py docs/features/<slug>` and validate
-   it with `scripts/validate_feature_state.py docs/features/<slug>`.
+8. Validate the package, rebuild status, and validate state as three separate commands:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
+
 10. A changed contract or design requires `/kapelle:start <slug> --approve`; otherwise return to
    `/kapelle:status <slug>`.
 

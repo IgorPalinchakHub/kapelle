@@ -7,6 +7,9 @@ description: >
 
 # Skill: data-model
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Document data/schema impact or an explicit no-schema-change result, plus domain ownership and
 behavior when the domain-model trigger applies. This is an optional planning utility, not a
 backbone stage and not a migration executor.
@@ -37,10 +40,14 @@ backbone stage and not a migration executor.
    template. Describe behavior and ownership, not only fields. Record an explicit no-schema-change
    result when applicable. Do not create migrations or production code; `/kapelle:implement` owns
    those changes.
-7. Validate a progressive package with
-   `scripts/validate_progressive_docs.py docs/features/<slug>`.
-8. Rebuild generated status with `scripts/build_feature_status.py docs/features/<slug>` and validate
-   it with `scripts/validate_feature_state.py docs/features/<slug>`.
+7. Validate the package, rebuild status, and validate state as three separate commands:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
+
 9. End with the standard handoff. A changed design requires `/kapelle:start <slug> --approve`;
    otherwise return to `/kapelle:status <slug>`.
 

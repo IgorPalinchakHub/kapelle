@@ -7,6 +7,9 @@ description: >
 
 # Skill: migrate
 
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
+
 Invoke:
 
 ```text
@@ -19,7 +22,7 @@ Invoke:
 1. Dry-run first:
 
 ```text
-scripts/migrate_workflow.py docs/features/<slug>
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_workflow.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
 
    Report preserved documents, missing `spec.md`/`design.md`/`tasks.md`, evidence that cannot be
@@ -29,7 +32,7 @@ scripts/migrate_workflow.py docs/features/<slug>
 3. On explicit `--apply`, run:
 
 ```text
-scripts/migrate_workflow.py docs/features/<slug> --apply
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_workflow.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" --apply
 ```
 
    This adds the marker, writes workflow version 2, and rebuilds status. It preserves existing

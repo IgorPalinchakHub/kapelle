@@ -2,6 +2,7 @@
 
 Use `/kapelle:amend <slug> "<feedback>"` for requirement, architecture, contract, implementation,
 test, or documentation changes discovered after planning begins.
+Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 ## Protocol
 
@@ -42,9 +43,14 @@ keep | revalidate | rework | supersede | revert-required
 8. Update canonical human documents in place. Keep history internal.
 9. Recompute approvals/evidence only from actual current results. Never fabricate lost evidence or
    automatically revert code.
-10. Before any record affects routing, validate it with `scripts/validate_json.py` and its exact
-    dispatcher schema: `change-request`, `change-state`, `change-revision`, `artifact-state`, or
-    `reconciliation`. Structural validity does not imply route approval; semantic freshness,
-    fingerprints, and explicit human approval remain separate gates.
+10. Before any record affects routing, validate it with:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-record-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<schema>.schema.json"
+```
+
+    Use its exact dispatcher schema: `change-request`, `change-state`, `change-revision`,
+    `artifact-state`, or `reconciliation`. Structural validity does not imply route approval;
+    semantic freshness, fingerprints, and explicit human approval remain separate gates.
 
 Kapelle performs no git operations. Rejection or unexplained drift leaves the amendment blocked.

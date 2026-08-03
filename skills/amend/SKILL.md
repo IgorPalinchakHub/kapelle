@@ -11,6 +11,8 @@ Read [`../../references/developer-questions.md`](../../references/developer-ques
 asking for input and
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) before
 promoting or detailing a use case.
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
 
 Invoke:
 
@@ -39,9 +41,13 @@ Invoke:
    `plan`, verification, and final approvals stale; do not build a separate revision graph.
 6. Use immutable `_kapelle/changes/` history only when the amendment follows PASS verification,
    changes authorization/money/destructive data/public contracts/migrations, or the developer asks
-   for an audit trail. When used, validate every machine record with `scripts/validate_json.py`
-   against the applicable `change-request`, `change-revision`, `change-state`, `artifact-state`,
-   and `reconciliation` schema before it affects routing.
+   for an audit trail. When used, validate every machine record against the applicable
+   `change-request`, `change-revision`, `change-state`, `artifact-state`, or `reconciliation`
+   schema before it affects routing:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-record-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<schema>.schema.json"
+```
 7. Refresh architecture guidance only when affected modules, entrypoints, paths, or architectural
    decisions changed. Reuse it for implementation-only corrections.
 8. Use at most one bounded read-only subagent burst when a promoted slice crosses unfamiliar
@@ -49,9 +55,13 @@ Invoke:
    risk or a material contradiction. The main agent integrates and writes the documents.
 9. Preserve already correct implementation. Add or reopen only the smallest workstream needed. Do
    not restart the feature, rewrite the base slice, or regenerate unrelated documents.
-10. Validate the progressive package with
-    `scripts/validate_progressive_docs.py docs/features/<slug>`. Documentation-only corrections
-    that do not change plan meaning may return directly to status.
+10. Validate the progressive package:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
+
+    Documentation-only corrections that do not change plan meaning may return directly to status.
     Implementation defects return to `/kapelle:implement`. Behavior/design changes require:
 
 ```text

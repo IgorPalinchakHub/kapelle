@@ -84,6 +84,9 @@ created just in time when their documented trigger applies. A simple slice stays
   approval until they pass or the developer explicitly confirms complete external verification.
 - Developer questions describe the intended behavior and concrete options with trade-offs. They do
   not expose task, blocker, DoD, gate, or artifact identifiers.
+- In Claude Code, bundled validators run as one direct `python3` command using the plugin and
+  project root substitutions. Kapelle does not prepend `cd`, assign a temporary path variable, or
+  combine helper calls, so a narrow `Bash(python3:*)` permission can match them.
 - Kapelle never runs git mutations.
 
 ## Project capabilities

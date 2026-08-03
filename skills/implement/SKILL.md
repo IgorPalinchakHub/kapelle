@@ -9,6 +9,8 @@ description: >
 
 Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
 asking for input. The project architecture-rules subagent result is cached by `start`.
+Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
+bundled Python helper.
 
 Invoke:
 
@@ -22,7 +24,7 @@ Invoke:
    `_kapelle/architecture-guidance/design.json`, and a current `plan` approval. Check the gate with:
 
 ```text
-scripts/review_gate.py check docs/features/<slug> plan
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" check "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" plan
 ```
 
    Refuse code-writing on failure. A recovered feature returns to `/kapelle:start <slug>` to rebuild
