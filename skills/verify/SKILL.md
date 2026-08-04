@@ -8,7 +8,7 @@ description: >
 # Skill: verify
 
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
-bundled Python helper.
+bundled Python helper and shell inspection command.
 
 Invoke:
 

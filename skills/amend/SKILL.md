@@ -12,7 +12,7 @@ asking for input and
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) before
 promoting or detailing a use case.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
-bundled Python helper.
+bundled Python helper and shell inspection command.
 
 Invoke:
 

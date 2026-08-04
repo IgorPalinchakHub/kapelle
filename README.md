@@ -87,6 +87,10 @@ created just in time when their documented trigger applies. A simple slice stays
 - In Claude Code, bundled validators run as one direct `python3` command using the plugin and
   project root substitutions. Kapelle does not prepend `cd`, assign a temporary path variable, or
   combine helper calls, so a narrow `Bash(python3:*)` permission can match them.
+- Project-native read-only CLIs use the same direct-command shape and consume the tool result
+  without scratchpad redirection, so narrow project command permissions can match them.
+- File inspection uses native file tools or one direct command with the tool working directory;
+  Kapelle does not emit `cd` plus shell loops or inspect other branches with Git.
 - Kapelle never runs git mutations.
 
 ## Project capabilities

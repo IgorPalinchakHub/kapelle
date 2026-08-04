@@ -3,7 +3,8 @@
 Kapelle expects project-native architecture guidance for the scoped part of a feature. Prefer the
 project's dedicated architecture-rules subagent when available; project skills and instructions may
 help locate it. The subagent name and rule provider are project-defined.
-Bundled helpers follow [`script-execution.md`](./script-execution.md).
+Bundled helpers and project-native read-only CLI calls follow
+[`script-execution.md`](./script-execution.md).
 
 ## Discovery
 
@@ -17,6 +18,9 @@ Bundled helpers follow [`script-execution.md`](./script-execution.md).
    modules, or framework do not match the current project, discard that source immediately and use
    applicable project-native sources.
 5. The project subagent may use native rules, files, MCP, CLI, APIs, or other project capabilities.
+   Every allowlisted read-only CLI call is one direct tool call: consume the tool result and never
+   add `cd`, redirection, a scratchpad, exit-code `echo`, shell operators, background execution, or
+   a polling loop.
    Run it once for the current vertical slice and request only binding rules, collisions, and
    design-changing gaps rather than an exhaustive catalogue. A high-level feature map may name
    likely future boundaries, but their rules remain directional and cannot authorize code until

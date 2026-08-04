@@ -21,7 +21,7 @@ before recording project rules. Follow
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) for the
 durable specification, system-design, use-case, and domain-model format.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
-bundled Python helper.
+bundled Python helper and shell inspection command.
 
 ## Draft or revise
 
@@ -41,6 +41,9 @@ bundled Python helper.
    State the intended change and real options with trade-offs. Do not mention internal artifact,
    gate, task, blocker, or acceptance-criterion identifiers.
 4. Discover relevant project skills, instructions, and the project architecture-rules capability.
+   When dispatching that capability, require direct CLI invocations and consume their tool results;
+   do not allow compound shell wrappers, scratchpad redirection, background execution, or shell
+   polling.
    The binding guidance scope must cover the first slice; broader candidate boundaries in the
    high-level design remain directional until a later amendment refreshes their rules. Persist the
    current result in

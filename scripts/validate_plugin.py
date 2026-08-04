@@ -236,6 +236,18 @@ for required in [
     'Never prefix a helper with `cd`',
     'environment-variable assignment',
     '`;`, `&&`, `||`, or a pipe',
+    'Project-native read-only commands',
+    'standard tool result',
+    '`echo $?`',
+    'redirect stdout or stderr to a scratchpad',
+    '`Bash(<project-read-cli> *)`',
+    'Never launch the CLI in the',
+    'follow-up polling command',
+    "provider's native continuation/wait mechanism",
+    'Filesystem and repository inspection',
+    "tool call's working-directory",
+    'Never generate a shell program containing `for`, `while`, `if`',
+    'Kapelle performs no Git operations',
 ]:
     check(required in script_execution,
           f'script execution: missing command-shape guard {required!r}')

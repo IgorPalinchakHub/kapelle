@@ -60,9 +60,13 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
 25. Developer questions are standalone and concise: explain the intended change, why the decision
     matters, and the real options with trade-offs. Never forward raw subagent output or require the
     developer to decode task, blocker, DoD, gate, acceptance-criterion, or artifact identifiers.
-26. Bundled Python helpers run as one plain `python3` command with a normalized absolute plugin
-    script path and project path. Never prefix them with `cd`, environment assignments, subshells,
-    or shell wrappers, and never combine them with `;`, `&&`, `||`, or pipes.
+26. Bundled Python helpers and allowlisted project-native read-only CLIs run as one direct command
+    per tool call. The executable is the first token; consume the tool result directly. Never add
+    `cd`, environment assignments, redirection, scratchpads, exit-code `echo`, subshells, shell
+    wrappers, `;`, `&&`, `||`, pipes, background execution, or shell polling loops.
+27. Shell inspection uses the tool's working directory and one native command, never `cd` plus a
+    `for`/`while`/`if` shell program. Prefer Read, Glob, and Search for current-worktree evidence.
+    Kapelle does not inspect branches, commits, or repository objects with Git.
 
 ## Handoff
 

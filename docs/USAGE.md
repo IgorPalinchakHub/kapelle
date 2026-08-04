@@ -115,7 +115,7 @@ operations.
 use-case/domain/contract detail to review, and one next command. If `_kapelle/` is gone, state is
 rebuilt without fabricating approvals or PASS evidence.
 
-## Claude Code helper permissions
+## Claude Code command permissions
 
 Kapelle invokes every bundled validator as one direct command:
 
@@ -126,6 +126,17 @@ python3 "<absolute-kapelle-plugin-path>/scripts/<validator>.py" "<absolute-proje
 It does not prepend `cd`, create a `K=...` variable, or join helpers with shell operators. This
 keeps commands compatible with a narrow Claude Code permission such as `Bash(python3:*)`. Kapelle
 does not install a broad auto-allow hook.
+
+The same rule applies to project-native read-only CLIs. For example, an architecture-rules
+subagent runs its project-defined search command directly and reads the Bash tool result. It does not
+change directory, redirect to a scratchpad, or append `echo $?`. A project permission such as
+`Bash(<project-read-cli> *)` can therefore match the command without a broad PreToolUse hook.
+The call is synchronous; Kapelle does not launch it in the background or generate `while`/`sleep`
+loops that poll a temporary file.
+
+Other inspection follows the same shape. Kapelle uses the tool working directory instead of `cd`
+and does not generate `for`/`if` shell programs to inspect lists of files. It reads the current
+worktree through native file tools and does not inspect other branches with Git.
 
 ## Old feature directories
 
