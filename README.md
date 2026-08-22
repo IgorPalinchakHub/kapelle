@@ -143,6 +143,9 @@ release.
 
 ## Documentation
 
+- [Kapelle + Claude Code process diagram (draw.io, 10 pages)](docs/KAPELLE_CLAUDE_CODE_FLOW.drawio) —
+  high-level flow, one page per backbone stage, artifacts and deterministic scripts, component
+  responsibility map, native-harness/stage matrix, reconstruction, and off-backbone routes
 - [Quick start (Ukrainian)](docs/QUICK_START_UK.md)
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
 - [Usage and migration](docs/USAGE.md)

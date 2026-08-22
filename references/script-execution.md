@@ -47,15 +47,16 @@ shapes and would have to parse arbitrary shell syntax safely.
 
 ## Filesystem and repository inspection
 
-Apply the direct-command rule to every shell inspection. Use the tool call's working-directory
-field instead of shell `cd`. Prefer native Read, Glob, and Search capabilities for the current
-worktree.
+Apply the direct-command rule to every shell inspection. Start the provider session at the project
+root and use absolute paths; when the provider exposes a working-directory field, use it instead of
+shell `cd`. Prefer native Read, Glob, and Search capabilities for the current worktree.
 
 Never generate a shell program containing `for`, `while`, `if`, arithmetic expansion, or repeated
 commands merely to inspect several paths. Use one native bulk command when the project explicitly
 provides one, or make separate bounded tool calls.
 
 Kapelle performs no Git operations. Do not inspect branches, commits, or repository objects with
-`git cat-file`, `git show`, `git ls-tree`, or similar commands during a Kapelle stage. If the
-developer explicitly requests a branch comparison outside the Kapelle workflow, treat it as a
-separate developer operation rather than stage evidence.
+`git cat-file`, `git show`, `git ls-tree`, or similar commands during a Kapelle stage. This includes
+Git hidden behind `rtk proxy`, another CLI, a shell, or a subagent. Do not count commits per file to
+infer feature scope. If the developer explicitly requests a branch comparison outside the Kapelle
+workflow, treat it as a separate developer operation rather than stage evidence.

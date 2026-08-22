@@ -229,6 +229,20 @@ for skill in skills:
         )
 
 check(bool(script_skills), 'skills: no canonical bundled-script invocations found')
+for backbone_name in ['start', 'implement', 'amend', 'verify']:
+    backbone_text = (ROOT / 'skills' / backbone_name / 'SKILL.md').read_text()
+    for required in [
+        '## Mandatory command shape',
+        'one direct executable invocation',
+        'Never add `cd`, shell operators, redirection',
+        'Never append `echo`, `wc`',
+        'Never run Git, including through `rtk proxy`',
+        'Read/Glob/Search on the current worktree',
+    ]:
+        check(
+            required in backbone_text,
+            f'skills/{backbone_name}: mandatory command guard missing {required!r}',
+        )
 script_execution = (ROOT / 'references/script-execution.md').read_text()
 for required in [
     'python3 "${CLAUDE_PLUGIN_ROOT}/scripts/<script>.py"',
@@ -245,9 +259,11 @@ for required in [
     'follow-up polling command',
     "provider's native continuation/wait mechanism",
     'Filesystem and repository inspection',
-    "tool call's working-directory",
+    'Start the provider session at the project',
     'Never generate a shell program containing `for`, `while`, `if`',
     'Kapelle performs no Git operations',
+    'Git hidden behind `rtk proxy`',
+    'Do not count commits per file',
 ]:
     check(required in script_execution,
           f'script execution: missing command-shape guard {required!r}')

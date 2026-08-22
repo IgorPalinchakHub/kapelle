@@ -14,6 +14,16 @@ promoting or detailing a use case.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
 bundled Python helper and shell inspection command.
 
+## Mandatory command shape
+
+- One Kapelle helper or inspection tool call is one direct executable invocation.
+- Use absolute paths from the project-root session. Never add `cd`, shell operators, redirection,
+  substitutions, loops, conditionals, background execution, polling, or scratchpads.
+- Read stdout, stderr, and exit status from the tool result. Never append `echo`, `wc`, or another
+  diagnostic command.
+- Never run Git, including through `rtk proxy`, another wrapper, or a subagent. Use native
+  Read/Glob/Search on the current worktree.
+
 Invoke:
 
 ```text

@@ -136,7 +136,8 @@ loops that poll a temporary file.
 
 Other inspection follows the same shape. Kapelle uses the tool working directory instead of `cd`
 and does not generate `for`/`if` shell programs to inspect lists of files. It reads the current
-worktree through native file tools and does not inspect other branches with Git.
+worktree through native file tools and does not inspect other branches with Git, including Git
+hidden behind a wrapper such as `rtk proxy`.
 
 ## Old feature directories
 

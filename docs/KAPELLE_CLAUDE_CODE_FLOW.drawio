@@ -1,0 +1,1508 @@
+<mxfile host="drawio-plugin" modified="2026-08-22T17:38:47.181Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36" compressed="false" version="22.1.22" etag="nm33xZH2ncJc_SrVm8dZ" type="embed" pages="7">
+<diagram id="overview" name="01 — High-level flow">
+    <mxGraphModel dx="1113" dy="638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Kapelle 0.19.6 + Claude Code — lightweight SDLC overview" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#172B4D;" parent="1" vertex="1">
+          <mxGeometry x="40" y="20" width="1300" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="One approved vertical slice at a time. Main agent is the default coordinator, planner, implementer, and first reviewer. Kapelle performs no Git operations." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontColor=#5E6C84;" parent="1" vertex="1">
+          <mxGeometry x="40" y="62" width="1400" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="devLane" value="Developer" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;fontSize=15;" parent="1" vertex="1">
+          <mxGeometry x="40" y="110" width="1520" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="nativeLane" value="Claude Code native harness" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;fontSize=15;" parent="1" vertex="1">
+          <mxGeometry x="40" y="230" width="1520" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="pluginLane" value="Kapelle plugin" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F3E5F5;strokeColor=#9673A6;fontStyle=1;fontSize=15;" parent="1" vertex="1">
+          <mxGeometry x="40" y="380" width="1520" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="projectLane" value="Project-native layer" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#E2F0D9;strokeColor=#82B366;fontStyle=1;fontSize=15;" parent="1" vertex="1">
+          <mxGeometry x="40" y="600" width="1520" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Raw feature task" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="145" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="Approve current slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="430" y="145" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="Choose next requirement or close scope" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="920" y="132" width="210" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" value="Final approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1320" y="145" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="Skill invocation + main agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="95" y="275" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="Read / Glob / Search (current worktree)&#xa;Bash: one direct python3 helper per call&#xa;Edit / Write only in implement and verify" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="340" y="275" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="Optional Task subagents&#xa;uncertainty / risk only" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="585" y="275" width="190" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="Optional Agent Team&#xa;safe parallel implementation only" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="830" y="275" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="Permission prompt = the ask | allow | skip boundary&#xa;One standalone developer question; silence is never approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="1105" y="275" width="210" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="Native project skills, agents, rules, plugins, MCP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="1370" y="275" width="150" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="k1" value="START&#xa;High-level feature map + system map&#xa;1 walking skeleton&#xa;writes spec.md • design.md • tasks.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="95" y="430" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k2" value="Deterministic plan gate&#xa;review_gate.py approve … plan&#xa;fingerprints current slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
+          <mxGeometry x="365" y="440" width="200" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="k3" value="IMPLEMENT&#xa;Thinnest complete E2E slice&#xa;default checkpoint: workstream&#xa;no unit tests here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="625" y="430" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k4" value="AMEND&#xa;Promote exactly one next capability&#xa;invalidate affected downstream evidence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="900" y="430" width="230" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k5" value="VERIFY&#xa;As-built reconciliation + all unit tests&#xa;one risk-based validation batch&#xa;record_verification.py → PASS | FAILED | deferred" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1180" y="430" width="235" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k6" value="Final gate&#xa;review_gate.py approve … final" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1340" y="540" width="170" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="status" value="STATUS sidecar&#xa;state recovery + exact next route&#xa;written only by deterministic scripts" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;" parent="1" vertex="1">
+          <mxGeometry x="680" y="535" width="260" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="Project code / tests / config / migrations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="130" y="650" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value=".claude/skills + .claude/rules + project instructions" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
+          <mxGeometry x="470" y="650" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="Required architecture-rules capability&#xa;binding guidance for current slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="830" y="650" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="Project-native validation commands" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
+          <mxGeometry x="1190" y="650" width="250" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="legend" value="Legend: purple = Kapelle stage • blue = Claude Code native harness • green = project-owned capability/evidence • yellow = developer decision • red = deterministic script/refusal • dashed = conditional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="180" y="790" width="1240" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="Deep dives: 02 start • 03 implement • 04 amend • 05 verify • 06 artifacts &amp; scripts • 07 responsibility map • 08 native-harness matrix • 09 reconstruct • 10 utilities, migrate, deprecated" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#F3E5F5;strokeColor=#9673A6;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="460" y="870" width="680" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d1" target="n1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="n1" target="k1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="k1" target="d2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d2" target="k2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="k2" target="k3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="k3" target="d3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="next slice" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d3" target="k4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="re-approve" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="k4" target="d2" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1015" y="400" />
+              <mxPoint x="515" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="scope sufficient" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d3" target="k5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="k5" target="d4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d4" target="k6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="inspect / edit / validate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="n2" target="p1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="semantic discovery" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="n6" target="p2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="required in start" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="k1" target="p3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="risk-based batch" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="k5" target="p4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#9673A6;" parent="1" source="status" target="k1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#9673A6;" parent="1" source="status" target="k3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=0;dashed=1;strokeColor=#9673A6;" parent="1" source="status" target="k5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+              <mxCell id="ovNoGit" value="&lt;b&gt;Two hard boundaries&lt;/b&gt;&lt;br&gt;• One direct executable per tool call — no cd, ; &amp;amp;&amp;amp; || pipes, redirection, background or polling&lt;br&gt;• No Git at all, including behind rtk proxy, a wrapper or a subagent" style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="180" y="940" width="1240" height="70" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="start" name="02 — /kapelle:start : map, design the skeleton, gate it">
+    <mxGraphModel dx="1113" dy="638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="START — map the feature, design one walking skeleton, obtain current-slice approval" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" parent="1" vertex="1">
+          <mxGeometry x="40" y="20" width="1450" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mainLane" value="Main agent (single package author)" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="90" width="1520" height="360" as="geometry" />
+        </mxCell>
+        <mxCell id="optionalLane" value="Conditional native subagents" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F5F5F5;strokeColor=#999999;fontStyle=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="450" width="1520" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="projectLane" value="Project-native capabilities" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#E2F0D9;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="600" width="1520" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="detLane" value="Kapelle deterministic control plane" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FCE8E6;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="750" width="1520" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="s1" value="/kapelle:start slug raw-task" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="90" y="140" width="180" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="s2" value="Load skill + references&#xa;developer questions / progressive artifacts / script execution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="320" y="130" width="240" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="s3" value="Inspect current worktree&#xa;Read • Glob • Search&#xa;direct read-only CLI if native&#xa;absolute paths; no shell loops; no Git" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="610" y="125" width="220" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Ownership / scope unclear or medium-large cross-component?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="880" y="120" width="235" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="s4" value="Integrate evidence into one bounded high-level map" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1190" y="130" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="s5" value="Discover narrow project skills/instructions + architecture-rules capability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="150" y="270" width="260" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="s6" value="Design only first production-shaped E2E walking skeleton" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="500" y="270" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="s7" value="Write minimum durable package&#xa;spec.md (7 headings, 2 markers, ≈250 lines)&#xa;design.md (7 headings, ≈180)&#xa;tasks.md (1 workstream, ≤3 boxes, ≈120)&#xa;optional JIT details only" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="845" y="255" width="245" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="risk" value="Material ambiguity or high risk?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1185" y="260" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="o1" value="One bounded read-only burst ≤3&#xa;1) behavior/ownership&#xa;2) rules&#xa;3) contracts/tests/integrations" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="840" y="490" width="275" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="o2" value="Explorer only if ownership is unclear" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="500" y="500" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="o3" value="One critic pass → one correction max" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="1190" y="500" width="230" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value=".claude/skills • rules • instructions • plugins/MCP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
+          <mxGeometry x="180" y="650" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="Required architecture-rules subagent/capability&#xa;binding scope = current slice only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="650" y="640" width="310" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="_kapelle/architecture-guidance/design.json&#xa;ARCHITECTURE_GUIDANCE_READY&#xa;or Status: REFUSED-missing-project-capability" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
+          <mxGeometry x="1130" y="640" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="validate_json.py&#xa;dispatcher/architecture-guidance.schema.json&#xa;non-zero exit blocks the stage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="100" y="800" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="validate_progressive_docs.py&#xa;markers, headings, order, non-empty sections,&#xa;detail-file shape, size caps&#xa;structure only — not semantic correctness" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="380" y="795" width="260" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="v3" value="workflow.json (v2) → workflow-state.schema.json&#xa;build_feature_status.py&#xa;validate_feature_state.py&#xa;(separate commands, never chained)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="700" y="800" width="270" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="approve" value="Developer explicit approval?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1030" y="790" width="210" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="gate" value="review_gate.py approve … plan&#xa;--confirmation &quot;Developer explicitly approved…&quot;&#xa;pure gate: no inspection, no agents, no edits&#xa;approval JSON is never hand-written" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1300" y="795" width="220" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="candidate" value="Candidate capabilities stay non-binding hypotheses. They are not tasks and do not authorize code until promoted through amend." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="420" y="970" width="760" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s1" target="s2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s2" target="s3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s3" target="d1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d1" target="s4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="d1" target="o1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="o1" target="s4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s4" target="s5" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1315" y="235" />
+              <mxPoint x="280" y="235" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s5" target="p1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s5" target="p2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="p2" target="p3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="p3" target="v1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="v1" target="s6" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s6" target="s7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s7" target="risk" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="risk" target="o3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="no / corrected" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="risk" target="v2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="o3" target="v2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="v2" target="v3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="v3" target="approve" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" value="revise" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="approve" target="s7" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1135" y="730" />
+              <mxPoint x="967" y="730" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" value="approve" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="approve" target="gate" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="unclear ownership" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="d1" target="o2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="o2" target="s4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+              <mxCell id="stShape" value="&lt;b&gt;Mandatory command shape&lt;/b&gt; — python3 &quot;${CLAUDE_PLUGIN_ROOT}/scripts/&lt;i&gt;x&lt;/i&gt;.py&quot; &quot;${CLAUDE_PROJECT_DIR}/&lt;i&gt;path&lt;/i&gt;&quot; … · one command per tool call, so Bash(python3:*) can be granted narrowly · placeholders are substituted by the harness and must never be executed unresolved" style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="40" y="1055" width="1520" height="60" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="implement" name="03 — /kapelle:implement : loops, checkpoints, Agent Teams">
+    <mxGraphModel dx="1113" dy="638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="IMPLEMENT — main-agent loop, conditional subagents, and opt-in Agent Teams" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" parent="1" vertex="1">
+          <mxGeometry x="40" y="20" width="1500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="mainLane" value="Main agent — default owner" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="90" width="1620" height="420" as="geometry" />
+        </mxCell>
+        <mxCell id="agentLane" value="Conditional subagents / Agent Team" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F5F5F5;strokeColor=#999999;fontStyle=1;dashed=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="510" width="1620" height="260" as="geometry" />
+        </mxCell>
+        <mxCell id="controlLane" value="Validation, status, and developer checkpoint" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FCE8E6;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="40" y="770" width="1620" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="i1" value="/kapelle:implement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="90" y="140" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="i2" value="review_gate.py check … plan&#xa;current fingerprints?&#xa;fail ⇒ refuse code-writing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="310" y="130" width="210" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="i3" value="Select unchecked work from approved slice only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="570" y="135" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="i4" value="Discover narrow native skill/instruction once per workstream&#xa;reuse cached architecture guidance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="840" y="125" width="270" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="teamDecision" value="Can/should work run in parallel?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1170" y="120" width="215" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="i5" value="Add focused boundary / characterization test first&#xa;endpoint • command • worker • public use-case method • fragile legacy&#xa;boundary level only — never unit tests here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="1400" y="125" width="220" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="i6" value="Implement thinnest complete production-shaped E2E outcome" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="180" y="285" width="245" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="i7" value="Keep tree loadable&#xa;update readers + migration/compatibility + boundary tests together" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
+          <mxGeometry x="500" y="275" width="270" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="scopeDrift" value="Requirement/design contradiction or scope leaves guidance?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="835" y="270" width="250" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="check" value="Run smallest useful development check&#xa;ask | allow | skip&#xa;prefer syntax/load + smallest affected functional test&#xa;no full static analysis, lint or broad suites unless asked" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1160" y="280" width="235" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="pass" value="Check / inline review acceptable?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1450" y="275" width="180" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="loop" value="Correction loop&#xa;≤2 focused corrections&#xa;global config remains bounded" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1190" y="405" width="220" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="explorer" value="Explorer&#xa;only newly discovered ownership uncertainty" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="110" y="570" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="reviewer" value="Fresh critic/reviewer&#xa;high risk • deviation • repeated failure • explicit request" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+          <mxGeometry x="390" y="560" width="260" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="preconditions" value="Agent Team preconditions&#xa;✓ not first skeleton&#xa;✓ stable approved contracts&#xa;✓ runtime support&#xa;✓ explicit developer approval&#xa;✓ dependency-ready + disjoint ownership" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="730" y="545" width="290" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="team" value="Bounded Agent Team burst ≤3&#xa;example partitions: backend provider / frontend consumer / independent worker" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1090" y="555" width="300" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="integrate" value="Main agent integrates all outputs and owns shared contracts/config" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1440" y="565" width="180" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="mark" value="Mark workstream complete&#xa;≤2 indented lines: Result: and Deferred validation:&#xa;no per-task narratives or agent transcripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
+          <mxGeometry x="150" y="830" width="240" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="status" value="Deterministic status rebuild&#xa;build_feature_status.py&#xa;validate_feature_state.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="475" y="835" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="checkpoint" value="Checkpoint?&#xa;workstream default&#xa;task / none opt-in" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="810" y="820" width="190" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="choice" value="Developer chooses" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1090" y="825" width="180" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="amend" value="AMEND&#xa;next requirement / contradiction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1350" y="805" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="verify" value="VERIFY&#xa;scope sufficient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+          <mxGeometry x="1350" y="905" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="unitNote" value="Unit tests are intentionally absent from implement. They are written together in verify after production behavior is complete." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" parent="1" vertex="1">
+          <mxGeometry x="430" y="1050" width="760" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i1" target="i2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i2" target="i3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i3" target="i4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i4" target="teamDecision" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="sequential/default" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="teamDecision" target="i5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="candidate" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="teamDecision" target="preconditions" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="all true" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="preconditions" target="team" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="team" target="integrate" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="integrate" target="i5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i5" target="i6" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1510" y="240" />
+              <mxPoint x="302" y="240" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i6" target="i7" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="i7" target="scopeDrift" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="yes → stop" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B85450;" parent="1" source="scopeDrift" target="amend" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="scopeDrift" target="check" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="check" target="pass" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B85450;" parent="1" source="pass" target="loop" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="retry" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B85450;" parent="1" source="loop" target="i6" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1300" y="490" />
+              <mxPoint x="302" y="490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e18" value="high risk / repeated failure" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="loop" target="reviewer" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="yes / deferred" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="pass" target="mark" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="mark" target="status" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="status" target="checkpoint" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="checkpoint" target="choice" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="continue approved slice" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="checkpoint" target="i3" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="905" y="740" />
+              <mxPoint x="680" y="740" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" value="evolve" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="choice" target="amend" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="close" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="choice" target="verify" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e26" value="any precondition false" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="preconditions" target="i5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e27" value="ownership uncertainty" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="i4" target="explorer" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e28" value="evidence" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" parent="1" source="explorer" target="i4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+              <mxCell id="implDefer" value="&lt;b&gt;validation-deferred is not PASS&lt;/b&gt;&lt;br&gt;A skipped or cancelled &lt;i&gt;required&lt;/i&gt; check permits continued development of dependency-ready work, blocks /kapelle:verify --approve, and is picked up first by a later &lt;b&gt;/kapelle:implement --validation=allow&lt;/b&gt; run — which executes the outstanding checks without repeating the implementation. Recorded as passed | failed | skipped | cancelled per dispatcher/validation-decision.schema.json." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="40" y="1130" width="1620" height="80" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="amend" name="04 — /kapelle:amend : one requirement, one new slice">
+    <mxGraphModel dx="1600" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="AMEND — promote one requirement, preserve the working base, renew approval" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1450" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="devLane" value="Developer intent" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="1520" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="mainLane" value="Main agent — amendment integration" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="220" width="1520" height="380" as="geometry" />
+        </mxCell>
+        <mxCell id="detailLane" value="Triggered details and optional agents" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F5F5F5;strokeColor=#999999;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="600" width="1520" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="routeLane" value="Deterministic invalidation and route" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FCE8E6;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="770" width="1520" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="a1" value="/kapelle:amend slug feedback or next requirement" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="110" y="130" width="260" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="a2" value="One concise developer decision only if observable behavior changes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="620" y="125" width="320" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="a3" value="Approve revised current slice later via /kapelle:start --approve" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="130" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="Read current spec/design/tasks + implementation + verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="270" width="240" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="kind" value="Classify request" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="400" y="260" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="next" value="Next increment&#xa;promote one candidate capability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="650" y="250" width="220" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="revise" value="Active-slice revision&#xa;update affected sections/work only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="930" y="250" width="220" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="defect" value="Implementation defect&#xa;preserve plan meaning" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="250" width="190" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="doc" value="Documentation-only correction" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="380" width="220" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="Inspect working skeleton in code; update high-level committed/candidate map" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="420" width="280" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="m3" value="Add/reopen one smallest coherent vertical-slice workstream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="520" y="420" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="scope" value="Affected paths/modules/entrypoints or design changed?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="850" y="405" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="guidance" value="Refresh project architecture guidance only on scope drift" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="420" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="details" value="Just-in-time detail triggers&#xa;use-case spec (alternatives/auth/failures)&#xa;domain model (aggregate, lifecycle, invariant, event, ownership)&#xa;contract (public API/command/event) • sequence (3+ components/async) • ADR" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="120" y="645" width="300" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="burst" value="Optional one read-only burst&#xa;unfamiliar backend/frontend/worker/integration boundaries" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="500" y="640" width="300" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="critic" value="Optional one critic correction&#xa;high risk or material contradiction" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="880" y="645" width="270" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="audit" value="Immutable change history only if&#xa;post-PASS / auth / money / destructive data / public contract / migration / explicit audit request" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="630" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="validate" value="validate_progressive_docs.py&#xa;validate_json.py for any audit record:&#xa;change-request • change-revision • change-state&#xa;artifact-state • reconciliation" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="830" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="stale" value="Fingerprint invalidation&#xa;affected plan / verification / final approvals become stale" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="825" width="270" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="route" value="Smallest safe next route" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="770" y="820" width="200" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="Behavior/design changed&#xa;START --approve → IMPLEMENT" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="805" width="230" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="Implementation defect&#xa;IMPLEMENT current workstream" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1040" y="905" width="230" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="Docs only&#xa;STATUS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="855" width="150" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="a1" target="m1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="m1" target="kind">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="next" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kind" target="next">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="revise" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kind" target="revise">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="defect" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kind" target="defect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="docs" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="kind" target="doc">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="next" target="m2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="revise" target="m2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="m2" target="m3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="m3" target="scope">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="scope" target="guidance">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="when triggered" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="m3" target="details">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="guidance" target="validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="scope" target="validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="validate" target="stale">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="stale" target="route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="behavior/design" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="route" target="r1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="defect" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="route" target="r2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" value="docs" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="route" target="r3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="r1" target="a3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" value="direct fix route" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="defect" target="route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e22" value="no plan meaning change" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="doc" target="route">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" value="unfamiliar boundaries" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="m2" target="burst">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e24" value="risk / contradiction" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="m3" target="critic">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e25" value="audit trigger" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="m3" target="audit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+              <mxCell id="amPreserve" value="&lt;b&gt;Preserve the working base.&lt;/b&gt; Add or reopen only the smallest workstream needed — never restart the feature, rewrite the base slice, or regenerate unrelated documents. The remaining candidate map is not detailed, redesigned or decomposed." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="40" y="1005" width="1520" height="60" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="verify" name="05 — /kapelle:verify : converge, test, validate, complete">
+    <mxGraphModel dx="1600" dy="1050" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="VERIFY — reconcile as-built behavior, write all unit tests, run one batch, approve completion" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="devLane" value="Developer" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="1520" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="mainLane" value="Main agent + project-native commands" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="230" width="1520" height="390" as="geometry" />
+        </mxCell>
+        <mxCell id="optionalLane" value="Conditional review" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F5F5F5;strokeColor=#999999;fontStyle=1;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="620" width="1520" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="detLane" value="Kapelle deterministic evidence + gates" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FCE8E6;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="750" width="1520" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Invoke verify = accumulated feature scope is sufficient" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="135" width="270" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="Under ask: run all / selected / accept completed external verification / defer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="620" y="125" width="350" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="Explicit final approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="135" width="200" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="v1" value="Require current plan approval + all approved slices complete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="285" width="250" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="v2" value="Reconcile code ↔ spec/design/details/contracts/ADRs/rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="390" y="285" width="270" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="mismatch" value="Behavior mismatch or still evolving?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="720" y="275" width="220" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="amend" value="Stop → AMEND" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="290" width="170" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="unit" value="Plan and write all unit tests now&#xa;grouped by changed behavior and failure modes&#xa;no tests for trivial accessors just to raise the count" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1230" y="280" width="230" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="batch" value="Build one exact risk-based batch&#xa;functional • unit • integration/contract • static • lint/format • build as applicable" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="440" width="330" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="policy" value="Validation policy" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="570" y="440" width="180" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="observed" value="Agent-observed&#xa;run commands directly" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="830" y="410" width="190" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="attested" value="Developer-attested (--developer-verified)&#xa;no captured output required; wording preserved&#xa;partial coverage leaves the rest deferred" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="830" y="510" width="210" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="deferred" value="Skipped/cancelled required check → validation-deferred" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="450" width="250" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="result" value="Required checks PASS?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1400" y="440" width="150" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="review" value="Fresh reviewer once only if high risk, material deviation, repeated failure, or explicit request" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1">
+          <mxGeometry x="620" y="660" width="360" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="writer" value="record_verification.py&#xa;--status --evidence-source agent-observed|developer-attested|mixed&#xa;--category --check --implementation-file …&#xa;[--developer-confirmation] required for attested/mixed" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="805" width="330" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="schema" value="validate_json.py&#xa;verification.schema.json" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="500" y="815" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="present" value="Present implemented flow, coverage, exact results/source, remaining risks" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="790" y="810" width="270" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="gate" value="review_gate.py approve … final&#xa;pure gate; current PASS required&#xa;else Status: REFUSED-validation-incomplete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1130" y="810" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="done" value="COMPLETED&#xa;No version/release JSON/diagram/git action required" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="805" width="120" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="A developer-attested PASS is accepted for completion but is always visibly labeled; Kapelle never presents it as agent-observed evidence." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" vertex="1" parent="1">
+          <mxGeometry x="450" y="930" width="700" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d1" target="v1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="v1" target="v2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="v2" target="mismatch">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="yes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#B85450;strokeWidth=2;" edge="1" parent="1" source="mismatch" target="amend">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="mismatch" target="unit">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="unit" target="batch">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1345" y="395" />
+              <mxPoint x="325" y="395" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="batch" target="policy">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="allow / run" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="policy" target="observed">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" value="external complete PASS" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="policy" target="attested">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="skip/cancel" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#B85450;" edge="1" parent="1" source="policy" target="deferred">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="observed" target="result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;" edge="1" parent="1" source="attested" target="result">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="no" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeColor=#B85450;" edge="1" parent="1" source="result" target="deferred">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" value="risk / request" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="result" target="review">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="review" target="writer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="writer" target="schema">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="schema" target="present">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="present" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d3" target="gate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="gate" target="done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" value="normal path" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="result" target="writer">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+    <diagram id="p6-artifacts" name="06 — Artifacts, scripts &amp; state">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1250" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ttl" value="06 — Artifacts, deterministic writers and state recovery" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="18" width="1300" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="Human documents are durable state. Everything under _kapelle/ is derived and rebuildable — but evidence is never fabricated during a rebuild." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1">
+          <mxGeometry x="40" y="52" width="1500" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="tree" value="docs/features/&lt;i&gt;&amp;lt;slug&amp;gt;&lt;/i&gt;/" style="swimlane;html=1;startSize=34;fillColor=#FFFDF7;strokeColor=#D79B00;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="95" width="620" height="640" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" value="&lt;b&gt;STATUS.md&lt;/b&gt; — generated human entry point (never hand-edited)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="60" y="140" width="580" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" value="&lt;b&gt;spec.md&lt;/b&gt; — problem/intent · current behaviour · committed behaviour · use-case map · rules &amp; invariants · candidate capabilities · exclusions &amp; open decisions" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="182" width="580" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" value="&lt;b&gt;design.md&lt;/b&gt; — context &amp; constraints · boundaries &amp; responsibilities · end-to-end flow · domain &amp; data · contracts &amp; integrations · decisions/risks/deferrals · current walking skeleton" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="242" width="580" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" value="&lt;b&gt;tasks.md&lt;/b&gt; — implemented base + the ONE active approved slice (nothing else)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="60" y="302" width="580" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="f5" value="&lt;b&gt;specs/&lt;/b&gt;&lt;i&gt;&amp;lt;use-case&amp;gt;&lt;/i&gt;&lt;b&gt;.md&lt;/b&gt; — only when a promoted use case has alternatives, authorization, meaningful failures, subprocess reactions, or too many rules to review inline" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="344" width="580" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="f6" value="&lt;b&gt;design/domain-model.md&lt;/b&gt; — on aggregate / lifecycle / money or authorization invariant / event / ownership / non-trivial relationship change" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="404" width="580" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="f7" value="&lt;b&gt;contracts/&lt;/b&gt; (public API/command/event/external boundary) · focused &lt;b&gt;design/*.md&lt;/b&gt; (3+ interacting components or async flow) · &lt;b&gt;ADR&lt;/b&gt; (expensive-to-reverse choice)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="458" width="580" height="52" as="geometry" />
+        </mxCell>
+        <mxCell id="f8" value="&lt;b&gt;_context/&lt;/b&gt; — feature-local architecture overlay + evidence index&lt;br&gt;&lt;i&gt;worktree drift is recorded here and NEVER rewrites docs/architecture-map.md&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="60" y="518" width="580" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="f9" value="&lt;b&gt;_kapelle/&lt;/b&gt; — derived execution state, approvals, rules evidence, verification&lt;br&gt;workflow.json · state.json · manifest.json · architecture-guidance/ · reviews/ · validation/ · verification.json · changes/ (optional) · history/" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="60" y="572" width="580" height="56" as="geometry" />
+        </mxCell>
+        <mxCell id="f10" value="&lt;b&gt;Soft size ceilings&lt;/b&gt; — spec.md ≈250 (&lt;320) · design.md ≈180 (&lt;240) · tasks.md ≈120 lines&lt;br&gt;Split genuinely independent behaviour into specs/, not into more root documents." style="shape=note;whiteSpace=wrap;html=1;size=12;fontSize=10;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="60" y="640" width="580" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="wr" value="Who may write what" style="swimlane;html=1;startSize=34;fillColor=#FEF6F6;strokeColor=#B85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="690" y="95" width="970" height="330" as="geometry" />
+        </mxCell>
+        <mxCell id="w1" value="&lt;b&gt;Deterministic Kapelle scripts ONLY&lt;/b&gt;&lt;br&gt;review-gate JSON · _kapelle/manifest.json · _kapelle/state.json · STATUS.md · verification.json&lt;br&gt;&lt;i&gt;Skills and subagents never hand-maintain these files.&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="140" width="930" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="w2" value="&lt;b&gt;Main agent (skills)&lt;/b&gt;&lt;br&gt;spec.md · design.md · tasks.md · specs/ · design/ · contracts/ · ADRs · _context/ · production code · tests" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="710" y="220" width="930" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="w3" value="&lt;b&gt;Subagents&lt;/b&gt; — return concise evidence only. They never write the human package." style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="710" y="290" width="930" height="46" as="geometry" />
+        </mxCell>
+        <mxCell id="w4" value="&lt;b&gt;Fail-closed schema validation&lt;/b&gt; — every machine JSON/JSONL passes jsonschema_lite via validate_json.py &lt;u&gt;before&lt;/u&gt; it can affect routing or stage completion. Stage validators then add semantic, cross-file, graph, filesystem, freshness and readiness checks." style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="710" y="346" width="930" height="62" as="geometry" />
+        </mxCell>
+        <mxCell id="sc" value="scripts/ — the deterministic layer" style="swimlane;html=1;startSize=34;fillColor=#FEF6F6;strokeColor=#B85450;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="690" y="445" width="970" height="470" as="geometry" />
+        </mxCell>
+        <mxCell id="sc1" value="&lt;b&gt;review_gate.py&lt;/b&gt; &lt;i&gt;approve|check&lt;/i&gt; — the ONLY writer of gate JSON; derives filename + exact artifact set" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="490" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc2" value="&lt;b&gt;validate_json.py&lt;/b&gt; — generic fail-closed validator against dispatcher/*.schema.json (backed by jsonschema_lite.py)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="530" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc3" value="&lt;b&gt;validate_progressive_docs.py&lt;/b&gt; — markers, headings, order, non-empty sections, detail-file shape, size caps" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="570" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc4" value="&lt;b&gt;build_feature_status.py&lt;/b&gt; — regenerates STATUS.md&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;validate_feature_state.py&lt;/b&gt; — semantic state check" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="610" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc5" value="&lt;b&gt;rebuild_feature_state.py&lt;/b&gt; — recovery from human docs + code (never fabricates approvals or PASS)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="650" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc6" value="&lt;b&gt;record_verification.py&lt;/b&gt; — the ONLY writer of verification.json; fingerprints inputs + implementation files" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="690" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc7" value="&lt;b&gt;artifact_fingerprint.py&lt;/b&gt; · &lt;b&gt;feature_state.py&lt;/b&gt; — staleness detection primitives shared by the writers" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="730" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc8" value="&lt;b&gt;migrate_workflow.py&lt;/b&gt; (legacy feature → lightweight) · &lt;b&gt;migrate_feature_layout.py&lt;/b&gt; · &lt;b&gt;validate_plugin.py&lt;/b&gt; (plugin self-check)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="770" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc9" value="&lt;b&gt;validate_design.py&lt;/b&gt; · &lt;b&gt;validate_task_plan.py&lt;/b&gt; · &lt;b&gt;validate_architecture_package.py&lt;/b&gt; — used by reconstruction / legacy packages" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="710" y="810" width="930" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sc10" value="&lt;b&gt;Invocation shape (Claude Code):&lt;/b&gt;&amp;nbsp; python3 &quot;${CLAUDE_PLUGIN_ROOT}/scripts/&lt;i&gt;x&lt;/i&gt;.py&quot; &quot;${CLAUDE_PROJECT_DIR}/&lt;i&gt;path&lt;/i&gt;&quot; …&lt;br&gt;placeholders are substituted by the harness before the model sees them — one command per tool call, so Bash(python3:*) can be granted narrowly" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="710" y="850" width="930" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="rec" value="Recovery path when _kapelle/ is missing or invalid" style="swimlane;html=1;startSize=34;fillColor=#FFFBEF;strokeColor=#D6B656;fontStyle=1;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="40" y="760" width="620" height="410" as="geometry" />
+        </mxCell>
+        <mxCell id="rc1" value="/kapelle:status &lt;i&gt;slug&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="200" y="805" width="300" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="rc2" value="feature dir exists?" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="230" y="865" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rc3" value="rebuild_feature_state.py → validate_feature_state.py&lt;br&gt;&lt;i&gt;checked work is inferred as &lt;b&gt;implemented-unverified&lt;/b&gt;&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="130" y="945" width="440" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="rc4" value="&lt;b&gt;Route to the EARLIEST necessary command&lt;/b&gt;&lt;br&gt;no valid progressive format → start --revise&lt;br&gt;missing package/guidance or stale plan → start&lt;br&gt;approved slice with unchecked work → implement&lt;br&gt;implemented, no PASS → amend  |  verify&lt;br&gt;PASS without final → verify --approve&lt;br&gt;final approval → completed" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=10;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="130" y="1020" width="440" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="rcx" value="Status: REFUSED-missing-input" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="490" y="870" width="160" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="er1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" parent="1" source="rc1" target="rc2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="er2" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#B85450;" edge="1" parent="1" source="rc2" target="rcx">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="er3" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;" edge="1" parent="1" source="rc2" target="rc3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="er4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" parent="1" source="rc3" target="rc4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="recnote" value="/kapelle:status performs no implementation edits, no validation commands, no git actions and no silent migration." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#5E6C84;" vertex="1" parent="1">
+          <mxGeometry x="130" y="1145" width="520" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="gnote" value="&lt;b&gt;Coordination graphs&lt;/b&gt; (surface-plan.json, task-plan.json, execution telemetry) are created only when they add real safety for genuine parallel ownership, shared contracts, migrations or complex dependencies — they are &lt;u&gt;not&lt;/u&gt; routine stage outputs." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="690" y="940" width="970" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="gnote2" value="&lt;b&gt;docs/architecture-map.md&lt;/b&gt; is a shared repository baseline produced by /kapelle:survey without a slug. Feature work never rewrites it; branch/worktree drift lives in the feature&#39;s _context/ overlay." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="690" y="1030" width="970" height="70" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+<diagram id="components" name="07 — Component responsibility map">
+    <mxGraphModel dx="1700" dy="1150" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1150" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="Who does what — Claude Code native harness, Kapelle, and the project" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1500" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="native" value="CLAUDE CODE NATIVE HARNESS" style="swimlane;html=1;startSize=42;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="510" height="950" as="geometry" />
+        </mxCell>
+        <mxCell id="kapelle" value="KAPELLE PLUGIN" style="swimlane;html=1;startSize=42;fillColor=#F3E5F5;strokeColor=#9673A6;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="595" y="90" width="510" height="950" as="geometry" />
+        </mxCell>
+        <mxCell id="project" value="PROJECT-NATIVE LAYER" style="swimlane;html=1;startSize=42;fillColor=#E2F0D9;strokeColor=#82B366;fontStyle=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="90" width="510" height="950" as="geometry" />
+        </mxCell>
+        <mxCell id="n1" value="Skill loader / slash command&#xa;Loads only the invoked SKILL.md and referenced guidance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="160" width="410" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="n2" value="Main agent&#xa;Default coordinator, planner, implementer, first reviewer, package author, integration owner" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="270" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n3" value="Read / Glob / Search&#xa;Current-worktree evidence; no Git history inspection" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="390" width="410" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="n4" value="Bash tool + permission boundary&#xa;One direct Python helper or allowlisted native CLI per call; no shell composition" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="500" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="Developer interaction&#xa;Standalone question, exact validation batch, explicit approval; silence is never approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="620" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="n6" value="Task/subagents&#xa;Optional bounded roles for uncertainty or risk; concise evidence returns; no raw chatter to developer" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="740" width="410" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n7" value="Agent Teams&#xa;Optional ≤3-agent implementation burst after approval and safe file partitioning; never first skeleton" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="90" y="865" width="410" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k1" value="Executable skills&#xa;start • implement • amend • verify • status&#xa;+ optional utilities + reconstruct" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="150" width="410" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="k2" value="Workflow references&#xa;progressive artifacts • orchestration • architecture guidance • human control • script execution" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="645" y="280" width="410" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="k3" value="Bundled optional roles&#xa;explorer • critic • reviewer • business analyst • devil&#39;s advocate • planner • implementer • test author • reconciler" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+          <mxGeometry x="645" y="405" width="410" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="k4" value="Deterministic writers&#xa;review_gate.py • record_verification.py • build/rebuild feature status&#xa;Only these write gate JSON, manifest, state, STATUS" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="540" width="410" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="k5" value="Fail-closed validators + schemas&#xa;validate_json • progressive docs • feature state&#xa;Structural failure blocks routing/completion" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="675" width="410" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="k6" value="Durable human state&#xa;spec.md • design.md • tasks.md • triggered details&#xa;Derived evidence under _kapelle/" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="645" y="805" width="410" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="k7" value="What Kapelle does not own&#xa;No project rule registry • no mandatory agent chain • no Git • no release automation • no speculative capability implementation" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="645" y="930" width="410" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" value="Project source and tests&#xa;Production behavior, configs, schemas, migrations, integration boundaries" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="150" width="410" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p2" value="Native instructions and rules&#xa;AGENTS.md / CLAUDE.md / .claude/rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="275" width="410" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="p3" value="Native project skills and subagents&#xa;.claude/skills • .claude/agents&#xa;selected semantically, never by Kapelle registry" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="390" width="410" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="p4" value="Architecture-rules capability&#xa;Required for current slice; provider/name/storage are project-defined; returns scoped binding guidance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="520" width="410" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="p5" value="Plugins / MCP / read-only CLI&#xa;May supply rules, docs, APIs, or specialized inspection through native discovery" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="655" width="410" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="p6" value="Project-native validation commands&#xa;Exact risk-based checks; execution controlled by ask | allow | skip" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="780" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="p7" value="Project owns technical truth. Kapelle coordinates intent, evidence, approvals, routing, and bounded execution." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1200" y="910" width="410" height="75" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" value="invokes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="n1" target="k1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="interprets" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="n2" target="k2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" value="reads / edits" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="n3" target="p1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" value="executes" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="n4" target="k4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" value="discovers" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="n2" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="validates" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="k5" target="k6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="scoped evidence" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="p4" target="k6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+    <diagram id="p7-matrix" name="08 — Native harness × stage matrix">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1250" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ttl" value="07 — Which Claude Code native component is used at which stage" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="18" width="1300" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="sub" value="Every cell reflects the current SKILL.md protocols. Empty span = the row applies identically to all stages." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1">
+          <mxGeometry x="40" y="52" width="1500" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="h0" value="Native harness component" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="88" width="300" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h1" value="/kapelle:start" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="340" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h2" value="/kapelle:implement" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="560" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h3" value="/kapelle:amend" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="780" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h4" value="/kapelle:verify" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h5" value="/kapelle:status" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="h6" value="utilities · reconstruct · migrate" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fontStyle=1;fillColor=#172B4D;fontColor=#FFFFFF;strokeColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="88" width="220" height="42" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c0" value="SkillTool&lt;br&gt;(loads skills/&amp;lt;name&amp;gt;/SKILL.md&lt;br&gt;+ referenced references/*.md)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="130" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c1" value="draft/revise&lt;br&gt;&lt;i&gt;and&lt;/i&gt; --approve (gate mode)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c2" value="protocol + checkpoint loop" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="560" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c3" value="classify + promote one slice" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="780" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c4" value="converge + record&lt;br&gt;&lt;i&gt;and&lt;/i&gt; --approve (gate mode)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c5" value="read-only routing" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r0c6" value="one skill per utility" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="130" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c0" value="Read · Glob · Grep&lt;br&gt;&lt;i&gt;current worktree only&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="194" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c1" value="heavy — map the known feature" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c2" value="understand affected code" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="560" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c3" value="read docs + implementation" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="780" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c4" value="as-built vs documents" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c5" value="read markers &amp; docs" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r1c6" value="evidence gathering (reconstruct)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="194" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c0" value="Write · Edit" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="258" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c1" value="human docs only" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c2" value="&lt;b&gt;production code&lt;/b&gt; + boundary tests" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="560" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c3" value="human docs only" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="780" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c4" value="&lt;b&gt;all unit tests&lt;/b&gt; + doc convergence" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c5" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r2c6" value="docs only — reconstruct never edits code" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="258" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c0" value="Bash → bundled python3 helpers&lt;br&gt;&lt;i&gt;one direct command per call&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="322" width="300" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c1" value="validate_json · validate_progressive_docs&lt;br&gt;build_feature_status · validate_feature_state&lt;br&gt;review_gate approve plan" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="340" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c2" value="review_gate check plan&lt;br&gt;build_feature_status&lt;br&gt;validate_feature_state" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="560" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c3" value="validate_progressive_docs&lt;br&gt;validate_json (change records)&lt;br&gt;build_feature_status" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="780" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c4" value="validate_progressive_docs&lt;br&gt;record_verification · validate_json&lt;br&gt;review_gate approve final" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c5" value="rebuild_feature_state&lt;br&gt;validate_feature_state" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r3c6" value="migrate_workflow · validate_design&lt;br&gt;validate_json · build_feature_status" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="322" width="220" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c0" value="Bash → project-native commands" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="402" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c1" value="read-only rule CLIs only" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c2" value="narrow dev checks (ask|allow|skip)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="560" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c3" value="read-only only" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="780" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c4" value="&lt;b&gt;one risk-based validation batch&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c5" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r4c6" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="402" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c0" value="Task → Kapelle subagents" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#F5F5F5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="466" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c1" value="explorer burst ≤3 (conditional)&lt;br&gt;critic ×1 (high risk only)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="340" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c2" value="explorer / reviewer (conditional)&lt;br&gt;&lt;i&gt;no planner→implementer chain&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="560" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c3" value="burst ≤3 + critic ×1 (conditional)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="780" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c4" value="reviewer ×1 (conditional)&lt;br&gt;test-author (optional)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c5" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r5c6" value="explorer · business-analyst · critic · reviewer&lt;br&gt;(reconstruct: ≤5 aspect slices)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="466" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c0" value="Task → project architecture-rules subagent" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="40" y="530" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c1" value="&lt;b&gt;REQUIRED&lt;/b&gt; — collects &amp; caches guidance" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="340" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c2" value="reuses cache; refresh only on scope change" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="560" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c3" value="refresh only if modules/entrypoints changed" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="780" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c4" value="reconciles against cached guidance" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c5" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r6c6" value="required for reconstruct --design" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#82B366;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="530" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c0" value="Agent Teams (parallel implementers)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="594" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c1" value="&lt;b&gt;never&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="340" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c2" value="opt-in, 5 conditions, ≤3 agents&lt;br&gt;&lt;b&gt;never for the first skeleton&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="560" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c3" value="&lt;b&gt;never&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="780" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c4" value="&lt;b&gt;never&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c5" value="&lt;b&gt;never&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r7c6" value="&lt;b&gt;never&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="594" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c0" value="AskUserQuestion / developer question" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="40" y="658" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c1" value="≤1 consolidated question" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="340" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c2" value="only for a real blocker" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="560" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c3" value="≤1 when the choice changes behaviour" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="780" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c4" value="validation decision + attestation clarity" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c5" value="&lt;b&gt;none&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r8c6" value="scope questions (reconstruct)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#D6B656;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="658" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c0" value="Permission system" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="722" width="300" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c1" value="Bash(python3:*) is enough" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c2" value="code edits + project check commands&lt;br&gt;the prompt IS the ask policy" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="560" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c3" value="Bash(python3:*)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="780" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c4" value="Bash(python3:*) + project test/lint/build" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c5" value="Bash(python3:*)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1220" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r9c6" value="Bash(python3:*) + read-only CLIs" style="rounded=0;whiteSpace=wrap;html=1;fontSize=9;align=left;spacingLeft=6;fillColor=#FFFFFF;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1440" y="722" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="r10c0" value="${CLAUDE_PLUGIN_ROOT} / ${CLAUDE_PROJECT_DIR}" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="40" y="786" width="300" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r10span" value="substituted by Claude Code in skill content before the model sees it — other providers must substitute normalized absolute roots themselves; an unresolved placeholder must never be executed" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="340" y="786" width="1320" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r11c0" value="Git (any form, incl. rtk proxy / wrappers / subagents)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontStyle=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="40" y="866" width="300" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="r11span" value="&lt;b&gt;NEVER&lt;/b&gt; — no branch, commit or object inspection; no mutations. A requested branch comparison is a separate developer operation, not stage evidence." style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="340" y="866" width="1320" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="foot" value="&lt;b&gt;Provider neutrality:&lt;/b&gt; the same protocols ship as a Codex plugin (.codex-plugin/plugin.json). Only the placeholder substitution and the tool names differ — the gates, refusals and command shape are identical." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
+          <mxGeometry x="40" y="962" width="1620" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+<diagram id="reconstruct" name="09 — /kapelle:reconstruct (documentation only)">
+    <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="RECONSTRUCT — evidence-backed documentation of code that already exists" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1450" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="warning" value="Separate documentation-only workflow: never routes to plan, implement, tests, verify, release, or ship-ready." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="410" y="70" width="780" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="devLane" value="Developer gates" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="150" width="1520" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="flowLane" value="Kapelle reconstruct skill" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#F3E5F5;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="270" width="1520" height="220" as="geometry" />
+        </mxCell>
+        <mxCell id="agentLane" value="Claude Code roles and project-native evidence" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#EAF2F8;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="490" width="1520" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="artifactLane" value="Evidence and deterministic state" style="swimlane;html=1;horizontal=0;startSize=34;fillColor=#FCE8E6;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="680" width="1520" height="230" as="geometry" />
+        </mxCell>
+        <mxCell id="d1" value="Define bounded feature scope" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="185" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d2" value="Approve scope" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="430" y="185" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d3" value="Approve product spec" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="740" y="185" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d4" value="Approve as-built design" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="185" width="190" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="d5" value="Final documentation approval" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFE599;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1370" y="185" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="SCOPE&#xa;entrypoints • actors • aspects • exclusions • unknowns" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="90" y="330" width="230" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="SPEC&#xa;observable business/product behavior&#xa;spec.md + specs/*.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="440" y="330" width="230" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="DESIGN&#xa;as-built boundaries, flows, data, contracts&#xa;design.md + design/*.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="325" width="240" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" value="REVIEW&#xa;coverage • contradictions • traceability • citations • deviations" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="330" width="240" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="done" value="DOCUMENTED&#xa;not ship-ready" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1425" y="330" width="110" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="explorer" value="Explorer&#xa;cited repository paths/lines&#xa;bounded slices for large scope" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="110" y="540" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ba" value="Business analyst&#xa;observable outcomes and rules; tests are evidence, not automatic intent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="410" y="530" width="260" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" value="Required project architecture-rules capability&#xa;scoped rules; source affinity; no invented guidance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="530" width="300" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="reviewer" value="Critic + fresh reviewer&#xa;one bounded review/correction cycle" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
+          <mxGeometry x="1150" y="540" width="250" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="classes" value="Claim classes&#xa;observed • inferred • declared • unknown&#xa;stable RC-NNN ids" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="100" y="740" width="250" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="index" value="_context/evidence-index.md&#xa;claim → source line → confidence" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+          <mxGeometry x="430" y="735" width="250" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="truth" value="Architecture truth labels&#xa;AS-BUILT • RULE • DEVIATION" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="760" y="740" width="250" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="coverage" value="reconstruction-coverage.json&#xa;PASS / PASS-WITH-GAPS / BLOCKED&#xa;artifact + source fingerprints" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="730" width="280" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="stale" value="Any cited source or generated artifact changes → review becomes stale → rerun --review" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="470" y="860" width="660" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d1" target="r1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="r1" target="d2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d2" target="r2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="r2" target="d3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d3" target="r3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="r3" target="d4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d4" target="r4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="r4" target="d5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="d5" target="done">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" value="evidence" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="explorer" target="index">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" value="behavior" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="ba" target="r2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" value="rules" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="rules" target="r3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" value="verdict" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;" edge="1" parent="1" source="reviewer" target="coverage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="classes" target="coverage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="index" target="coverage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="truth" target="coverage">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;dashed=1;strokeColor=#B85450;" edge="1" parent="1" source="coverage" target="stale">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+              <mxCell id="recCmds" value="&lt;b&gt;Commands and internal gate names&lt;/b&gt;&lt;br&gt;/kapelle:reconstruct &lt;i&gt;slug&lt;/i&gt; &quot;scope&quot; → gate &lt;b&gt;reconstruction-scope&lt;/b&gt; · --spec → &lt;b&gt;reconstruction-spec&lt;/b&gt; · --design → &lt;b&gt;reconstruction-design&lt;/b&gt; · --review → &lt;b&gt;reconstruction&lt;/b&gt;&lt;br&gt;--approve approves whichever draft STATUS.md currently identifies and never generates the next phase in the same invocation.&lt;br&gt;Marker: &amp;lt;!-- kapelle-workflow: reconstruction-v1 --&amp;gt; in proposal.md + &quot;workflow&quot;: &quot;reconstruction&quot; in _kapelle/workflow.json. Large scope: ≤5 read-only aspect slices, one coordinator owns synthesis.&lt;br&gt;After final approval &lt;b&gt;Run next&lt;/b&gt; is /kapelle:status — never a development stage." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="40" y="925" width="1520" height="105" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="p10-utilities" name="10 — Utilities, migration, deprecated">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="ttl" value="10 — Off-backbone routes: utilities, migration, deprecated wrappers" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1"><mxGeometry x="40" y="18" width="1300" height="34" as="geometry"/></mxCell>
+        <mxCell id="sub" value="None of these is a second pipeline. Every one of them returns to the backbone through /kapelle:status or /kapelle:start --approve." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="40" y="52" width="1500" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="uw" value="Optional standalone utilities — run one only when its output is independently useful" style="swimlane;html=1;startSize=34;fillColor=#F6FBF5;strokeColor=#82B366;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="40" y="95" width="800" height="480" as="geometry"/></mxCell>
+        <mxCell id="u1" value="&lt;b&gt;/kapelle:survey [slug]&lt;/b&gt;&lt;br&gt;no slug + no baseline → one explorer dispatch → docs/architecture-map.md&lt;br&gt;no slug + baseline exists → Status: BASELINE-READY, &lt;b&gt;no write&lt;/b&gt;&lt;br&gt;with slug → docs/features/&lt;i&gt;slug&lt;/i&gt;/_context/architecture.md only&lt;br&gt;--refresh-baseline needs explicit confirmation and cannot be combined with a slug" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="145" width="740" height="90" as="geometry"/></mxCell>
+        <mxCell id="u2" value="&lt;b&gt;/kapelle:decide-adr &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — one durable, expensive-to-reverse architectural decision" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="245" width="740" height="36" as="geometry"/></mxCell>
+        <mxCell id="u3" value="&lt;b&gt;/kapelle:contracts &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — human-readable boundary contracts (public API, command, event, external boundary)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="289" width="740" height="36" as="geometry"/></mxCell>
+        <mxCell id="u4" value="&lt;b&gt;/kapelle:data-model &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — data/schema and domain-model impact" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="333" width="740" height="36" as="geometry"/></mxCell>
+        <mxCell id="u5" value="&lt;b&gt;/kapelle:sequences &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — one complex runtime flow (3+ interacting components or async)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="377" width="740" height="36" as="geometry"/></mxCell>
+        <mxCell id="u6" value="&lt;b&gt;/kapelle:glossary &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — disputed domain terms&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;/kapelle:roadmap &lt;i&gt;slug&lt;/i&gt;&lt;/b&gt; — project roadmap placement" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="70" y="421" width="740" height="36" as="geometry"/></mxCell>
+        <mxCell id="u7" value="&lt;b&gt;Return route:&lt;/b&gt; changed the approved package → &lt;b&gt;/kapelle:start &lt;i&gt;slug&lt;/i&gt; --approve&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;otherwise → &lt;b&gt;/kapelle:status&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="70" y="470" width="740" height="42" as="geometry"/></mxCell>
+        <mxCell id="u8" value="Utilities perform no implementation edits and no git actions. Their contract is references/utility-contract.md." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="70" y="520" width="740" height="20" as="geometry"/></mxCell>
+
+        <mxCell id="mw" value="/kapelle:migrate — adopt an older feature directory into the lightweight workflow" style="swimlane;html=1;startSize=34;fillColor=#FFFBEF;strokeColor=#D6B656;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="870" y="95" width="790" height="480" as="geometry"/></mxCell>
+        <mxCell id="g1" value="&lt;b&gt;dry run (default)&lt;/b&gt;&lt;br&gt;migrate_workflow.py &lt;i&gt;docs/features/slug&lt;/i&gt;&lt;br&gt;reports preserved documents, missing spec/design/tasks,&lt;br&gt;evidence that cannot be reconstructed, and the next command" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="900" y="150" width="730" height="75" as="geometry"/></mxCell>
+        <mxCell id="g2" value="spec.md present?&lt;br&gt;&lt;i&gt;(it carries the durable marker — the only prerequisite)&lt;/i&gt;" style="rhombus;whiteSpace=wrap;html=1;fontSize=10;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="1050" y="250" width="430" height="80" as="geometry"/></mxCell>
+        <mxCell id="g3" value="&lt;b&gt;--apply&lt;/b&gt; → adds the lightweight marker, writes workflow version 2, rebuilds status&lt;br&gt;preserves proposal.md, detailed specs/designs, contracts, ADRs, task evidence, history" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="900" y="360" width="730" height="60" as="geometry"/></mxCell>
+        <mxCell id="g4" value="→ /kapelle:start &lt;i&gt;slug&lt;/i&gt; &quot;raw task or current feature intent&quot;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="900" y="255" width="130" height="70" as="geometry"/></mxCell>
+        <mxCell id="g5" value="&lt;b&gt;Migration never invents history&lt;/b&gt; — no approvals, validation results, agent reviews, command output or telemetry. No production-code, validation or git changes. Handoff is the exact command returned by the helper." style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="900" y="440" width="730" height="70" as="geometry"/></mxCell>
+        <mxCell id="eg1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" parent="1" source="g1" target="g2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="eg2" value="no" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;strokeColor=#B85450;" edge="1" parent="1" source="g2" target="g4"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="eg3" value="yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;" edge="1" parent="1" source="g2" target="g3"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="dw" value="Deprecated compatibility wrappers — they never execute their former stage protocol" style="swimlane;html=1;startSize=34;fillColor=#FEF6F6;strokeColor=#B85450;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="40" y="605" width="1620" height="290" as="geometry"/></mxCell>
+        <mxCell id="dp1" value="&lt;b&gt;16 wrapper names&lt;/b&gt;&lt;br&gt;spec · specify · clarify · classify-size · design · plan&lt;br&gt;plan-tests · decompose · base-functional-tests · unit-tests&lt;br&gt;change · resume-change · fix · feature-review · finalize · ship" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1"><mxGeometry x="70" y="655" width="470" height="105" as="geometry"/></mxCell>
+        <mxCell id="dp2" value="&lt;b&gt;On invocation (references/deprecated-legacy-stages.md)&lt;/b&gt;&lt;br&gt;1. no human-controlled marker ⇒ Status: DEPRECATED + /kapelle:migrate &lt;i&gt;slug&lt;/i&gt;&lt;br&gt;2. otherwise ⇒ Status: DEPRECATED + the replacement command named by the wrapper&lt;br&gt;3. write no feature or project files; run no agent, validation, git or migration action" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="570" y="655" width="580" height="105" as="geometry"/></mxCell>
+        <mxCell id="dp3" value="&lt;b&gt;Typical replacements&lt;/b&gt;&lt;br&gt;analysis / design / planning names → &lt;b&gt;/kapelle:start&lt;/b&gt;&lt;br&gt;change · resume-change · fix → &lt;b&gt;/kapelle:amend&lt;/b&gt;&lt;br&gt;test · review · release names → &lt;b&gt;/kapelle:verify&lt;/b&gt;&lt;br&gt;&lt;i&gt;each wrapper names its own exact replacement&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="1180" y="655" width="450" height="105" as="geometry"/></mxCell>
+        <mxCell id="dp4" value="Wrappers exist for one compatibility release and may then be removed. Kapelle has exactly one human-controlled pipeline: &lt;b&gt;start → implement → (amend →) verify&lt;/b&gt;, with &lt;b&gt;status&lt;/b&gt; as recovery and routing." style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="70" y="780" width="1560" height="50" as="geometry"/></mxCell>
+
+        <mxCell id="core" value="&lt;b&gt;Core invariant:&lt;/b&gt; stage → native project capability → guidance/tools/code is one-way. Project skills never invoke Kapelle stages, and project-specific behaviour belongs in native project capabilities, not in core stages." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=12;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="40" y="915" width="1620" height="60" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

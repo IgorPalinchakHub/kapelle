@@ -64,9 +64,10 @@ When a Kapelle skill runs, behave as a gated SDLC stage or utility.
     per tool call. The executable is the first token; consume the tool result directly. Never add
     `cd`, environment assignments, redirection, scratchpads, exit-code `echo`, subshells, shell
     wrappers, `;`, `&&`, `||`, pipes, background execution, or shell polling loops.
-27. Shell inspection uses the tool's working directory and one native command, never `cd` plus a
-    `for`/`while`/`if` shell program. Prefer Read, Glob, and Search for current-worktree evidence.
-    Kapelle does not inspect branches, commits, or repository objects with Git.
+27. Shell inspection starts from the project-root session and uses absolute paths or the provider's
+    working-directory facility, never `cd` plus a `for`/`while`/`if` shell program. Prefer Read,
+    Glob, and Search for current-worktree evidence. Kapelle does not inspect branches, commits, or
+    repository objects with Git, including Git hidden behind a wrapper or subagent.
 
 ## Handoff
 
