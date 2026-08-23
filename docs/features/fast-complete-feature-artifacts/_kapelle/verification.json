@@ -1,0 +1,33 @@
+{
+  "categories": [
+    "unit",
+    "contract"
+  ],
+  "commands": [
+    "python3 -m unittest discover -s /Users/ihorpal/Development/AI/kapelle/scripts -p 'test_*.py'",
+    "python3 /Users/ihorpal/Development/AI/kapelle/scripts/validate_plugin.py",
+    "python3 /Users/ihorpal/Development/AI/kapelle/scripts/validate_progressive_docs.py /Users/ihorpal/Development/AI/kapelle/docs/features/fast-complete-feature-artifacts"
+  ],
+  "evidence_source": "agent-observed",
+  "implementation_fingerprints": {
+    "README.md": "84db45942181dee2f004d284485f76a41790ee9be0ccbaca28fe51ef49117a0d",
+    "docs/QUICK_START_UK.md": "baa1e2fa826786f14bb63cb0279c53176ffdda019c3d035fcfb1c2c4005b702f",
+    "references/artifact-presentation.md": "a99055433073e7b71b9dea1e6cd6e354bd6810388825fcfde9fce17ffc167170",
+    "references/developer-questions.md": "362b6c1dcaa982f49052092fccef2eb29dc033c5cf2dca530d922cad18784a06",
+    "references/progressive-artifacts.md": "00c1dfa67869393001bc6734348e43b7b949ce2ec9fee834e06ac0809c730991",
+    "scripts/test_validate_progressive_docs.py": "8631498035724c5268dce2248b7895efd4a1c11c5269789317a7ccd38ef6607f",
+    "scripts/validate_plugin.py": "c4ffaee0a25c4d84f182d128e681c343e704124a3f3c55cab6e339e80de7871b",
+    "scripts/validate_progressive_docs.py": "ec92913593f0087bea7699fa848db4386ce8a15cdc854fcdf8ddaa57a0442783",
+    "skills/amend/SKILL.md": "9d69bb251f20acd43dbfcfc4d815000d494a4c27bb8463c79c87a816198b2ac9",
+    "skills/sequences/SKILL.md": "9d531a0eaf847f4db0b7a9103b4652798fc22b11a2cca4008c6c06c4ad816777",
+    "skills/start/SKILL.md": "f2b3feb9ed4570c15062b550c65801c644f70b8fa5aa6ef06a2c283a665a617f",
+    "skills/verify/SKILL.md": "ce485f22e2342e706133a92eb4fc4dd7a46159510a9aa88eaf1ab9e89ba83f7f"
+  },
+  "input_fingerprints": {
+    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
+    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
+    "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
+    "tasks.md": "0cad0eaf4b2af3c5cdf1a66812e364599bfffc9939b00ebe6b0356f34ddfb143"
+  },
+  "status": "PASS"
+}

@@ -1,6 +1,6 @@
 {
   "name": "kapelle",
-  "version": "0.19.6+codex.20260805061442",
+  "version": "0.20.0+codex.20260823151418",
   "description": "Progressive human-controlled SDLC harness with a high-level feature map, system design, and approved vertical-slice delivery.",
   "author": {
     "name": "Ihor Pal"

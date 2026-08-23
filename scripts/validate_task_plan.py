@@ -8,13 +8,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from acceptance_criteria import AC_PATTERN
 from jsonschema_lite import validate_instance
 
 ROOT = Path(__file__).resolve().parent.parent
 TASK_PLAN_SCHEMA = ROOT / "dispatcher" / "task-plan.schema.json"
 SURFACE_PLAN_SCHEMA = ROOT / "dispatcher" / "surface-plan.schema.json"
 
-AC_PATTERN = re.compile(r"\bAC-[A-Za-z0-9][A-Za-z0-9._-]*\b")
 
 
 def load_json(path: Path) -> dict[str, Any]:

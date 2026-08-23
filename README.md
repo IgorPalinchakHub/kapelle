@@ -50,6 +50,12 @@ high-level map of the known feature and system boundaries. It details and plans 
 production-shaped walking skeleton. Future capabilities remain non-binding candidates. The
 developer approves this first vertical slice before code.
 
+New and explicitly revised slices use a compact living-artifact contract. The specification states
+the affected current behavior, intended change, resulting behavior, preserved behavior, and
+observable acceptance scenarios. The design contrasts brief current affected architecture with
+the resulting responsibilities and technical delta. Each workstream says what changes, when it is
+done, and how it will be verified. Existing progressive packages remain compatible until revised.
+
 `implement` builds that end-to-end slice. The main agent plans and codes directly, reusing project
 guidance. Planner/implementer/reviewer subagent chains are not the default. Focused boundary or
 characterization tests are written before risky production changes when useful.
@@ -70,20 +76,38 @@ risk-based validation batch. If the developer already completed that batch manua
 session, Kapelle accepts an explicit passing confirmation without requiring copied output and
 labels the result `developer-attested`. A second, explicit approval completes the feature.
 
+Verification also converges the root and triggered detail documents into the confirmed current
+user and technical description. Detail remains proportional: another developer or LLM can follow
+the current user and affected technical flows without the authoring chat, but simple changes do not
+produce empty use-case, design, contract, ADR, or diagram files.
+
+Living packages keep lightweight traceability in the human files: each active `AC-NN` scenario is
+covered by a coherent workstream whose `Verify` field states the focused evidence. Deterministic
+validation checks missing, unknown, and uncovered scenarios without requiring a task DAG.
+
 Detailed use-case specifications, `design/domain-model.md`, contracts, sequences, and ADRs are
 created just in time when their documented trigger applies. A simple slice stays in `spec.md` and
 `design.md`.
 
+Diagrams are also evidence-triggered, never a mandatory bundle. A changed boundary/ownership,
+complex runtime ordering, lifecycle, sensitive data flow, or non-trivial refactor may add the
+smallest useful Mermaid visual inline in `design.md` or under `design/`. Every visual has a short
+plain-language explanation and is reconciled with as-built code during `verify`; simple changes
+remain diagram-free.
+
 ## Human control
 
 - Default checkpoint is one workstream, not one micro-task.
-- Start with one walking-skeleton workstream; split it into at most three checkboxes only when
-  needed for review.
+- Start with one active walking-skeleton workstream; split it into at most three top-level unchecked
+  checkboxes only when needed for review. Completed base entries do not count against that limit.
 - Each requested increment becomes one coherent vertical slice and leaves the application loadable.
 - Development validation can be `ask`, `allow`, or `skip`; deferred required checks block final
   approval until they pass or the developer explicitly confirms complete external verification.
 - Developer questions describe the intended behavior and concrete options with trade-offs. They do
   not expose task, blocker, DoD, gate, or artifact identifiers.
+- Blocking questions recommend the evidence-backed option first with its downside and normally show
+  two choices. A short code example is included only when it materially clarifies an API, schema,
+  control-flow, or compatibility decision; reversible defaults are stated instead of asked.
 - In Claude Code, bundled validators run as one direct `python3` command using the plugin and
   project root substitutions. Kapelle does not prepend `cd`, assign a temporary path variable, or
   combine helper calls, so a narrow `Bash(python3:*)` permission can match them.
@@ -143,9 +167,10 @@ release.
 
 ## Documentation
 
-- [Kapelle + Claude Code process diagram (draw.io, 10 pages)](docs/KAPELLE_CLAUDE_CODE_FLOW.drawio) —
-  high-level flow, one page per backbone stage, artifacts and deterministic scripts, component
-  responsibility map, native-harness/stage matrix, reconstruction, and off-backbone routes
+- [Kapelle + Claude Code process diagram (draw.io, 11 pages)](docs/KAPELLE_CLAUDE_CODE_FLOW.drawio) —
+  high-level flow, one page per backbone stage, artifacts and deterministic scripts, the living
+  artifact contract, component responsibility map, native-harness/stage matrix, reconstruction, and
+  off-backbone routes
 - [Quick start (Ukrainian)](docs/QUICK_START_UK.md)
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
 - [Usage and migration](docs/USAGE.md)

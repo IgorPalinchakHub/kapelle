@@ -1479,6 +1479,21 @@ class FeatureStateTests(unittest.TestCase):
             self.assertTrue(state_path.exists())
             self.assertFalse((feature / "_kapelle").exists())
 
+    def test_indented_checkboxes_stay_inside_their_workstream_block(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tasks = Path(tmp) / "tasks.md"
+            tasks.write_text(
+                "# Implementation tasks\n\n"
+                "- [ ] **W1 Deliver the outcome** — covers AC-01\n"
+                "  - [ ] Nested implementation note.\n"
+                "  - Changes: affected behavior.\n"
+                "  - Done when: observable result exists.\n"
+                "  - Verify: focused behavior check passes.\n"
+            )
+            parsed = parse_tasks(tasks)
+            self.assertEqual(["W1"], [task["id"] for task in parsed])
+            self.assertEqual(["AC-01"], parsed[0]["acs"])
+
 
 if __name__ == "__main__":
     unittest.main()

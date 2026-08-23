@@ -5,8 +5,9 @@ use-case map and not a speculative full-feature micro-task graph.
 
 ## Rules
 
-- Start with one walking-skeleton workstream. Split it into at most three checkboxes only when a
-  single checkpoint would not be reviewable.
+- Start with one active walking-skeleton workstream. Split it into at most three top-level unchecked
+  checkboxes only when a single checkpoint would not be reviewable. Checked implemented-base work
+  does not count against the active-slice limit.
 - Each later developer-requested requirement adds one smallest coherent vertical slice.
 - Keep the known feature map in `spec.md`; only promoted committed behavior enters `tasks.md`.
 - Order by real dependency and keep coupling low.

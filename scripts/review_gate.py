@@ -26,6 +26,8 @@ from feature_state import (
 )
 from validate_architecture_package import validate as validate_architecture_package
 from validate_progressive_docs import (
+    LIVING_CONTRACT_MARKER,
+    MARKER_SCAN_LINES,
     progressive_format,
     validate as validate_progressive_docs,
 )
@@ -49,7 +51,13 @@ def plan_readiness_errors(feature_dir: Path) -> list[str]:
     workflow = read_json(feature_dir / "_kapelle" / "workflow.json")
     if not has_durable_lightweight_marker(feature_dir):
         errors.append("missing lightweight workflow marker in spec.md")
-    if not parse_tasks(feature_dir / "tasks.md"):
+    spec = feature_dir / "spec.md"
+    living_contract = bool(
+        spec.is_file()
+        and LIVING_CONTRACT_MARKER
+        in spec.read_text(errors="replace").splitlines()[:MARKER_SCAN_LINES]
+    )
+    if not parse_tasks(feature_dir / "tasks.md") and not living_contract:
         errors.append("at least one workstream task is required")
     if not (
         guidance

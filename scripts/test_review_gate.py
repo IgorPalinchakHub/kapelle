@@ -7,11 +7,12 @@ import unittest
 from pathlib import Path
 
 from feature_state import FeatureStateError, approval_current, choose_next_command
-from review_gate import approve, build_gate
+from review_gate import approve, build_gate, plan_readiness_errors
 from validate_progressive_docs import (
     ARTIFACT_MARKER,
     DESIGN_HEADINGS,
     DOMAIN_HEADINGS,
+    LIVING_CONTRACT_MARKER,
     SPEC_HEADINGS,
     USE_CASE_HEADINGS,
     WORKFLOW_MARKER,
@@ -79,6 +80,25 @@ class ReviewGateTests(unittest.TestCase):
                     "Developer approved business specification.",
                     refresh=False,
                 )
+
+    def test_living_plan_reports_missing_tasks_once(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = self.make_feature(Path(tmp))
+            (feature / "spec.md").write_text(
+                f"{WORKFLOW_MARKER}\n{ARTIFACT_MARKER}\n{LIVING_CONTRACT_MARKER}\n"
+                + self.structured_document("# Feature specification", SPEC_HEADINGS)
+            )
+            (feature / "design.md").write_text(
+                self.structured_document("# System design", DESIGN_HEADINGS)
+            )
+            errors = plan_readiness_errors(feature)
+            task_errors = [
+                error
+                for error in errors
+                if "tasks.md" in error or "workstream task" in error
+            ]
+            self.assertEqual(1, len(task_errors))
+            self.assertIn("missing document:", task_errors[0])
 
     def test_lightweight_plan_requires_ready_guidance_and_final_requires_pass(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

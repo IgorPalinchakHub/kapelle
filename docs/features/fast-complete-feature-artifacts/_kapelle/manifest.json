@@ -1,0 +1,37 @@
+{
+  "human_artifacts": {
+    "design.md": {
+      "exists": true,
+      "path": "design.md",
+      "sha256": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c"
+    },
+    "proposal.md": {
+      "exists": false,
+      "path": "proposal.md",
+      "sha256": null
+    },
+    "spec.md": {
+      "exists": true,
+      "path": "spec.md",
+      "sha256": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8"
+    },
+    "tasks.md": {
+      "exists": true,
+      "path": "tasks.md",
+      "sha256": "0cad0eaf4b2af3c5cdf1a66812e364599bfffc9939b00ebe6b0356f34ddfb143"
+    },
+    "test-plan.md": {
+      "exists": false,
+      "path": "test-plan.md",
+      "sha256": null
+    }
+  },
+  "layout_version": 2,
+  "recovery": {
+    "evidence_loss": [],
+    "mode": "native"
+  },
+  "schema_version": "1.0",
+  "slug": "fast-complete-feature-artifacts",
+  "state_built_at": "2026-08-22T20:45:58Z"
+}

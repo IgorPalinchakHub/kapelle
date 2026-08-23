@@ -1,0 +1,12 @@
+{
+  "artifact_fingerprints": {
+    "_kapelle/verification.json": "a3657cae342a006acfa626ea56abdaaeab46a5ddad86d0bdb9a63e6368837022",
+    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
+    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
+    "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
+    "tasks.md#structural": "94831cd2c6c044447cde720efc71ff7fb7ef557b3e6861682fa5322e377af3be"
+  },
+  "confirmation": "Developer explicitly authorized autonomous completion of all verified Kapelle improvements without further approval pauses.",
+  "gate": "final",
+  "status": "approved"
+}

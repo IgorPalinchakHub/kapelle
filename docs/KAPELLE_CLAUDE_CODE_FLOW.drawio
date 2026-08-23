@@ -4,7 +4,7 @@
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="title" value="Kapelle 0.19.6 + Claude Code — lightweight SDLC overview" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#172B4D;" parent="1" vertex="1">
+        <mxCell id="title" value="Kapelle 0.20.0 + Claude Code — lightweight SDLC overview" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=26;fontStyle=1;fontColor=#172B4D;" parent="1" vertex="1">
           <mxGeometry x="40" y="20" width="1300" height="40" as="geometry" />
         </mxCell>
         <mxCell id="subtitle" value="One approved vertical slice at a time. Main agent is the default coordinator, planner, implementer, and first reviewer. Kapelle performs no Git operations." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=14;fontColor=#5E6C84;" parent="1" vertex="1">
@@ -52,7 +52,7 @@
         <mxCell id="n6" value="Native project skills, agents, rules, plugins, MCP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
           <mxGeometry x="1370" y="275" width="150" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="k1" value="START&#xa;High-level feature map + system map&#xa;1 walking skeleton&#xa;writes spec.md • design.md • tasks.md" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="k1" value="START&#xa;High-level feature map + system map&#xa;1 walking skeleton&#xa;living contract: current → change → result → preserved" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="95" y="430" width="210" height="90" as="geometry" />
         </mxCell>
         <mxCell id="k2" value="Deterministic plan gate&#xa;review_gate.py approve … plan&#xa;fingerprints current slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
@@ -61,10 +61,10 @@
         <mxCell id="k3" value="IMPLEMENT&#xa;Thinnest complete E2E slice&#xa;default checkpoint: workstream&#xa;no unit tests here" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="625" y="430" width="230" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="k4" value="AMEND&#xa;Promote exactly one next capability&#xa;invalidate affected downstream evidence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="k4" value="AMEND&#xa;Promote exactly one next capability&#xa;adds the living structure when absent&#xa;invalidate affected downstream evidence" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="900" y="430" width="230" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="k5" value="VERIFY&#xa;As-built reconciliation + all unit tests&#xa;one risk-based validation batch&#xa;record_verification.py → PASS | FAILED | deferred" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="k5" value="VERIFY&#xa;Converge current → change → result → preserved&#xa;all unit tests + one risk-based batch&#xa;reconcile AC coverage and any diagram" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="1180" y="430" width="235" height="90" as="geometry" />
         </mxCell>
         <mxCell id="k6" value="Final gate&#xa;review_gate.py approve … final" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontStyle=1;" parent="1" vertex="1">
@@ -88,7 +88,7 @@
         <mxCell id="legend" value="Legend: purple = Kapelle stage • blue = Claude Code native harness • green = project-owned capability/evidence • yellow = developer decision • red = deterministic script/refusal • dashed = conditional" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="180" y="790" width="1240" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="note" value="Deep dives: 02 start • 03 implement • 04 amend • 05 verify • 06 artifacts &amp; scripts • 07 responsibility map • 08 native-harness matrix • 09 reconstruct • 10 utilities, migrate, deprecated" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#F3E5F5;strokeColor=#9673A6;fontSize=13;" parent="1" vertex="1">
+        <mxCell id="note" value="Deep dives: 02 start • 03 implement • 04 amend • 05 verify • 06 artifacts &amp; scripts • 07 living artifact contract • 08 responsibility map • 09 native-harness matrix • 10 reconstruct • 11 utilities, migrate, deprecated" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#F3E5F5;strokeColor=#9673A6;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="460" y="870" width="680" height="60" as="geometry" />
         </mxCell>
         <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="d1" target="n1" edge="1">
@@ -195,7 +195,7 @@
         <mxCell id="s6" value="Design only first production-shaped E2E walking skeleton" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="500" y="270" width="250" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="s7" value="Write minimum durable package&#xa;spec.md (7 headings, 2 markers, ≈250 lines)&#xa;design.md (7 headings, ≈180)&#xa;tasks.md (1 workstream, ≤3 boxes, ≈120)&#xa;optional JIT details only" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="s7" value="Write minimum durable package&#xa;spec.md — 3 markers, 7 headings, §3 split into&#xa;Intended change / Resulting / Preserved / Acceptance scenarios&#xa;design.md — §2 split into Current / Resulting architecture / Technical delta&#xa;tasks.md — 1 active workstream: Changes • Done when • Verify • covers AC-NN&#xa;(full contract on page 07)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="845" y="255" width="245" height="105" as="geometry" />
         </mxCell>
         <mxCell id="risk" value="Material ambiguity or high risk?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" parent="1" vertex="1">
@@ -207,7 +207,7 @@
         <mxCell id="o2" value="Explorer only if ownership is unclear" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
           <mxGeometry x="500" y="500" width="220" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="o3" value="One critic pass → one correction max" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
+        <mxCell id="o3" value="One critic pass → one correction max&#xa;questions recommend the evidence-backed option first&#xa;and normally offer two choices" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;fillColor=#F5F5F5;strokeColor=#999999;" parent="1" vertex="1">
           <mxGeometry x="1190" y="500" width="230" height="60" as="geometry" />
         </mxCell>
         <mxCell id="p1" value=".claude/skills • rules • instructions • plugins/MCP" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;" parent="1" vertex="1">
@@ -222,7 +222,7 @@
         <mxCell id="v1" value="validate_json.py&#xa;dispatcher/architecture-guidance.schema.json&#xa;non-zero exit blocks the stage" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="100" y="800" width="220" height="65" as="geometry" />
         </mxCell>
-        <mxCell id="v2" value="validate_progressive_docs.py&#xa;markers, headings, order, non-empty sections,&#xa;detail-file shape, size caps&#xa;structure only — not semantic correctness" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="v2" value="validate_progressive_docs.py&#xa;markers, headings, order, size, details&#xa;with the living marker: §3/§2 subheadings, compact&#xa;workstream fields, AC coverage, Mermaid fences" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="380" y="795" width="260" height="75" as="geometry" />
         </mxCell>
         <mxCell id="v3" value="workflow.json (v2) → workflow-state.schema.json&#xa;build_feature_status.py&#xa;validate_feature_state.py&#xa;(separate commands, never chained)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
@@ -343,7 +343,7 @@
         <mxCell id="i2" value="review_gate.py check … plan&#xa;current fingerprints?&#xa;fail ⇒ refuse code-writing" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="310" y="130" width="210" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="i3" value="Select unchecked work from approved slice only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="i3" value="Select ONE top-level unchecked workstream&#xa;belonging to the approved slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="570" y="135" width="220" height="65" as="geometry" />
         </mxCell>
         <mxCell id="i4" value="Discover narrow native skill/instruction once per workstream&#xa;reuse cached architecture guidance" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" parent="1" vertex="1">
@@ -388,7 +388,7 @@
         <mxCell id="integrate" value="Main agent integrates all outputs and owns shared contracts/config" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="1440" y="565" width="180" height="80" as="geometry" />
         </mxCell>
-        <mxCell id="mark" value="Mark workstream complete&#xa;≤2 indented lines: Result: and Deferred validation:&#xa;no per-task narratives or agent transcripts" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
+        <mxCell id="mark" value="Mark only the active top-level checkbox&#xa;preserve its AC-NN coverage and&#xa;Changes / Done when / Verify&#xa;add Result: and, if needed, Deferred validation:" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;" parent="1" vertex="1">
           <mxGeometry x="150" y="830" width="240" height="75" as="geometry" />
         </mxCell>
         <mxCell id="status" value="Deterministic status rebuild&#xa;build_feature_status.py&#xa;validate_feature_state.py" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
@@ -544,10 +544,10 @@
         <mxCell id="m1" value="Read current spec/design/tasks + implementation + verification" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1">
           <mxGeometry x="90" y="270" width="240" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="kind" value="Classify request" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="kind" value="Classify request&#xa;(5 kinds)" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="400" y="260" width="180" height="90" as="geometry" />
         </mxCell>
-        <mxCell id="next" value="Next increment&#xa;promote one candidate capability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="next" value="Next increment&#xa;promote one candidate capability&#xa;add the living structure when absent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="650" y="250" width="220" height="75" as="geometry" />
         </mxCell>
         <mxCell id="revise" value="Active-slice revision&#xa;update affected sections/work only" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" vertex="1" parent="1">
@@ -677,6 +677,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
               <mxCell id="amPreserve" value="&lt;b&gt;Preserve the working base.&lt;/b&gt; Add or reopen only the smallest workstream needed — never restart the feature, rewrite the base slice, or regenerate unrelated documents. The remaining candidate map is not detailed, redesigned or decomposed." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="40" y="1005" width="1520" height="60" as="geometry"/></mxCell>
+              <mxCell id="amRefactor" value="&lt;b&gt;Behavior-preserving refactor&lt;/b&gt; is a fifth classification: keep the affected current architecture brief, make resulting responsibilities and the technical delta implementable, name preserved behavior and public contracts, and plan focused characterization evidence before production edits. If observable behavior changes, that part is classified and documented as a behavior change." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="100" y="925" width="900" height="60" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
@@ -712,7 +713,7 @@
         <mxCell id="v1" value="Require current plan approval + all approved slices complete" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="90" y="285" width="250" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="v2" value="Reconcile code ↔ spec/design/details/contracts/ADRs/rules" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
+        <mxCell id="v2" value="Converge current → change → result → preserved&#xa;code ↔ spec/design/details/contracts/ADRs/rules&#xa;root documents become the canonical current map" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" vertex="1" parent="1">
           <mxGeometry x="390" y="285" width="270" height="70" as="geometry" />
         </mxCell>
         <mxCell id="mismatch" value="Behavior mismatch or still evolving?" style="rhombus;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontStyle=1;" vertex="1" parent="1">
@@ -831,6 +832,7 @@
         <mxCell id="e21" value="normal path" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" edge="1" parent="1" source="result" target="writer">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+              <mxCell id="vLiving" value="&lt;b&gt;Living convergence also:&lt;/b&gt; relinks every implemented active AC-NN to a workstream and to test or manual evidence; adds specs/, design/, contracts, ADRs or diagrams only when implementation evidence meets their normal trigger; reconciles each existing diagram with as-built participants, ordering and failures, correcting or removing stale visuals rather than keeping misleading ones." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="40" y="995" width="1520" height="70" as="geometry"/></mxCell>
       </root>
     </mxGraphModel>
   </diagram>
@@ -851,13 +853,13 @@
         <mxCell id="f1" value="&lt;b&gt;STATUS.md&lt;/b&gt; — generated human entry point (never hand-edited)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1">
           <mxGeometry x="60" y="140" width="580" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="f2" value="&lt;b&gt;spec.md&lt;/b&gt; — problem/intent · current behaviour · committed behaviour · use-case map · rules &amp; invariants · candidate capabilities · exclusions &amp; open decisions" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+        <mxCell id="f2" value="&lt;b&gt;spec.md&lt;/b&gt; — 3 markers · problem/intent · current behavior · committed behavior · use-case map · rules &amp; invariants · candidate capabilities · exclusions&lt;br&gt;&lt;i&gt;living contract: §3 splits into Intended change / Resulting / Preserved / Acceptance scenarios (AC-NN) — page 07&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
           <mxGeometry x="60" y="182" width="580" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="f3" value="&lt;b&gt;design.md&lt;/b&gt; — context &amp; constraints · boundaries &amp; responsibilities · end-to-end flow · domain &amp; data · contracts &amp; integrations · decisions/risks/deferrals · current walking skeleton" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+        <mxCell id="f3" value="&lt;b&gt;design.md&lt;/b&gt; — context · boundaries &amp; responsibilities · end-to-end flow · domain &amp; data · contracts · decisions/risks/deferrals · current walking skeleton&lt;br&gt;&lt;i&gt;living contract: §2 splits into Current architecture / Resulting architecture / Technical delta&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
           <mxGeometry x="60" y="242" width="580" height="52" as="geometry" />
         </mxCell>
-        <mxCell id="f4" value="&lt;b&gt;tasks.md&lt;/b&gt; — implemented base + the ONE active approved slice (nothing else)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
+        <mxCell id="f4" value="&lt;b&gt;tasks.md&lt;/b&gt; — implemented base + the ONE active approved slice&lt;br&gt;&lt;i&gt;active checkbox: Changes · Done when · Verify · covers AC-NN; checked base keeps its historical shape&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1">
           <mxGeometry x="60" y="302" width="580" height="34" as="geometry" />
         </mxCell>
         <mxCell id="f5" value="&lt;b&gt;specs/&lt;/b&gt;&lt;i&gt;&amp;lt;use-case&amp;gt;&lt;/i&gt;&lt;b&gt;.md&lt;/b&gt; — only when a promoted use case has alternatives, authorization, meaningful failures, subprocess reactions, or too many rules to review inline" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;dashed=1;" vertex="1" parent="1">
@@ -872,7 +874,7 @@
         <mxCell id="f8" value="&lt;b&gt;_context/&lt;/b&gt; — feature-local architecture overlay + evidence index&lt;br&gt;&lt;i&gt;worktree drift is recorded here and NEVER rewrites docs/architecture-map.md&lt;/i&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1">
           <mxGeometry x="60" y="518" width="580" height="46" as="geometry" />
         </mxCell>
-        <mxCell id="f9" value="&lt;b&gt;_kapelle/&lt;/b&gt; — derived execution state, approvals, rules evidence, verification&lt;br&gt;workflow.json · state.json · manifest.json · architecture-guidance/ · reviews/ · validation/ · verification.json · changes/ (optional) · history/" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+        <mxCell id="f9" value="&lt;b&gt;_kapelle/&lt;/b&gt; — derived execution state, approvals, rules evidence, verification&lt;br&gt;workflow.json · state.json · manifest.json · &lt;b&gt;approvals/&amp;lt;gate&amp;gt;.json&lt;/b&gt; (written only by review_gate.py) · architecture-guidance/ · verification.json&lt;br&gt;optional/legacy: reviews/ (documentation-convergence, feature-review) · validation/ · changes/ · history/" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
           <mxGeometry x="60" y="572" width="580" height="56" as="geometry" />
         </mxCell>
         <mxCell id="f10" value="&lt;b&gt;Soft size ceilings&lt;/b&gt; — spec.md ≈250 (&lt;320) · design.md ≈180 (&lt;240) · tasks.md ≈120 lines&lt;br&gt;Split genuinely independent behaviour into specs/, not into more root documents." style="shape=note;whiteSpace=wrap;html=1;size=12;fontSize=10;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1">
@@ -902,7 +904,7 @@
         <mxCell id="sc2" value="&lt;b&gt;validate_json.py&lt;/b&gt; — generic fail-closed validator against dispatcher/*.schema.json (backed by jsonschema_lite.py)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
           <mxGeometry x="710" y="530" width="930" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="sc3" value="&lt;b&gt;validate_progressive_docs.py&lt;/b&gt; — markers, headings, order, non-empty sections, detail-file shape, size caps" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+        <mxCell id="sc3" value="&lt;b&gt;validate_progressive_docs.py&lt;/b&gt; — markers, headings, order, non-empty sections, detail-file shape, size caps; with the living marker also §3/§2 subheadings, active-workstream fields, AC traceability and Mermaid fences" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
           <mxGeometry x="710" y="570" width="930" height="34" as="geometry" />
         </mxCell>
         <mxCell id="sc4" value="&lt;b&gt;build_feature_status.py&lt;/b&gt; — regenerates STATUS.md&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;validate_feature_state.py&lt;/b&gt; — semantic state check" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
@@ -914,7 +916,7 @@
         <mxCell id="sc6" value="&lt;b&gt;record_verification.py&lt;/b&gt; — the ONLY writer of verification.json; fingerprints inputs + implementation files" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
           <mxGeometry x="710" y="690" width="930" height="34" as="geometry" />
         </mxCell>
-        <mxCell id="sc7" value="&lt;b&gt;artifact_fingerprint.py&lt;/b&gt; · &lt;b&gt;feature_state.py&lt;/b&gt; — staleness detection primitives shared by the writers" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
+        <mxCell id="sc7" value="&lt;b&gt;artifact_fingerprint.py&lt;/b&gt; · &lt;b&gt;feature_state.py&lt;/b&gt; — staleness primitives&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;&lt;b&gt;acceptance_criteria.py&lt;/b&gt; — the single AC-NN parser shared by the validators" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
           <mxGeometry x="710" y="730" width="930" height="34" as="geometry" />
         </mxCell>
         <mxCell id="sc8" value="&lt;b&gt;migrate_workflow.py&lt;/b&gt; (legacy feature → lightweight) · &lt;b&gt;migrate_feature_layout.py&lt;/b&gt; · &lt;b&gt;validate_plugin.py&lt;/b&gt; (plugin self-check)" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1">
@@ -968,7 +970,65 @@
       </root>
     </mxGraphModel>
   </diagram>
-<diagram id="components" name="07 — Component responsibility map">
+  <diagram id="p07-living" name="07 — Living artifact contract">
+    <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1320" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="ttl" value="07 — Living artifact contract (kapelle-artifact-contract: living-v1)" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1"><mxGeometry x="40" y="18" width="1300" height="34" as="geometry"/></mxCell>
+        <mxCell id="sub" value="A new or explicitly revised slice states current → change → result → preserved, so a later developer or LLM can read the package without the authoring chat. Enforced by validate_progressive_docs.py when the third marker is present." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="40" y="52" width="1560" height="22" as="geometry"/></mxCell>
+
+        <mxCell id="mk" value="Three markers in the first eight lines of spec.md (MARKER_SCAN_LINES = 8)" style="swimlane;html=1;startSize=32;fillColor=#FFFBEF;strokeColor=#D6B656;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="90" width="1620" height="130" as="geometry"/></mxCell>
+        <mxCell id="mk1" value="&lt;b&gt;kapelle-workflow: lightweight-v1&lt;/b&gt;&lt;br&gt;enables recovery and routing" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="70" y="135" width="500" height="60" as="geometry"/></mxCell>
+        <mxCell id="mk2" value="&lt;b&gt;kapelle-artifacts: progressive-map-v1&lt;/b&gt;&lt;br&gt;enables structural heading validation" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="590" y="135" width="500" height="60" as="geometry"/></mxCell>
+        <mxCell id="mk3" value="&lt;b&gt;kapelle-artifact-contract: living-v1&lt;/b&gt;&lt;br&gt;enables the checks on this page — absent ⇒ package stays valid unchanged" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="1110" y="135" width="520" height="60" as="geometry"/></mxCell>
+
+        <mxCell id="sp" value="spec.md — §3 Committed behavior" style="swimlane;html=1;startSize=32;fillColor=#FAF6FB;strokeColor=#9673A6;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="240" width="530" height="330" as="geometry"/></mxCell>
+        <mxCell id="sp1" value="&lt;b&gt;### Intended change&lt;/b&gt;&lt;br&gt;what this slice changes — not how every file is edited" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="65" y="285" width="480" height="52" as="geometry"/></mxCell>
+        <mxCell id="sp2" value="&lt;b&gt;### Resulting behavior&lt;/b&gt;&lt;br&gt;what a user, caller, operator or downstream system observes afterwards" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="65" y="345" width="480" height="52" as="geometry"/></mxCell>
+        <mxCell id="sp3" value="&lt;b&gt;### Preserved behavior&lt;/b&gt;&lt;br&gt;compatibility and invariants — may say no prior behavior exists, but never empty" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="65" y="405" width="480" height="52" as="geometry"/></mxCell>
+        <mxCell id="sp4" value="&lt;b&gt;### Acceptance scenarios&lt;/b&gt;&lt;br&gt;≥1 observable success scenario with a stable &lt;b&gt;AC-NN&lt;/b&gt; id; failure/edge only when relevant; compact Given/When/Then prose" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="65" y="465" width="480" height="62" as="geometry"/></mxCell>
+        <mxCell id="sp5" value="Brownfield: §2 Current behavior describes the affected as-built flow first. Never write the requested result as though it already exists." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="65" y="530" width="480" height="34" as="geometry"/></mxCell>
+
+        <mxCell id="ds" value="design.md — §2 System boundaries and responsibilities" style="swimlane;html=1;startSize=32;fillColor=#FAF6FB;strokeColor=#9673A6;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="590" y="240" width="530" height="330" as="geometry"/></mxCell>
+        <mxCell id="ds1" value="&lt;b&gt;### Current architecture&lt;/b&gt;&lt;br&gt;brief, evidence-backed, affected scope only — or the existing integration point for a new capability" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="615" y="285" width="480" height="62" as="geometry"/></mxCell>
+        <mxCell id="ds2" value="&lt;b&gt;### Resulting architecture&lt;/b&gt;&lt;br&gt;enough as-designed responsibility and boundary detail to guide this slice" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="615" y="355" width="480" height="52" as="geometry"/></mxCell>
+        <mxCell id="ds3" value="&lt;b&gt;### Technical delta&lt;/b&gt;&lt;br&gt;moved, added, removed or compatibility-sensitive responsibilities" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="615" y="415" width="480" height="52" as="geometry"/></mxCell>
+        <mxCell id="ds4" value="&lt;b&gt;Behavior-preserving refactor&lt;/b&gt;&lt;br&gt;keep current architecture brief, make target + delta implementable, and state preserved behavior and public contracts in the specification. If observable behavior changes, classify it as a behavior change instead." style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="615" y="475" width="480" height="80" as="geometry"/></mxCell>
+
+        <mxCell id="tk" value="tasks.md — compact workstream" style="swimlane;html=1;startSize=32;fillColor=#FAF6FB;strokeColor=#9673A6;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1140" y="240" width="520" height="330" as="geometry"/></mxCell>
+        <mxCell id="tk1" value="- [ ] **W1 Deliver the observable outcome** — covers AC-01&#xa;  - Changes: affected behavior and technical areas.&#xa;  - Done when: one objective completion signal.&#xa;  - Verify: focused evidence that will demonstrate the outcome." style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fontFamily=Courier New;fillColor=#FFFFFF;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="1165" y="285" width="470" height="80" as="geometry"/></mxCell>
+        <mxCell id="tk2" value="&lt;b&gt;Enforced only on active (unchecked) top-level checkboxes&lt;/b&gt;&lt;br&gt;• at most three active checkboxes&lt;br&gt;• each needs &lt;b&gt;Changes&lt;/b&gt;, &lt;b&gt;Done when&lt;/b&gt;, &lt;b&gt;Verify&lt;/b&gt; (non-empty)&lt;br&gt;• each must name at least one existing AC-NN" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="1165" y="375" width="470" height="80" as="geometry"/></mxCell>
+        <mxCell id="tk3" value="&lt;b&gt;Compatibility&lt;/b&gt;&lt;br&gt;• checked implemented-base entries keep their historical shape&lt;br&gt;• adding the marker never forces backfilling the three fields&lt;br&gt;• indented checkboxes are free-form notes, not workstreams&lt;br&gt;• no mandatory DAG, owners, estimates or file inventories" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="1165" y="465" width="470" height="90" as="geometry"/></mxCell>
+
+        <mxCell id="tr" value="Lightweight traceability — human files only, no machine graph" style="swimlane;html=1;startSize=32;fillColor=#FFFBEF;strokeColor=#D6B656;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="595" width="1080" height="270" as="geometry"/></mxCell>
+        <mxCell id="tr1" value="observable&lt;br&gt;&lt;b&gt;AC-NN&lt;/b&gt; scenario" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#FFE6CC;strokeColor=#D79B00;" vertex="1" parent="1"><mxGeometry x="80" y="650" width="220" height="60" as="geometry"/></mxCell>
+        <mxCell id="tr2" value="coherent&lt;br&gt;&lt;b&gt;workstream&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="400" y="650" width="220" height="60" as="geometry"/></mxCell>
+        <mxCell id="tr3" value="focused&lt;br&gt;&lt;b&gt;Verify&lt;/b&gt; evidence" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;fillColor=#D5E8D4;strokeColor=#82B366;" vertex="1" parent="1"><mxGeometry x="720" y="650" width="220" height="60" as="geometry"/></mxCell>
+        <mxCell id="etr1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" parent="1" source="tr1" target="tr2"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="etr2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;" edge="1" parent="1" source="tr2" target="tr3"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="tr4" value="&lt;b&gt;Deterministic rules&lt;/b&gt;&amp;nbsp; ≥1 active AC-NN required · an active workstream referencing an unknown AC fails · every active scenario must be covered · compact ranges expand (AC-01–AC-03) with id width preserved and a bounded span · when no workstream is active, checked coverage counts · candidates and use-case-map items are never traced" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="80" y="730" width="1000" height="60" as="geometry"/></mxCell>
+        <mxCell id="tr5" value="AC parsing is shared by &lt;b&gt;scripts/acceptance_criteria.py&lt;/b&gt; (validate_progressive_docs · feature_state · validate_task_plan). Internal identifiers never appear in developer questions." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=10;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="80" y="800" width="1000" height="34" as="geometry"/></mxCell>
+
+        <mxCell id="dg" value="Evidence-triggered diagrams — zero by default" style="swimlane;html=1;startSize=32;fillColor=#F4F8FE;strokeColor=#6C8EBF;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="1140" y="595" width="520" height="270" as="geometry"/></mxCell>
+        <mxCell id="dg1" value="changed boundary / ownership / security, or 3+ participants → &lt;b&gt;architecture flow&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="1165" y="638" width="470" height="34" as="geometry"/></mxCell>
+        <mxCell id="dg2" value="ordering, async handoff, retry, rollback, cross-component failure → &lt;b&gt;runtime sequence&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="1165" y="676" width="470" height="34" as="geometry"/></mxCell>
+        <mxCell id="dg3" value="non-trivial lifecycle with constrained transitions → &lt;b&gt;state diagram&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="1165" y="714" width="470" height="34" as="geometry"/></mxCell>
+        <mxCell id="dg4" value="sensitive or external data movement → &lt;b&gt;data-flow diagram&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="1165" y="752" width="470" height="34" as="geometry"/></mxCell>
+        <mxCell id="dg5" value="refactor moves responsibilities and prose hides it → &lt;b&gt;before/after architecture&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#DAE8FC;strokeColor=#6C8EBF;" vertex="1" parent="1"><mxGeometry x="1165" y="790" width="470" height="34" as="geometry"/></mxCell>
+        <mxCell id="dg6" value="Diffable Mermaid inline in design.md or focused design/&lt;i&gt;aspect&lt;/i&gt;.md · never a new root sequences.md · 0–1 per normal slice · every diagram followed by a plain-language explanation · reviewed with the slice, never approved separately" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="1165" y="828" width="470" height="28" as="geometry"/></mxCell>
+
+        <mxCell id="ck" value="What validate_progressive_docs.py checks when the living marker is present" style="swimlane;html=1;startSize=32;fillColor=#FEF6F6;strokeColor=#B85450;fontStyle=1;fontSize=13;" vertex="1" parent="1"><mxGeometry x="40" y="890" width="1620" height="240" as="geometry"/></mxCell>
+        <mxCell id="ck1" value="&lt;b&gt;Structure&lt;/b&gt;&lt;br&gt;• the four Committed-behavior subheadings exist, in order, non-empty&lt;br&gt;• the three System-boundaries subheadings exist, in order, non-empty&lt;br&gt;• ≥1 top-level workstream checkbox exists" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="70" y="935" width="510" height="90" as="geometry"/></mxCell>
+        <mxCell id="ck2" value="&lt;b&gt;Active work&lt;/b&gt;&lt;br&gt;• ≤3 active checkboxes&lt;br&gt;• Changes / Done when / Verify present and non-empty&lt;br&gt;• AC coverage: none missing, no unknown reference, nothing uncovered" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="600" y="935" width="510" height="90" as="geometry"/></mxCell>
+        <mxCell id="ck3" value="&lt;b&gt;Diagrams&lt;/b&gt; (design.md, design/*.md, legacy sequences.md)&lt;br&gt;• every mermaid fence is closed&lt;br&gt;• no empty diagram body&lt;br&gt;• a plain-language explanation follows before the next heading or fence" style="rounded=0;whiteSpace=wrap;html=1;fontSize=10;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="1130" y="935" width="510" height="90" as="geometry"/></mxCell>
+        <mxCell id="ck4" value="&lt;b&gt;Not machine-checkable — stays evidence-based human/agent review:&lt;/b&gt; whether the delta is correct, whether the architecture fits the project, Mermaid semantics and syntax (use a project-native renderer when available), and whether the detail is genuinely proportional to the slice." style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="70" y="1040" width="1570" height="60" as="geometry"/></mxCell>
+
+        <mxCell id="lc" value="&lt;b&gt;Lifecycle:&lt;/b&gt; /kapelle:start writes the contract for a new package · --revise adds the marker and the missing compact structure without rewriting unrelated history · /kapelle:amend adds it when absent and records the next slice's current → change → result → preserved · /kapelle:implement closes only the active top-level checkbox and never strips AC coverage or the three fields · /kapelle:verify converges root documents into the confirmed current map and reconciles or removes stale diagrams." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=11;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="40" y="1150" width="1620" height="80" as="geometry"/></mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+<diagram id="components" name="08 — Component responsibility map">
     <mxGraphModel dx="1700" dy="1150" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1150" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -1072,12 +1132,12 @@
       </root>
     </mxGraphModel>
   </diagram>
-    <diagram id="p7-matrix" name="08 — Native harness × stage matrix">
+    <diagram id="p7-matrix" name="09 — Native harness × stage matrix">
     <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1250" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="ttl" value="07 — Which Claude Code native component is used at which stage" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
+        <mxCell id="ttl" value="09 — Which Claude Code native component is used at which stage" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1">
           <mxGeometry x="40" y="18" width="1300" height="34" as="geometry" />
         </mxCell>
         <mxCell id="sub" value="Every cell reflects the current SKILL.md protocols. Empty span = the row applies identically to all stages." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1">
@@ -1332,7 +1392,7 @@
       </root>
     </mxGraphModel>
   </diagram>
-<diagram id="reconstruct" name="09 — /kapelle:reconstruct (documentation only)">
+<diagram id="reconstruct" name="10 — /kapelle:reconstruct (documentation only)">
     <mxGraphModel dx="1600" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1000" math="0" shadow="0">
       <root>
         <mxCell id="0" />
@@ -1467,12 +1527,12 @@
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="p10-utilities" name="10 — Utilities, migration, deprecated">
+  <diagram id="p10-utilities" name="11 — Utilities, migration, deprecated">
     <mxGraphModel dx="1800" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="1050" math="0" shadow="0">
       <root>
         <mxCell id="0"/>
         <mxCell id="1" parent="0"/>
-        <mxCell id="ttl" value="10 — Off-backbone routes: utilities, migration, deprecated wrappers" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1"><mxGeometry x="40" y="18" width="1300" height="34" as="geometry"/></mxCell>
+        <mxCell id="ttl" value="11 — Off-backbone routes: utilities, migration, deprecated wrappers" style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=24;fontStyle=1;fontColor=#172B4D;" vertex="1" parent="1"><mxGeometry x="40" y="18" width="1300" height="34" as="geometry"/></mxCell>
         <mxCell id="sub" value="None of these is a second pipeline. Every one of them returns to the backbone through /kapelle:status or /kapelle:start --approve." style="text;html=1;strokeColor=none;fillColor=none;align=left;fontSize=12;fontColor=#5E6C84;" vertex="1" parent="1"><mxGeometry x="40" y="52" width="1500" height="22" as="geometry"/></mxCell>
 
         <mxCell id="uw" value="Optional standalone utilities — run one only when its output is independently useful" style="swimlane;html=1;startSize=34;fillColor=#F6FBF5;strokeColor=#82B366;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="40" y="95" width="800" height="480" as="geometry"/></mxCell>
@@ -1498,7 +1558,7 @@
         <mxCell id="dw" value="Deprecated compatibility wrappers — they never execute their former stage protocol" style="swimlane;html=1;startSize=34;fillColor=#FEF6F6;strokeColor=#B85450;fontStyle=1;fontSize=14;" vertex="1" parent="1"><mxGeometry x="40" y="605" width="1620" height="290" as="geometry"/></mxCell>
         <mxCell id="dp1" value="&lt;b&gt;16 wrapper names&lt;/b&gt;&lt;br&gt;spec · specify · clarify · classify-size · design · plan&lt;br&gt;plan-tests · decompose · base-functional-tests · unit-tests&lt;br&gt;change · resume-change · fix · feature-review · finalize · ship" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F5F5F5;strokeColor=#999999;" vertex="1" parent="1"><mxGeometry x="70" y="655" width="470" height="105" as="geometry"/></mxCell>
         <mxCell id="dp2" value="&lt;b&gt;On invocation (references/deprecated-legacy-stages.md)&lt;/b&gt;&lt;br&gt;1. no human-controlled marker ⇒ Status: DEPRECATED + /kapelle:migrate &lt;i&gt;slug&lt;/i&gt;&lt;br&gt;2. otherwise ⇒ Status: DEPRECATED + the replacement command named by the wrapper&lt;br&gt;3. write no feature or project files; run no agent, validation, git or migration action" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#F8CECC;strokeColor=#B85450;" vertex="1" parent="1"><mxGeometry x="570" y="655" width="580" height="105" as="geometry"/></mxCell>
-        <mxCell id="dp3" value="&lt;b&gt;Typical replacements&lt;/b&gt;&lt;br&gt;analysis / design / planning names → &lt;b&gt;/kapelle:start&lt;/b&gt;&lt;br&gt;change · resume-change · fix → &lt;b&gt;/kapelle:amend&lt;/b&gt;&lt;br&gt;test · review · release names → &lt;b&gt;/kapelle:verify&lt;/b&gt;&lt;br&gt;&lt;i&gt;each wrapper names its own exact replacement&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="1180" y="655" width="450" height="105" as="geometry"/></mxCell>
+        <mxCell id="dp3" value="&lt;b&gt;Actual replacements&lt;/b&gt;&lt;br&gt;spec · specify · clarify · classify-size · design · plan · plan-tests · decompose → &lt;b&gt;/kapelle:start&lt;/b&gt;&lt;br&gt;change · fix → &lt;b&gt;/kapelle:amend&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;base-functional-tests → &lt;b&gt;/kapelle:implement&lt;/b&gt;&lt;br&gt;unit-tests · feature-review · finalize · ship → &lt;b&gt;/kapelle:verify&lt;/b&gt;&amp;nbsp;&amp;nbsp;·&amp;nbsp;&amp;nbsp;resume-change → &lt;b&gt;/kapelle:status&lt;/b&gt;&lt;br&gt;&lt;i&gt;specify routes to /kapelle:migrate first when the marker is absent&lt;/i&gt;" style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#FFF2CC;strokeColor=#D6B656;" vertex="1" parent="1"><mxGeometry x="1180" y="655" width="450" height="105" as="geometry"/></mxCell>
         <mxCell id="dp4" value="Wrappers exist for one compatibility release and may then be removed. Kapelle has exactly one human-controlled pipeline: &lt;b&gt;start → implement → (amend →) verify&lt;/b&gt;, with &lt;b&gt;status&lt;/b&gt; as recovery and routing." style="rounded=1;whiteSpace=wrap;html=1;fontSize=11;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="70" y="780" width="1560" height="50" as="geometry"/></mxCell>
 
         <mxCell id="core" value="&lt;b&gt;Core invariant:&lt;/b&gt; stage → native project capability → guidance/tools/code is one-way. Project skills never invoke Kapelle stages, and project-specific behaviour belongs in native project capabilities, not in core stages." style="shape=note;whiteSpace=wrap;html=1;size=14;fontSize=12;align=left;spacingLeft=8;fillColor=#E1D5E7;strokeColor=#9673A6;" vertex="1" parent="1"><mxGeometry x="40" y="915" width="1620" height="60" as="geometry"/></mxCell>

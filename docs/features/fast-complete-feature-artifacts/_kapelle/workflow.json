@@ -1,0 +1,6 @@
+{
+  "workflow": "human-controlled",
+  "version": 2,
+  "created_from": "raw-task",
+  "profile": "lightweight"
+}

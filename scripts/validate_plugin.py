@@ -121,6 +121,7 @@ for rel in [
     'scripts/test_jsonschema_lite.py',
     'scripts/validate_task_plan.py',
     'scripts/test_validate_task_plan.py',
+    'scripts/acceptance_criteria.py',
     'scripts/feature_state.py',
     'scripts/build_feature_status.py',
     'scripts/rebuild_feature_state.py',
@@ -717,6 +718,17 @@ for required in [
     'at most three checkboxes',
     'candidate capabilities',
     'progressive-map-v1',
+    'kapelle-artifact-contract: living-v1',
+    'Intended change',
+    'Resulting behavior',
+    'Preserved behavior',
+    'Acceptance scenarios',
+    'Current architecture',
+    'Resulting architecture',
+    'Technical delta',
+    '`Changes`',
+    '`Done when`',
+    '`Verify`',
     'validate_progressive_docs.py',
     'design/domain-model.md',
     'production-shaped',
@@ -729,6 +741,85 @@ check(
     'review_gate.py approve' in start_skill or 'review_gate.py" approve' in start_skill,
     "start: missing lightweight-planning guard 'review_gate.py approve'",
 )
+
+amend_skill = (ROOT / 'skills/amend/SKILL.md').read_text()
+for required in [
+    'behavior-preserving refactor',
+    'affected current flow',
+    'Resulting behavior',
+    'Preserved behavior',
+    'Current architecture',
+    'Resulting architecture',
+    'Technical delta',
+    'characterization evidence',
+]:
+    check(required in amend_skill, f'amend: missing living-artifact guard {required!r}')
+
+question_contract = (ROOT / 'references/developer-questions.md').read_text()
+for required in [
+    'recommend it first',
+    'Normally give two real options',
+    'Code examples when relevant',
+    'normally at most 12 lines',
+    'never expands into a full implementation',
+    'evidence-backed default',
+]:
+    check(required in question_contract,
+          f'developer questions: missing concise-decision guard {required!r}')
+
+verify_skill = (ROOT / 'skills/verify/SKILL.md').read_text()
+for required in [
+    'current -> change -> result -> preserved',
+    'canonical current map',
+    'without the authoring chat',
+    'Reconcile every existing',
+    'stale diagrams',
+]:
+    check(required in verify_skill, f'verify: missing living-convergence guard {required!r}')
+
+implement_skill = (ROOT / 'skills/implement/SKILL.md').read_text()
+for required in [
+    'top-level unchecked workstream',
+    'Preserve its `AC-NN` coverage',
+    '`Changes`, `Done when`, and `Verify` fields',
+    'Mark only the active top-level workstream checkbox complete',
+]:
+    check(required in implement_skill, f'implement: missing living-workstream guard {required!r}')
+
+progressive_artifacts = (ROOT / 'references/progressive-artifacts.md').read_text()
+for required in [
+    'Evidence-triggered diagrams',
+    'Diagrams are zero-by-default',
+    'focused architecture flow',
+    'runtime sequence',
+    'state diagram',
+    'data-flow diagram',
+    'concise before/after architecture',
+    'plain-language explanation',
+    'Do not ask for separate diagram approval',
+]:
+    check(required in progressive_artifacts,
+          f'progressive artifacts: missing diagram guard {required!r}')
+
+for required in [
+    'Lightweight traceability',
+    'observable acceptance scenario -> coherent workstream -> focused verification',
+    'rejects unknown references',
+    'requires every active scenario to be covered',
+    'Do not introduce a mandatory machine DAG',
+    'Internal identifiers never appear in developer questions',
+]:
+    check(required in progressive_artifacts,
+          f'progressive artifacts: missing traceability guard {required!r}')
+
+sequences_skill = (ROOT / 'skills/sequences/SKILL.md').read_text()
+for required in [
+    'design/runtime-flow.md',
+    'focused `design/<aspect>.md`',
+    'plain-language explanation',
+    'Do not create a new root `sequences.md`',
+]:
+    check(required in sequences_skill, f'sequences: missing diagram guard {required!r}')
 
 for rel in [
     'skills/start/SKILL.md',

@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from acceptance_criteria import AC_PATTERN, expand_acceptance_criteria
 from jsonschema_lite import validate_instance
 from validate_task_plan import validate as validate_task_plan
 from validate_design import validate as validate_design
@@ -47,12 +48,12 @@ EVIDENCE_LOSS = (
     "historical validation command output",
     "token and cost telemetry",
 )
+# Workstream checkboxes are top-level only; indented checkboxes are free-form notes
+# inside a workstream block and must not become separate tasks.
 TASK_PATTERN = re.compile(
-    r"^\s*-\s+\[(?P<checked>[ xX])\]\s+(?:\*\*)?(?P<id>[A-Za-z][A-Za-z0-9._-]*)"
+    r"^-\s+\[(?P<checked>[ xX])\]\s+(?:\*\*)?(?P<id>[A-Za-z][A-Za-z0-9._-]*)"
     r"(?:\s+(?P<title>.*?))?(?:\*\*)?\s*$"
 )
-AC_PATTERN = re.compile(r"\bAC-[A-Za-z0-9][A-Za-z0-9._-]*\b")
-AC_RANGE_PATTERN = re.compile(r"\bAC-(\d+)\s*[–—-]\s*AC-(\d+)\b")
 TASK_ID_PATTERN = re.compile(r"\b[A-Z][A-Z0-9._-]*\d[A-Z0-9._-]*\b")
 
 
@@ -243,17 +244,6 @@ def artifact_manifest(feature_dir: Path, fingerprints: dict[str, str | None]) ->
         }
         for name in HUMAN_ARTIFACTS
     }
-
-
-def expand_acceptance_criteria(text: str) -> list[str]:
-    found = set(AC_PATTERN.findall(text))
-    for match in AC_RANGE_PATTERN.finditer(text):
-        start_text, end_text = match.groups()
-        start, end = int(start_text), int(end_text)
-        if start <= end and end - start <= 100:
-            width = max(len(start_text), len(end_text))
-            found.update(f"AC-{item:0{width}d}" for item in range(start, end + 1))
-    return sorted(found)
 
 
 def parse_tasks(path: Path) -> list[dict[str, Any]]:

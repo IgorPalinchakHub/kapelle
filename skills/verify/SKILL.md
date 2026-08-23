@@ -39,6 +39,18 @@ Invoke:
    use-case flows, domain state/behavior, system boundaries, and integration contracts. Update the
    human documents only to describe confirmed implementation decisions; never silently promote a
    candidate capability. Behavior mismatches go through `/kapelle:amend`.
+   Converge `current -> change -> result -> preserved`: update `Current behavior` to the confirmed
+   resulting user flow while retaining concise implemented-change context. For refactoring,
+   reconcile brief prior affected architecture, resulting architecture, technical delta, and
+   preserved behavior/contracts. Root documents become the canonical current map.
+   Create or update `specs/*.md`, focused `design/*.md`, contracts, ADRs, or diagrams only when
+   implementation evidence meets their normal trigger and the artifact remains independently
+   useful after completion. Final detail must let another developer or LLM understand the current
+   user and affected technical flows without the authoring chat; do not narrate every class or
+   method.
+   Reconcile active acceptance scenarios with completed workstreams and performed verification.
+   Every implemented active scenario remains linked to at least one workstream and relevant test or
+   manual evidence; candidate capabilities remain outside this trace.
 3. Plan and write all unit tests now, grouped by changed behavior and failure modes. Do not generate
    tests for trivial accessors or implementation details merely to increase count.
 4. Build one exact, risk-based validation batch from project-native commands. Include applicable
@@ -87,7 +99,11 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/
 ```
 
    Do not create per-task validation JSON, separate unit-test-run state, diagrams, release notes, or
-   agent transcripts unless independently useful to the developer.
+   agent transcripts unless independently useful to the developer. Reconcile every existing
+   triggered diagram with as-built participants, ordering, and failure behavior; remove or correct
+   stale diagrams rather than preserving misleading visuals. Run an available project-native
+   Mermaid renderer or checker when applicable; otherwise require closed, non-empty source and the
+   structural validator's nearby plain-language explanation check.
 9. On PASS, present: implemented flow, test coverage, commands/results, evidence source, remaining
    manual checks, risks, and the exact final approval command.
 

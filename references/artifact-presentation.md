@@ -19,17 +19,20 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
 
 - `STATUS.md`: generated entry point, normally at most 100 lines.
 - `proposal.md`: problem, goal, scope, non-goals, impact, risks, and product decisions.
-- `spec.md`: the high-level feature map, current behavior, committed observable behavior, use cases,
-  rules/invariants, candidate capabilities, exclusions, and unknowns.
+- `spec.md`: the high-level feature map, evidence-backed current behavior, intended active change,
+  resulting and preserved observable behavior, acceptance scenarios, use cases, rules/invariants,
+  candidate capabilities, exclusions, and unknowns.
 - `specs/*.md`: only promoted use cases whose alternatives, failures, business rules, subprocesses,
   or integration reactions need independent review.
-- `design.md`: high-level system context, boundaries, responsibilities, flows, domain/data,
-  contracts, security, decisions, risks, deferrals, and the current walking skeleton.
+- `design.md`: high-level system context, brief affected current architecture, resulting boundaries
+  and responsibilities, technical delta, flows, domain/data, contracts, security, decisions,
+  risks, deferrals, and the current walking skeleton.
 - `design/domain-model.md`: aggregate ownership, behavior, invariants, state transitions, events,
   and persistence mapping when the domain trigger applies.
 - other `design/*.md`: only genuinely independent component or integration designs.
-- `tasks.md`: workstream checklist with task id, outcome, meaningful dependency, AC coverage,
-  blocker, and validation state.
+- `tasks.md`: compact workstream checklist whose active entries include an outcome plus `Changes`,
+  `Done when`, and `Verify`; checked legacy entries may retain their historical shape. Meaningful
+  dependencies and richer coordination appear only when the slice genuinely needs them.
 - `test-plan.md`: strategy, AC/integration coverage, required/optional commands, manual checks,
   explicit skips, and deferrals.
 - `_context/evidence-index.md`: reconstruction claim ids, classifications, cited source ranges,
@@ -37,6 +40,10 @@ inside `proposal.md`, `spec.md`, `design.md`, `tasks.md`, or `test-plan.md`.
 
 Keep the package proportional. The high-level map may cover the known feature, but detail only the
 current vertical slice. Do not create one document per rule, class, or layer.
+
+The final package is detailed enough when another developer or LLM can understand the current user
+flow, affected technical flow, important failures, and verification without the authoring chat.
+Detail does not mean narrating every class, method, candidate use case, or implementation step.
 
 ## Generated status
 
@@ -75,6 +82,12 @@ tasks <-> implemented work
 test-plan <-> performed validation
 ADR <-> actual architectural decisions
 ```
+
+For an existing-feature change, convergence also reconciles `current -> change -> result ->
+preserved`. For behavior-preserving refactoring it reconciles `current architecture -> resulting
+architecture -> technical delta -> preserved behavior/contracts`. Root documents describe the
+confirmed current system after verification; immutable machine change evidence remains under
+`_kapelle/changes/` when its trigger applies.
 
 The human-controlled route records complete verification and a fingerprinted release. Observable
 requirement changes always use the amendment lifecycle.

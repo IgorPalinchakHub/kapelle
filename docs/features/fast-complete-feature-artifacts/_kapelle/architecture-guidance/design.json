@@ -1,0 +1,98 @@
+{
+  "status": "ARCHITECTURE_GUIDANCE_READY",
+  "capability": {
+    "name": "delegated-project-scoped-architecture-rules-reviewer",
+    "kind": "project-subagent"
+  },
+  "scope": {
+    "aspects": [
+      "progressive product specifications",
+      "as-built technical specifications",
+      "brownfield change deltas",
+      "behavior-preserving refactoring",
+      "developer questions",
+      "architecture and runtime diagrams",
+      "lightweight traceability",
+      "deterministic structural validation",
+      "final documentation convergence"
+    ],
+    "modules": [
+      "skills",
+      "references",
+      "scripts",
+      "docs"
+    ],
+    "entrypoints": [
+      "/kapelle:start",
+      "/kapelle:amend",
+      "/kapelle:verify",
+      "/kapelle:sequences",
+      "validate_progressive_docs.py",
+      "validate_plugin.py"
+    ],
+    "paths": [
+      "skills/start/SKILL.md",
+      "skills/amend/SKILL.md",
+      "skills/verify/SKILL.md",
+      "skills/sequences/SKILL.md",
+      "references/progressive-artifacts.md",
+      "references/artifact-presentation.md",
+      "references/developer-questions.md",
+      "scripts/validate_progressive_docs.py",
+      "scripts/test_validate_progressive_docs.py",
+      "scripts/test_review_gate.py",
+      "scripts/test_feature_state.py",
+      "scripts/validate_plugin.py"
+    ]
+  },
+  "rules": [
+    {
+      "title": "Preserve lightweight vertical slices",
+      "summary": "Keep the public start/approve/implement/amend/verify backbone, one smallest production-shaped active slice, and non-binding candidates.",
+      "source": "AGENTS.md; skills/start/SKILL.md; skills/amend/SKILL.md"
+    },
+    {
+      "title": "Keep detail evidence-triggered",
+      "summary": "Root documents converge to as-built truth; detailed use-case, design, contract, ADR, and diagram artifacts are created only when independently useful.",
+      "source": "AGENTS.md; references/progressive-artifacts.md"
+    },
+    {
+      "title": "Inspect brownfield behavior before change",
+      "summary": "Existing-feature amendments must read current documents and implementation, preserve correct behavior, and update only affected sections and work.",
+      "source": "skills/amend/SKILL.md"
+    },
+    {
+      "title": "Verify owns as-built convergence",
+      "summary": "Final human artifacts describe confirmed implementation decisions; candidate behavior is never silently promoted.",
+      "source": "AGENTS.md; skills/verify/SKILL.md; references/artifact-presentation.md"
+    },
+    {
+      "title": "Preserve compatibility and proportional size",
+      "summary": "Keep progressive-map-v1 root headings compatible, spec.md under 320 lines, design.md under 240 lines, and simple behavior inline.",
+      "source": "references/progressive-artifacts.md; scripts/validate_progressive_docs.py"
+    },
+    {
+      "title": "Deterministic state and direct execution",
+      "summary": "Machine state stays under _kapelle; deterministic scripts own state/status JSON; helpers and inspections are direct; no Git operations.",
+      "source": "AGENTS.md; references/script-execution.md"
+    }
+  ],
+  "sources": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "config/shapes/architecture-rules-agent.shape.md",
+    "skills/start/SKILL.md",
+    "skills/amend/SKILL.md",
+    "skills/verify/SKILL.md",
+    "skills/sequences/SKILL.md",
+    "references/progressive-artifacts.md",
+    "references/developer-questions.md",
+    "references/artifact-presentation.md",
+    "scripts/validate_progressive_docs.py",
+    "scripts/test_validate_progressive_docs.py",
+    "scripts/test_review_gate.py",
+    "scripts/test_feature_state.py",
+    "scripts/validate_plugin.py"
+  ],
+  "gaps": []
+}

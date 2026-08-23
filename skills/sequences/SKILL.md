@@ -29,8 +29,11 @@ Enrich the technical specification with runtime flows and failure branches.
 4. Use native project capabilities when project-specific behavior is needed: [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
 5. Request scoped project guidance when the flow crosses an architectural boundary:
    [`../../references/guidance.md`](../../references/guidance.md).
-6. Prefer `End-to-end flow` in `design.md`. Create `sequences.md` only when three or more components,
-   asynchronous ordering, retries, or failure branches would make that section hard to scan. Do not
+6. Prefer one focused Mermaid block in `End-to-end flow` in `design.md`. When three or more
+   components, asynchronous ordering, retries, or failure branches would make that section hard to
+   scan, create `design/runtime-flow.md` or another focused `design/<aspect>.md`. Follow every
+   diagram with a short plain-language explanation. Do not create a new root `sequences.md`; read
+   and preserve that path only as compatibility input until it is explicitly migrated. Do not
    write `_kapelle/state.json` directly.
 7. Validate the package, rebuild status, and validate state as three separate commands:
 
@@ -45,7 +48,7 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 
 ## Output
 
-- Updated `design.md`; optional `sequences.md`.
+- Updated `design.md`; optional focused `design/<aspect>.md`.
 - `Status: DONE | utility: sequences | produced: <paths>`.
 
 ## Definition of Done

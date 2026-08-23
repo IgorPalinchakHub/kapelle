@@ -39,6 +39,9 @@ bundled Python helper and shell inspection command.
    known feature: current behavior, actors and outcomes, entrypoints, use cases, affected
    components, domain/data ownership, integrations, nearby tests, and precedents. Investigate only
    the first usable end-to-end path in implementation detail. Keep unknowns explicit.
+   Classify the active slice as new behavior, an existing-feature behavior change, a
+   behavior-preserving refactor, a defect, or a documentation-only correction. This classification
+   changes artifact emphasis, not the public workflow.
 2. The main agent integrates the map. Use an explorer only when ownership is unclear or relevant
    code spans unfamiliar modules. For a genuinely medium/large cross-component feature, it may run
    one bounded parallel read-only burst of at most three disjoint investigations: existing
@@ -48,8 +51,10 @@ bundled Python helper and shell inspection command.
    data change, public contract, migration, concurrency, or cross-system side effects. Do not run a
    default business-analyst/critic/devil's-advocate chain.
 3. Ask at most one consolidated developer question when a decision changes observable behavior.
-   State the intended change and real options with trade-offs. Do not mention internal artifact,
-   gate, task, blocker, or acceptance-criterion identifiers.
+   State the intended change and real options with trade-offs. Recommend the evidence-backed choice
+   first with its downside and normally offer two options. Add a focused code example only when an
+   API, schema, control-flow, or compatibility difference is materially clearer in code. Do not
+   mention internal artifact, gate, task, blocker, or acceptance-criterion identifiers.
 4. Discover relevant project skills, instructions, and the project architecture-rules capability.
    When dispatching that capability, require direct CLI invocations and consume their tool results;
    do not allow compound shell wrappers, scratchpad redirection, background execution, or shell
@@ -70,18 +75,32 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/
 ```md
 <!-- kapelle-workflow: lightweight-v1 -->
 <!-- kapelle-artifacts: progressive-map-v1 -->
+<!-- kapelle-artifact-contract: living-v1 -->
 ```
 
+     Under `Committed behavior`, write `Intended change`, `Resulting behavior`,
+     `Preserved behavior`, and `Acceptance scenarios` as defined by `progressive-artifacts.md`. For brownfield
+     work, write the affected evidence-backed current flow before the requested result. Do not
+     describe the target as current behavior.
    - `design.md`: the high-level system context, likely component boundaries, responsibilities,
      end-to-end flow, domain/data ownership, contracts, decisions, risks, and deferrals. Design only
      the first committed slice in implementation detail; label candidate architecture directional.
+     Under `System boundaries and responsibilities`, write brief `Current architecture`, useful
+     `Resulting architecture`, and `Technical delta`. A refactor also makes preserved behavior and
+     public contracts explicit in the specification.
    - `tasks.md`: one initial walking-skeleton workstream, split into at most three checkboxes only
-     when the slice cannot remain reviewable as one checkbox. Do not place candidate capabilities here.
+     when the slice cannot remain reviewable as one checkbox. These are top-level unchecked
+     workstreams. Each active workstream states `Changes`, `Done when`, and `Verify`, and names the
+     active `AC-NN` acceptance scenarios it covers. Do not place candidate capabilities here or
+     create a mandatory DAG.
 6. Add `specs/<use-case>.md` for the first slice only when alternatives, authorization, failures, or
    system reactions need independent review. Create `design/domain-model.md` when the slice changes
    an aggregate, lifecycle/status transition, money or authorization invariant, domain event,
    ownership boundary, or non-trivial relationship. Create contracts, other detailed design, an
-   ADR, or a diagram only when its trigger in `progressive-artifacts.md` applies.
+   ADR, or a diagram only when its trigger in `progressive-artifacts.md` applies. Diagrams are
+   zero-by-default, use Mermaid inline in `design.md` or focused `design/<aspect>.md`, and include a
+   nearby plain-language explanation. Do not ask for a separate diagram decision when repository
+   evidence already determines whether the trigger applies.
 7. Keep documents easy to scan. Prefer roughly 250 lines for `spec.md`, 180 for `design.md`, and
    120 for `tasks.md` as soft ceilings. Validate the package:
 
@@ -118,7 +137,8 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_P
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
-11. On revision, correct the high-level map or active slice without detailing candidate use cases.
+11. On revision, add the living-contract marker and compact structure when they are absent, then
+    correct the high-level map or active slice without detailing candidate use cases.
     Any plan, verification, or final approval whose fingerprints no longer match becomes stale
     automatically. Do not promote candidate capabilities into committed behavior until the
     developer requests them through `/kapelle:amend`.

@@ -9,6 +9,8 @@ description: >
 
 Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
 asking for input. The project architecture-rules subagent result is cached by `start`.
+Read [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) to
+preserve the active workstream and traceability contract.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
 bundled Python helper and shell inspection command.
 
@@ -39,8 +41,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" check "${CLAUDE_PROJECT_D
 
    Refuse code-writing on failure. A recovered feature returns to `/kapelle:start <slug>` to rebuild
    or approve its plan.
-2. Default to `--checkpoint=workstream`. Select the unchecked work belonging to the current vertical
-   slice. `task` is an opt-in finer pause; `none` continues only through that approved slice.
+2. Default to `--checkpoint=workstream`. Select a top-level unchecked workstream belonging to the
+   current vertical slice. Preserve its `AC-NN` coverage and its `Changes`, `Done when`, and
+   `Verify` fields. `task` is an opt-in finer pause; `none` continues only through that approved
+   slice.
 3. The main agent owns understanding, local planning, implementation, and the first review. Discover
    the narrowest project-native skill or instruction relevant to this workstream and reuse the
    cached architecture guidance. Refresh guidance only if the actual code scope leaves its recorded
@@ -68,9 +72,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" check "${CLAUDE_PROJECT_D
    - prefer syntax/load checks and the smallest affected functional test;
    - do not run full static analysis, lint, or broad suites unless requested;
    - skipped or cancelled required checks are reported as deferred, never PASS.
-9. Mark the workstream checkbox complete only when its production outcome is present and its narrow
-   development check is either passed or explicitly deferred. Add at most two indented lines:
-   `Result:` and, when needed, `Deferred validation:`. Do not create per-task run narratives,
+9. Mark only the active top-level workstream checkbox complete when its production outcome is
+   present and its narrow development check is either passed or explicitly deferred. Do not remove
+   or rewrite its `AC-NN` coverage or its `Changes`, `Done when`, and `Verify` fields. Add at most
+   two indented lines: `Result:` and, when needed, `Deferred validation:`. Do not create per-task run narratives,
    planner/reviewer transcripts, or telemetry by default.
 10. If implementation reveals a missing business rule, domain behavior, contract, boundary, or
     design contradiction, stop and route to `/kapelle:amend`. A normal implementation defect can be
