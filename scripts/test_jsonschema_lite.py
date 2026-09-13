@@ -41,6 +41,14 @@ class JsonSchemaLiteTests(unittest.TestCase):
                     validate_file(ROOT / "examples" / instance, SCHEMAS / schema),
                 )
 
+    def test_architecture_guidance_requires_skill_provenance(self) -> None:
+        guidance = json.loads((ROOT / "examples" / "architecture-guidance.json").read_text())
+        schema = SCHEMAS / "architecture-guidance.schema.json"
+        guidance["capability"] = {"name": "native-rule-lookup", "kind": "project-skill"}
+        self.assertEqual([], validate_instance(guidance, schema))
+        guidance["capability"]["kind"] = "project-subagent"
+        self.assertTrue(validate_instance(guidance, schema))
+
     def test_allof_if_then_and_min_properties(self) -> None:
         schema = SCHEMAS / "base-functional-tests.schema.json"
         blocked = {

@@ -17,6 +17,15 @@ Invoke:
 /kapelle:migrate <slug> --apply
 ```
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Protocol
 
 1. Dry-run first:
@@ -42,3 +51,17 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_workflow.py" "${CLAUDE_PROJECT_DI
 5. Perform no production-code, validation, or git changes.
 
 Handoff to the exact command returned by the migration helper.
+
+## Legacy physical layout (only when present)
+
+For layout-v1 paths, inspect the separate migration before workflow adoption:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" --dry-run
+```
+
+Apply only when the developer has authorized the reported layout migration, then resume workflow adoption:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" --apply
+```

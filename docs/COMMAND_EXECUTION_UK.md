@@ -27,7 +27,7 @@ start base -> approve -> implement
 ### Що відбувається
 
 Плагін один раз досліджує релевантний існуючий код, тести й аналоги. Він знаходить проєктні skills,
-інструкції та architecture-rules subagent. Explorer додається лише коли неясна зона відповідальності;
+інструкції та architecture-rules skill. Explorer додається лише коли неясна зона відповідальності;
 critic — лише для суттєвої неоднозначності або ризику.
 
 Плагін формує високорівневу карту всієї відомої фічі: actors, use cases, бізнес-правила, компоненти,
@@ -88,9 +88,10 @@ use-case service, domain та persistence/integration boundary і дати мі�
 → reviewer subagent-циклів немає. Reviewer використовується для high-risk змін або на пряме
 прохання.
 
-Перед production-кодом можуть бути додані базові functional/characterization tests для endpoint,
-command, worker або public use-case method. Unit-тести поки не пишуться. Повний PHPStan/lint/full
-suite також не запускається під час звичайного development.
+Перед реалізацією спочатку перевикористовуються наявні тести. Додаються лише базові перевірки
+зовнішньої поведінки або короткий тест конкретного важливого ризику, наприклад подвійного списання.
+Це може бути unit-тест, якщо він дає найпростіший корисний доказ. Усі інші тести залишаються на
+`verify`; повні перевірки статичного аналізу й стилю також виконуються наприкінці.
 
 ### Результат
 
@@ -142,7 +143,7 @@ behavior, за потреби створює детальний use-case spec, �
 ### Що відбувається
 
 Сам виклик `verify` означає, що developer вважає поточний накопичений scope достатнім. Плагін
-звіряє код зі spec/design, планує й пише всі unit-тести, формує один
+звіряє код зі spec/design, перевикористовує ранні тести, дописує решту тестів і формує один
 risk-based batch із applicable functional, unit, integration/contract, static-analysis, lint і
 build checks. Неактуальні категорії пропускаються з коротким поясненням.
 
@@ -201,7 +202,7 @@ PASS evidence.
 
 Перший виклик — dry-run. Другий додає lightweight marker і routing, зберігаючи старі документи та
 history. Старі команди `spec`, `design`, `plan`, `base-functional-tests`, `unit-tests`, `finalize`
-лише показують нову команду й нічого не виконують.
+видалені з плагіна. Відповідники наведено в [таблиці міграції команд](../references/deprecated-legacy-stages.md).
 
 ## 7. `/kapelle:reconstruct <slug>`
 

@@ -10,6 +10,15 @@ description: >
 Bootstrap shared repository context or inspect the current feature scope without rewriting shared
 state.
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Inputs
 
 - Optional `<slug>` for feature-scoped work.
@@ -37,7 +46,7 @@ state.
 5. If `--refresh-baseline` is present, show the proposed baseline sections and require explicit
    confirmation before dispatching the full refresh. Refuse combining it with `<slug>`. Do not
    interpret branch drift as confirmation.
-6. Semantically discover the project's architecture-rules subagent. Record its native name and
+6. Semantically discover the project's architecture-rules skill. Record its native name and
    description evidence, or record a readiness gap; do not create a Kapelle alias or mapping.
 7. Use native project capabilities when project-specific behavior is needed:
    [`../../references/project-capabilities.md`](../../references/project-capabilities.md).
@@ -68,3 +77,15 @@ state.
 - Copying the full shared baseline into a feature overlay.
 - Baking project-specific conventions or provider assumptions into the core skill.
 - Running git operations.
+
+
+## Feature status commands
+
+After changing feature artifacts, run each separately; omit for a repository-only utility:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```
+
+Follow [script-execution.md](../../references/script-execution.md) for helper execution.

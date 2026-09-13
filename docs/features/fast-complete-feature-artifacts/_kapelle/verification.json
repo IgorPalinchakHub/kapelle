@@ -1,33 +1,32 @@
 {
   "categories": [
-    "unit",
-    "contract"
+    "contract",
+    "unit"
   ],
   "commands": [
-    "python3 -m unittest discover -s /Users/ihorpal/Development/AI/kapelle/scripts -p 'test_*.py'",
-    "python3 /Users/ihorpal/Development/AI/kapelle/scripts/validate_plugin.py",
-    "python3 /Users/ihorpal/Development/AI/kapelle/scripts/validate_progressive_docs.py /Users/ihorpal/Development/AI/kapelle/docs/features/fast-complete-feature-artifacts"
+    "rtk proxy python3 scripts/validate_plugin.py",
+    "rtk proxy python3 scripts/validate_progressive_docs.py docs/features/fast-complete-feature-artifacts",
+    "Deferred: existing architecture guidance records project-subagent; current schema requires actual project-skill lookup before approval and final verification. Earlier local quick_validate runs are not used as current evidence."
   ],
   "evidence_source": "agent-observed",
   "implementation_fingerprints": {
-    "README.md": "84db45942181dee2f004d284485f76a41790ee9be0ccbaca28fe51ef49117a0d",
-    "docs/QUICK_START_UK.md": "baa1e2fa826786f14bb63cb0279c53176ffdda019c3d035fcfb1c2c4005b702f",
-    "references/artifact-presentation.md": "a99055433073e7b71b9dea1e6cd6e354bd6810388825fcfde9fce17ffc167170",
-    "references/developer-questions.md": "362b6c1dcaa982f49052092fccef2eb29dc033c5cf2dca530d922cad18784a06",
-    "references/progressive-artifacts.md": "00c1dfa67869393001bc6734348e43b7b949ce2ec9fee834e06ac0809c730991",
-    "scripts/test_validate_progressive_docs.py": "8631498035724c5268dce2248b7895efd4a1c11c5269789317a7ccd38ef6607f",
-    "scripts/validate_plugin.py": "c4ffaee0a25c4d84f182d128e681c343e704124a3f3c55cab6e339e80de7871b",
-    "scripts/validate_progressive_docs.py": "ec92913593f0087bea7699fa848db4386ce8a15cdc854fcdf8ddaa57a0442783",
-    "skills/amend/SKILL.md": "9d69bb251f20acd43dbfcfc4d815000d494a4c27bb8463c79c87a816198b2ac9",
-    "skills/sequences/SKILL.md": "9d531a0eaf847f4db0b7a9103b4652798fc22b11a2cca4008c6c06c4ad816777",
-    "skills/start/SKILL.md": "f2b3feb9ed4570c15062b550c65801c644f70b8fa5aa6ef06a2c283a665a617f",
-    "skills/verify/SKILL.md": "ce485f22e2342e706133a92eb4fc4dd7a46159510a9aa88eaf1ab9e89ba83f7f"
+    "dispatcher/architecture-guidance.schema.json": "0f51e44cf90cc1ee8d233d4a8d38b30670ad77c678355095604057fb8f202069",
+    "references/architecture-guidance.md": "baecc10fbfa8502e89d173431a81a0db941cae73da2e437e933fbad5ed3aa2c3",
+    "references/artifact-basics.md": "46766597cb59f03455b3593eacde3bd2e56626ec973d0f298397b18880c88be6",
+    "references/progressive-artifacts.md": "b3fb31f109bf6c451f1acaef7e9714a0232b36ec53e4b0ad18e3e4bff202f1ed",
+    "scripts/test_plugin_surface.py": "01c2319df062d26fd68b4f4d538bc0081e2ce4dd507733232bad4a1d1fa69b1d",
+    "scripts/validate_plugin.py": "eb340f7b0d3e393df95ef833bf52fa0ab291e6c822e2bbdd4b69992d748e39d8",
+    "scripts/validate_progressive_docs.py": "67ba64cac977c1511417dcf1ace6b5a9bf286fdb449298afe7ba467af770a345",
+    "skills/amend/SKILL.md": "35e3ff8cd7fc20afa62bd0458aa8f251c1ba46b304a41a40b1f7ac946dfcc9e3",
+    "skills/implement/SKILL.md": "cb9372383b33af7725815687ac453bab9610914ba711c884e1d5eb7ea9393cdd",
+    "skills/start/SKILL.md": "ddf07cca6bcaa675a98cfbe057ed5b7a8208b373d72c508b5c7ce6821e8dc688",
+    "skills/verify/SKILL.md": "63176018a431b9ac42304e98bb084c0b6555e9c0f14daef1e784d1e5928333f1"
   },
   "input_fingerprints": {
-    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
-    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
-    "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
-    "tasks.md": "0cad0eaf4b2af3c5cdf1a66812e364599bfffc9939b00ebe6b0356f34ddfb143"
+    "design.md": "f34527260553e615cc100ae2563af2ed9bad42ffbb8505d492fd09e800ce4a85",
+    "spec.md": "fc826d7bdd159b91405a18086896e5c61facf0a0f728254d871b93ca31e4eed6",
+    "specs": "8c2a0aeef0722431a8c6a154fecddfe551e99ec6dbaaa44cd42ca8dfff05f005",
+    "tasks.md": "6f9af7d90b491a0c8a05b055729c31849652ac5d78a57a079c847c8340759359"
   },
-  "status": "PASS"
+  "status": "validation-deferred"
 }

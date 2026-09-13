@@ -14,6 +14,15 @@ Document data/schema impact or an explicit no-schema-change result, plus domain 
 behavior when the domain-model trigger applies. This is an optional planning utility, not a
 backbone stage and not a migration executor.
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Inputs
 
 - `<slug>` for feature-scoped work.
@@ -69,3 +78,13 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 - Guessing missing prior-stage output.
 - Baking project-specific conventions or provider assumptions into the core skill.
 - Running git operations.
+
+
+## Feature status commands
+
+After changing feature artifacts, run each separately; omit for a repository-only utility:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```

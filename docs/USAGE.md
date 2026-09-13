@@ -47,8 +47,10 @@ control, or `none` when the slice is low risk and you want one result after all 
 The main agent implements the end-to-end slice using relevant project-native skills. The first
 slice crosses the applicable input/auth/validation, endpoint or command, use-case service, domain,
 persistence/integration, and response boundaries. It does not scaffold empty future services. It
-may add focused functional/characterization tests before production changes. It does not write unit
-tests or run the whole static-analysis/lint suite during normal development.
+reuses existing tests first and may add only basic functional/characterization tests or a small
+test of a concrete high-consequence rule, including a focused unit test when appropriate. All
+remaining tests stay at verify. It does not run the whole static-analysis/lint suite during normal
+development.
 
 Validation policy:
 
@@ -82,7 +84,7 @@ When all currently approved slices are implemented and you do not want to add an
 ```
 
 Invoking `verify` explicitly declares the accumulated feature scope sufficient. The command
-reconciles docs with code, writes all unit tests, and runs one applicable functional,
+reconciles docs with code, reuses early coverage, writes all remaining tests, and runs one applicable functional,
 unit, integration/contract, static-analysis, lint, and build batch. Categories that do not apply are
 omitted with a reason.
 
@@ -128,7 +130,7 @@ keeps commands compatible with a narrow Claude Code permission such as `Bash(pyt
 does not install a broad auto-allow hook.
 
 The same rule applies to project-native read-only CLIs. For example, an architecture-rules
-subagent runs its project-defined search command directly and reads the Bash tool result. It does not
+skill specifies a project-defined search command; its executor runs it directly and reads the tool result. It does not
 change directory, redirect to a scratchpad, or append `echo $?`. A project permission such as
 `Bash(<project-read-cli> *)` can therefore match the command without a broad PreToolUse hook.
 The call is synchronous; Kapelle does not launch it in the background or generate `while`/`sleep`
@@ -148,7 +150,7 @@ hidden behind a wrapper such as `rtk proxy`.
 
 The first command is a dry-run. Migration preserves old documents/evidence and adopts the
 lightweight workflow. Former commands such as `spec`, `design`, `plan`,
-`base-functional-tests`, `unit-tests`, and `finalize` are non-executing compatibility wrappers.
+`base-functional-tests`, `unit-tests`, and `finalize` have been removed. See the [command migration table](../references/deprecated-legacy-stages.md).
 
 ## Documentation-only reconstruction
 

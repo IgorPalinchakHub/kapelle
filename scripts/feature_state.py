@@ -1475,6 +1475,22 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
     groups: OrderedDict[str, list[dict[str, Any]]] = OrderedDict()
     for task in tasks:
         groups.setdefault(task["workstream"], []).append(task)
+    unfinished_states = {
+        "pending",
+        "in-progress",
+        "blocked",
+        "needs-rework",
+        "stale",
+        "unknown",
+    }
+    next_task = next(
+        (
+            task
+            for task in tasks
+            if state.get("tasks", {}).get(task["id"], "unknown") in unfinished_states
+        ),
+        None,
+    )
     labels = {
         "planning": "Planning",
         "awaiting-human-review": "Awaiting developer review",
@@ -1746,6 +1762,13 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
             "",
             "## Next action",
             "",
+        ]
+    )
+    if next_task and state.get("current_stage") == "implement":
+        lines.append(f"Next workstream: {next_task['id']} — {next_task['title']}")
+        lines.append("")
+    lines.extend(
+        [
             state.get("next_command", f"/kapelle:status {feature_dir.name}"),
             "",
         ]

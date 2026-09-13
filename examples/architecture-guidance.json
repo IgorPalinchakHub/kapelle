@@ -2,7 +2,7 @@
   "status": "ARCHITECTURE_GUIDANCE_READY",
   "capability": {
     "name": "architecture-rules",
-    "kind": "project-subagent"
+    "kind": "project-skill"
   },
   "scope": {
     "aspects": ["backend", "frontend"],

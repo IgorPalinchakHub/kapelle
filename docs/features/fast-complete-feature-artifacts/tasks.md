@@ -20,3 +20,14 @@
   - Verify: positive, missing, unknown, range, compatibility, and plugin self-validation tests pass.
   - Result: living packages now validate active scenario IDs, workstream references, compact ranges,
     complete coverage, and focused verification without a mandatory machine graph.
+
+## Compact completeness and understandable decisions
+
+- [x] **W5 Strengthen specifications and dialogue without lengthening simple work** — covers AC-19–AC-25
+  - Changes: shared requirement/design/use-case guidance, current/proposal explanations, narrow
+    early-test exception, final evidence mapping, stage consumers, docs, and behavior-eval fixtures.
+  - Done when: a simple improvement keeps one workstream and the current route, risky concerns are
+    explicit, dialogue stands alone, and all nonessential tests remain at final verification.
+  - Verify: existing plugin validation and focused skill validation; scenario-based review for simple
+    improvement, risky integration, and refactoring. No new test suite for wording alone.
+  - Result: proportional completeness, standalone dialogue, and narrow early tests are implemented; plugin and four skill checks pass; independent A/B/C planning drafts cover AC-19–AC-22/AC-24, shared/detail contract review covers AC-23, and evidence mapping plus eval provenance covers AC-25 (see evals/compact-quality.md).

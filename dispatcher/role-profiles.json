@@ -1,32 +1,109 @@
 {
-  "//": "Provider-neutral execution profiles for Kapelle roles and stages. Core declares required reasoning and cost intent only; a provider adapter maps a profile to a concrete model or effort through project config (providers.<provider>.roles / providers.<provider>.stages). When no adapter binding exists, the role inherits the session default.",
-  "reasoning_levels": ["low", "medium", "high"],
-  "cost_tiers": ["economical", "balanced", "premium"],
+  "//": "Advisory reasoning and cost intent for roles and stages. No model adapter or project config loader is implemented. Host settings select actual models; unbound roles inherit the session default.",
+  "reasoning_levels": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "cost_tiers": [
+    "economical",
+    "balanced",
+    "premium"
+  ],
   "agents": {
-    "business-analyst": { "reasoning": "high", "cost": "premium" },
-    "explorer": { "reasoning": "low", "cost": "economical" },
-    "critic": { "reasoning": "high", "cost": "premium" },
-    "devils-advocate": { "reasoning": "high", "cost": "premium" },
-    "implementation-planner": { "reasoning": "high", "cost": "premium" },
-    "change-reconciler": { "reasoning": "high", "cost": "premium" },
-    "test-author": { "reasoning": "medium", "cost": "balanced" },
-    "implementer": { "reasoning": "medium", "cost": "balanced" },
-    "reviewer": { "reasoning": "high", "cost": "premium" }
+    "business-analyst": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "explorer": {
+      "reasoning": "low",
+      "cost": "economical"
+    },
+    "critic": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "devils-advocate": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "implementation-planner": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "change-reconciler": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "test-author": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "implementer": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "reviewer": {
+      "reasoning": "high",
+      "cost": "premium"
+    }
   },
   "stages": {
-    "start": { "reasoning": "high", "cost": "premium" },
-    "verify": { "reasoning": "medium", "cost": "balanced" },
-    "amend": { "reasoning": "high", "cost": "premium" },
-    "migrate": { "reasoning": "medium", "cost": "balanced" },
-    "survey": { "reasoning": "medium", "cost": "balanced" },
-    "sequences": { "reasoning": "medium", "cost": "balanced" },
-    "data-model": { "reasoning": "medium", "cost": "balanced" },
-    "contracts": { "reasoning": "medium", "cost": "balanced" },
-    "implement": { "reasoning": "high", "cost": "balanced" },
-    "decide-adr": { "reasoning": "high", "cost": "premium" },
-    "roadmap": { "reasoning": "medium", "cost": "balanced" },
-    "glossary": { "reasoning": "low", "cost": "economical" },
-    "status": { "reasoning": "low", "cost": "economical" },
-    "reconstruct": { "reasoning": "high", "cost": "premium" }
+    "start": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "verify": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "amend": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "migrate": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "survey": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "sequences": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "data-model": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "contracts": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "implement": {
+      "reasoning": "high",
+      "cost": "balanced"
+    },
+    "decide-adr": {
+      "reasoning": "high",
+      "cost": "premium"
+    },
+    "roadmap": {
+      "reasoning": "medium",
+      "cost": "balanced"
+    },
+    "glossary": {
+      "reasoning": "low",
+      "cost": "economical"
+    },
+    "status": {
+      "reasoning": "low",
+      "cost": "economical"
+    },
+    "reconstruct": {
+      "reasoning": "high",
+      "cost": "premium"
+    }
   }
 }

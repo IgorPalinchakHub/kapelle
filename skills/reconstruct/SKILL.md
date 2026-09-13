@@ -14,6 +14,15 @@ bundled Python helper.
 
 Document an existing feature from current code without changing production behavior.
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Commands
 
 ```text
@@ -48,8 +57,8 @@ generates the next phase in the same invocation.
    `"workflow": "reconstruction"` in `_kapelle/workflow.json`.
 3. Discover applicable project skills and subagents semantically. Dispatch selected project
    subagents to discover narrower native capabilities where useful.
-4. Discover the project's architecture-rules subagent for the current aspects, modules,
-   entrypoints, and paths. Persist its response under `_kapelle/architecture-guidance/`. A missing
+4. Discover the project's architecture-rules skill for the current aspects, modules,
+   entrypoints, and paths. Normalize its findings through the architecture-guidance contract and persist them under `_kapelle/architecture-guidance/`. A missing
    capability is an explicit readiness gap, never an invented rule.
 5. Use `kapelle:explorer` for cited repository evidence and `kapelle:business-analyst` for
    observable product behavior. Use `kapelle:critic` and a fresh `kapelle:reviewer` at review.
@@ -121,7 +130,7 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT
 ## Architecture design phase (`--design`)
 
 1. Require current `reconstruction-spec` approval.
-2. Ask the architecture-rules subagent for scoped rules and applicable project capabilities before
+2. Ask the architecture-rules skill for scoped rules and applicable project capabilities before
    synthesis.
 3. Trace all relevant aspects together, including backend, frontend, workers, data, contracts, and
    integrations when present. Record shared contracts and dependencies in

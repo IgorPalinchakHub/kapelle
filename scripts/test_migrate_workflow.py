@@ -55,7 +55,7 @@ class WorkflowMigrationTests(unittest.TestCase):
                 "status": "ARCHITECTURE_GUIDANCE_READY",
                 "capability": {
                     "name": "project-rules",
-                    "kind": "project-subagent",
+                    "kind": "project-skill",
                     "description_evidence": "Legacy evidence",
                 },
                 "scope": {

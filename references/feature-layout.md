@@ -109,12 +109,8 @@ under a legacy path.
 Unmarked or `human-controlled-v1` feature directories are never silently routed through old
 stages. First use
 `/kapelle:migrate <slug>` or the bundled `migrate_workflow.py`. Physical layout-v1 directories may
-also require:
-
-```text
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "<absolute-feature-dir>" --dry-run
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/migrate_feature_layout.py" "<absolute-feature-dir>" --apply
-```
+also require physical layout migration. The migrate skill contains its dry-run and apply
+commands; use its resolved paths. Layout migration is separate from workflow adoption.
 
 Migration parses and semantically validates legacy coordination and change state before writing,
 preserves legacy evidence under `_kapelle/history/legacy/`, reports collisions before writing, and

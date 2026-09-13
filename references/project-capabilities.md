@@ -32,5 +32,6 @@ Record:
 Names are evidence, not configuration. A future project capability can replace an existing one
 without changing Kapelle core.
 
-Architecture-rule discovery is a required specialized project capability governed by
+Architecture-rule discovery uses a required project skill that owns source lookup and any subagent
+selection; Kapelle follows that procedure instead of selecting a rules agent directly. It is governed by
 [`architecture-guidance.md`](./architecture-guidance.md).

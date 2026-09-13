@@ -31,25 +31,37 @@ reconciled with as-built code. Living packages require identified acceptance sce
 workstream coverage, and focused verification; deterministic validation rejects missing, unknown,
 and uncovered active scenarios.
 
+Planning now reviews applicable failure and quality concerns within the existing package. Detailed
+use cases state postconditions and branch points; final verification maps their outcomes to actual
+evidence. Dialogue explains current behavior, proposals, and consequences before links. Only basic
+or concretely important tests are added early; remaining tests stay at verify. The public route is
+unchanged and simple improvements retain one workstream. Maintainer drafting scenarios exercise
+these decisions without claiming full agent-stage or production execution.
+
 ## 3. Committed behavior
 
 ### Intended change
 
-Add lightweight traceability inside the compact human package. Every active living-contract
-acceptance scenario receives an `AC-NN` identifier; every workstream names the scenarios it covers
-and already states focused verification. Deterministic validation checks completeness, unknown
-references, and coverage without creating a mandatory task DAG or exposing identifiers in developer
-questions.
+Strengthen requirement and design completeness inside the existing compact slice. Explain decisions
+with current behavior, proposed behavior, and consequences; review applicable failure and quality
+concerns without extending the public workflow. Before implementation, add only basic or genuinely
+important tests; all remaining tests stay at final verification.
 
 ### Resulting behavior
 
-- Each active acceptance scenario has one stable `AC-NN` identifier.
-- Each active workstream uses `covers AC-NN` or a compact range and references only existing active
-  scenarios.
-- Every active scenario is covered by at least one workstream.
-- Each workstream continues to provide one objective `Verify` statement, closing the path from
-  observable result to implementation evidence.
-- Compatibility packages without the living marker are not forced into the new traceability floor.
+- Planning checks applicability of success, failures, permissions, invariants, and interactions.
+  Only relevant scenarios become requirements; unrelated categories may be dismissed together.
+- Architecturally significant quality requirements state context, agreed target, design response,
+  and suitable verification. Unknown targets remain unknown; numbers are never invented.
+- Detailed use cases explain success/failure postconditions and alternatives at their branch point.
+- Decisions, review packets, and handoffs briefly explain what exists, what is proposed or changed,
+  and why it matters before offering supporting artifact links.
+- Simple improvements use the existing root documents and one workstream; no extra public stage,
+  questionnaire, mandatory diagram, ADR quota, or per-criterion test-level approval is introduced.
+- Early testing reuses existing coverage first, adding only basic boundary/characterization evidence
+  or a narrowly justified test of a high-consequence rule. Remaining tests are written at verify.
+- Small behavior-evaluation scenarios cover simple work, risky integration, and refactoring without
+  making model-driven evaluation a required stage for downstream projects.
 
 ### Preserved behavior
 
@@ -58,17 +70,26 @@ questions.
 - Identifiers never appear in developer questions or require the developer to decode an internal
   blocker or gate.
 - Candidate capabilities and high-level use-case-map items remain outside active traceability.
+- Existing artifact markers, headings, structural validators, AC coverage, and approval gates remain
+  compatible. Explicit approvals and deferred-validation reporting remain required.
 
 ### Acceptance scenarios
 
-- **AC-15** Given a living active slice, when its specification is validated, then at least one
-  stable `AC-NN` acceptance scenario exists.
-- **AC-16** Given an active workstream, when its compact task block is validated, then it names at
-  least one existing acceptance scenario that it covers.
-- **AC-17** Given the active scenario set, when validation completes, then every scenario is covered
-  by at least one workstream and unknown references fail clearly.
-- **AC-18** Given traceability is valid, when a developer reads the package, then the path from
-  observable scenario through workstream to focused verification is visible without a separate DAG.
+- **AC-19** Given a simple local improvement, planning stays in the existing root package with one
+  workstream and asks no question whose answer is already supported by the request or repository.
+- **AC-20** Given a decision requiring user input, the message explains current behavior, the
+  proposal, and its consequence without requiring the reader to open a paragraph or decode IDs.
+- **AC-21** Given applicable failure, permission, invariant, or cross-component behavior, the slice
+  names the observable outcome; absent concerns do not generate fictional requirements.
+- **AC-22** Given a quality requirement that affects architecture, the design links its evidenced
+  target and operating context to a decision and appropriate verification; unknowns stay explicit.
+- **AC-23** Given a detailed use case with a failed or repeated operation, its alternatives identify
+  the relevant step, resulting state, and applicable retry or partial-completion behavior.
+- **AC-24** Given implementation work, existing tests are reused and only basic or high-consequence
+  coverage is added early with a reason; remaining tests are deferred to verify without duplication.
+- **AC-25** Given final verification, active root/detail scenarios are reconciled with concrete
+  evidence; behavioral eval fixtures check simple, integration, and refactoring decisions separately
+  from deterministic structural validation and never claim an unexecuted model run passed.
 
 ## 4. Use-case map
 

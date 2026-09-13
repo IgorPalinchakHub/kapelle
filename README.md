@@ -71,7 +71,7 @@ After each slice, the developer chooses:
 /kapelle:verify <slug>
 ```
 
-`verify` reconciles the as-built feature with the docs, writes all unit tests, and runs one
+`verify` reconciles the as-built feature with the docs, writes all remaining tests, and runs one
 risk-based validation batch. If the developer already completed that batch manually or in another
 session, Kapelle accepts an explicit passing confirmation without requiring copied output and
 labels the result `developer-attested`. A second, explicit approval completes the feature.
@@ -89,6 +89,16 @@ Detailed use-case specifications, `design/domain-model.md`, contracts, sequences
 created just in time when their documented trigger applies. A simple slice stays in `spec.md` and
 `design.md`.
 
+Planning reviews applicable failures, permissions, invariants, and interactions, plus quality
+constraints that affect architecture. Relevant targets link to design decisions and suitable
+verification; unknown numbers stay unknown. This is an internal completeness review, not another
+interview or document bundle. Detailed use cases state success/failure postconditions and where
+alternative paths branch.
+
+Only basic or genuinely critical tests are added early, reusing existing coverage first. A focused
+unit test is appropriate when it is the smallest proof of a concrete high-consequence rule. All
+other tests stay at `verify`. Simple improvements keep one workstream and the existing route.
+
 Diagrams are also evidence-triggered, never a mandatory bundle. A changed boundary/ownership,
 complex runtime ordering, lifecycle, sensitive data flow, or non-trivial refactor may add the
 smallest useful Mermaid visual inline in `design.md` or under `design/`. Every visual has a short
@@ -105,6 +115,8 @@ remain diagram-free.
   approval until they pass or the developer explicitly confirms complete external verification.
 - Developer questions describe the intended behavior and concrete options with trade-offs. They do
   not expose task, blocker, DoD, gate, or artifact identifiers.
+- Questions, review summaries, and handoffs briefly explain what exists, what is proposed or changed,
+  and why it matters before supporting links. Simple changes do not acquire a fixed questionnaire.
 - Blocking questions recommend the evidence-backed option first with its downside and normally show
   two choices. A short code example is included only when it materially clarifies an API, schema,
   control-flow, or compatibility decision; reversible defaults are stated instead of asked.
@@ -120,7 +132,8 @@ remain diagram-free.
 ## Project capabilities
 
 Kapelle discovers relevant project skills, instructions, and the project architecture-rules
-subagent semantically. Architecture guidance is collected once during `start` and reused until the
+skill semantically. That skill specifies where to search and which subagent to use, if any; Kapelle
+does not select a rules agent directly. Architecture guidance is collected during `start` and reused until the
 scope changes. Medium/large discovery may use one read-only burst of at most three agents. Agent
 Teams remain opt-in, are not used for the first skeleton, and require stable contracts plus safe,
 disjoint ownership.
@@ -175,3 +188,11 @@ release.
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
 - [Usage and migration](docs/USAGE.md)
 - [Reverse engineering guide (Ukrainian)](docs/RECONSTRUCTION_UK.md)
+- [Maintainer behavior-evaluation scenarios](evals/compact-quality.md) — lightweight checks of
+  simple-change planning, integration risk, and refactoring; not a required feature stage
+
+## Removed compatibility commands
+
+Only the 14 active skills are bundled. See the [command migration table](references/deprecated-legacy-stages.md).
+Kapelle does not load `kapelle.config.json`: use documented command options and native project
+instructions. Artifacts live under `docs/features`; model selection belongs to the host.

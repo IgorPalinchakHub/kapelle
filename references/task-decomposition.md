@@ -16,7 +16,8 @@ use-case map and not a speculative full-feature micro-task graph.
 - Every checkpoint leaves the project loadable and internally coherent.
 - Include focused pre-change functional/characterization coverage in the owning workstream.
 - Keep candidate capabilities out of `tasks.md`; they remain non-binding hypotheses in `spec.md`.
-- Do not add unit-test workstreams; all unit tests are written in `verify`.
+- Do not add separate test workstreams. Only basic or justified critical tests belong early in the
+  owning workstream; all remaining tests are written in `verify` (see `human-control.md`).
 - State only outcome, important dependency, expected observable behavior, and short result.
 
 Use optional machine dependency/file-ownership graphs only for true parallel work, shared

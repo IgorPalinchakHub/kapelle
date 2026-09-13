@@ -15,13 +15,21 @@ Invoke:
 /kapelle:start <slug> --approve
 ```
 
-Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
-asking a question and [`../../references/architecture-guidance.md`](../../references/architecture-guidance.md)
-before recording project rules. Follow
-[`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) for the
-durable specification, system-design, use-case, and domain-model format.
-Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
-bundled Python helper and shell inspection command.
+Use [artifact-basics.md](../../references/artifact-basics.md) for the compact document format.
+Read [architecture-guidance.md](../../references/architecture-guidance.md) when obtaining rules.
+Read [developer-questions.md](../../references/developer-questions.md) only for a blocking decision.
+Read [progressive-artifacts.md](../../references/progressive-artifacts.md) only for triggered detail
+or a changed architectural quality constraint. Command rules are inline below; consult
+[script-execution.md](../../references/script-execution.md) only for an execution ambiguity.
+
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
 
 ## Mandatory command shape
 
@@ -35,91 +43,46 @@ bundled Python helper and shell inspection command.
 
 ## Draft or revise
 
-1. Require a stable slug and a raw task for a new feature. Build a bounded high-level map of the
-   known feature: current behavior, actors and outcomes, entrypoints, use cases, affected
-   components, domain/data ownership, integrations, nearby tests, and precedents. Investigate only
-   the first usable end-to-end path in implementation detail. Keep unknowns explicit.
-   Classify the active slice as new behavior, an existing-feature behavior change, a
-   behavior-preserving refactor, a defect, or a documentation-only correction. This classification
-   changes artifact emphasis, not the public workflow.
-2. The main agent integrates the map. Use an explorer only when ownership is unclear or relevant
-   code spans unfamiliar modules. For a genuinely medium/large cross-component feature, it may run
-   one bounded parallel read-only burst of at most three disjoint investigations: existing
-   behavior, project architecture/rules, and contracts/tests/integrations. Subagents return concise
-   evidence and do not write the human package.
-   Use one critic pass only for material ambiguity or high risk: authorization, money, destructive
-   data change, public contract, migration, concurrency, or cross-system side effects. Do not run a
-   default business-analyst/critic/devil's-advocate chain.
-3. Ask at most one consolidated developer question when a decision changes observable behavior.
-   State the intended change and real options with trade-offs. Recommend the evidence-backed choice
-   first with its downside and normally offer two options. Add a focused code example only when an
-   API, schema, control-flow, or compatibility difference is materially clearer in code. Do not
-   mention internal artifact, gate, task, blocker, or acceptance-criterion identifiers.
-4. Discover relevant project skills, instructions, and the project architecture-rules capability.
-   When dispatching that capability, require direct CLI invocations and consume their tool results;
-   do not allow compound shell wrappers, scratchpad redirection, background execution, or shell
-   polling.
-   The binding guidance scope must cover the first slice; broader candidate boundaries in the
-   high-level design remain directional until a later amendment refreshes their rules. Persist the
-   current result in
-   `_kapelle/architecture-guidance/design.json` and validate it:
+1. Require a stable slug and raw task. Inspect affected current behavior, ownership, entrypoints,
+   and nearby evidence. Map known outcomes and candidate capabilities at high level; design only
+   the first production-shaped end-to-end slice. Distinguish new behavior, behavior change,
+   behavior-preserving refactor, defect, and documentation correction.
+2. Plan inline by default. Use an explorer for unclear ownership; a read-only burst of at most
+   three investigations only for unfamiliar cross-component scope. Use a critic for material
+   ambiguity or high risk. No default business-analyst/critic/devil's-advocate chain.
+3. Simple work normally needs no question. If blocked, explain current behavior, the proposed
+   change, and consequence; recommend a supported option with its trade-off. Do not repeat
+   answered questions or expose internal identifiers.
+4. Follow the project's architecture-rules skill for this slice. It chooses sources and any
+   subagent. Normalize and validate its findings at _kapelle/architecture-guidance/design.json:
 
 ```text
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/architecture-guidance/design.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/architecture-guidance.schema.json"
 ```
 
-5. Create the minimum progressive human package:
-   - `spec.md`: the full known high-level product map, with committed behavior clearly separated
-     from candidate capabilities and unknowns. Begin it with:
-
-```md
-<!-- kapelle-workflow: lightweight-v1 -->
-<!-- kapelle-artifacts: progressive-map-v1 -->
-<!-- kapelle-artifact-contract: living-v1 -->
-```
-
-     Under `Committed behavior`, write `Intended change`, `Resulting behavior`,
-     `Preserved behavior`, and `Acceptance scenarios` as defined by `progressive-artifacts.md`. For brownfield
-     work, write the affected evidence-backed current flow before the requested result. Do not
-     describe the target as current behavior.
-   - `design.md`: the high-level system context, likely component boundaries, responsibilities,
-     end-to-end flow, domain/data ownership, contracts, decisions, risks, and deferrals. Design only
-     the first committed slice in implementation detail; label candidate architecture directional.
-     Under `System boundaries and responsibilities`, write brief `Current architecture`, useful
-     `Resulting architecture`, and `Technical delta`. A refactor also makes preserved behavior and
-     public contracts explicit in the specification.
-   - `tasks.md`: one initial walking-skeleton workstream, split into at most three checkboxes only
-     when the slice cannot remain reviewable as one checkbox. These are top-level unchecked
-     workstreams. Each active workstream states `Changes`, `Done when`, and `Verify`, and names the
-     active `AC-NN` acceptance scenarios it covers. Do not place candidate capabilities here or
-     create a mandatory DAG.
-6. Add `specs/<use-case>.md` for the first slice only when alternatives, authorization, failures, or
-   system reactions need independent review. Create `design/domain-model.md` when the slice changes
-   an aggregate, lifecycle/status transition, money or authorization invariant, domain event,
-   ownership boundary, or non-trivial relationship. Create contracts, other detailed design, an
-   ADR, or a diagram only when its trigger in `progressive-artifacts.md` applies. Diagrams are
-   zero-by-default, use Mermaid inline in `design.md` or focused `design/<aspect>.md`, and include a
-   nearby plain-language explanation. Do not ask for a separate diagram decision when repository
-   evidence already determines whether the trigger applies.
-7. Keep documents easy to scan. Prefer roughly 250 lines for `spec.md`, 180 for `design.md`, and
-   120 for `tasks.md` as soft ceilings. Validate the package:
+5. Write the three documents using artifact-basics.md:
+   - spec.md: current flow, Intended change, Resulting behavior, Preserved behavior,
+     Acceptance scenarios; candidates remain non-binding.
+   - design.md: Current architecture, Resulting architecture, Technical delta and the usable flow.
+   - tasks.md: one walking-skeleton workstream with `Changes`, `Done when`, `Verify` and AC coverage;
+     at most three checkboxes only when needed for reviewability.
+   Include lightweight-v1, progressive-map-v1, and kapelle-artifact-contract: living-v1 markers.
+6. Keep simple changes in these documents. Read progressive-artifacts.md only for independently
+   reviewable alternatives/auth/failures (use-case detail); aggregates, transitions, invariants,
+   events or ownership (design/domain-model.md); public contracts; expensive decisions (ADR);
+   or a diagram that makes a complex flow clearer. No detail or diagram quota.
+   Review applicable failure, permission, invariant and interaction risks. Reuse project quality
+   defaults; never invent performance or recovery targets.
+7. Reuse coverage. Add only basic or critical early tests with a concrete risk rationale; a focused
+   unit test is allowed. All remaining tests stay at verify. Keep each slice coherent: update
+   affected readers, contracts and migrations together without knowingly broken steps.
+8. Validate structure before approval; this does not establish semantic correctness:
 
 ```text
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
 
-   A non-zero result blocks approval. This validation checks structure, not semantic correctness.
-8. The walking skeleton must be production-shaped, observable, and safe to extend; it is not a
-   throwaway mock. It may return a deliberately narrow result, but must cross every boundary needed
-   to prove the flow: input/authorization/validation, endpoint or command, use-case service, domain
-   and persistence/integration boundary, stable minimal response, and focused boundary evidence as
-   applicable. Do not scaffold every future endpoint or empty service. It must leave the project
-   loadable and internally coherent. Do not plan a knowingly broken intermediate state such as an
-   enum/schema rename separated from required readers and migrations.
-9. Plan basic functional/characterization tests before production changes only for affected
-   endpoints, commands, workers, or public use-case methods. Keep this work inside its owning
-   workstream. Do not plan or write unit tests until `/kapelle:verify`.
-10. For a new feature, write `_kapelle/workflow.json` as:
+9. For a new feature, write `_kapelle/workflow.json` as:
 
 ```json
 {
@@ -137,7 +100,7 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_P
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
 ```
-11. On revision, add the living-contract marker and compact structure when they are absent, then
+10. On revision, add the living-contract marker and compact structure when they are absent, then
     correct the high-level map or active slice without detailing candidate use cases.
     Any plan, verification, or final approval whose fingerprints no longer match becomes stale
     automatically. Do not promote candidate capabilities into committed behavior until the

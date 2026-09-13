@@ -3,6 +3,18 @@
 Questions shown to the developer must stand on their own. Internal planning notation is useful for
 Kapelle, but it is not useful context for a human decision.
 
+## Explain before linking
+
+Apply this to questions, review packets, progress updates, and handoffs. Briefly explain what
+exists now, what is proposed or has changed, and the practical consequence before optional links.
+If current behavior is unknown, say what is known and what is unresolved instead of guessing.
+A file, paragraph, or internal identifier is supporting evidence, never the explanation itself.
+Use two or three short sentences when sufficient; do not repeat an entire specification.
+
+For example: "Зараз повторне натискання може створити друге замовлення. Пропоную повертати вже
+створене замовлення для того самого запиту. Це захистить від дублювання, але потребує зберігати
+ідентифікатор запиту." Then ask the actual unresolved decision, if any.
+
 ## When to ask
 
 Ask only when the answer blocks safe progress or materially changes product behavior,
@@ -12,12 +24,17 @@ evidence-backed default and state the assumption in the review packet.
 Do not ask the developer to choose a reversible implementation detail when repository evidence and
 project rules support a safe default. Make that choice, state it as an assumption, and keep moving.
 
+For simple work, start with zero questions. If independent blocking decisions remain, ask one
+concise question per decision rather than hiding several choices in one question. Do not walk a
+fixed questionnaire, ask the user to choose every test level, or reconfirm an already answered
+decision. Stop asking when the current slice is safe to describe and implement.
+
 ## Required form
 
 Match the developer's language and keep one decision question concise, normally under 90 prose
 words. A short code example does not count toward that prose target:
 
-1. Say what Kapelle intends to implement in plain language.
+1. Say what exists now and what Kapelle intends to implement in plain language.
 2. Explain why this decision is needed and the concrete consequence of a wrong assumption.
 3. When evidence supports a preferred choice, recommend it first and state its downside.
 4. Give at most three real options. Normally give two real options. Make trade-offs explicit by
@@ -27,7 +44,8 @@ words. A short code example does not count toward that prose target:
 Preferred shape:
 
 ```text
-Я хочу <короткий результат>. Потрібно вирішити <рішення>, тому що <наслідок>.
+Зараз <поточна поведінка>. Пропоную <короткий результат>.
+Потрібно вирішити <рішення>, тому що <наслідок>.
 
 - Рекомендую <Варіант A> — <перевага>; <вартість або ризик>.
 - <Варіант B> — <перевага>; <вартість або ризик>.

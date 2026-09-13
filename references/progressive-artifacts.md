@@ -1,111 +1,37 @@
-# Progressive feature artifacts
+# Detailed feature artifacts
 
-Kapelle keeps a complete high-level feature map while detailing and implementing only the currently
-approved vertical slice. High-level coverage is not permission to implement candidate behavior.
+Use [artifact-basics.md](./artifact-basics.md) for root documents. Read this file only when a detail
+trigger applies, a material quality constraint changes, or final verification reconciles details.
+Simple edits use the basic contract alone.
 
-## Durable format markers
+## Proportional completeness review
 
-New lightweight features begin `spec.md` with both markers:
+During start/amend, review the affected behavior for success, failure/edge cases, permissions,
+domain invariants, and interactions with other components. This is an internal applicability pass,
+not five required scenarios or five developer questions. Translate applicable concerns into
+observable acceptance scenarios and preserved behavior. Summarize unrelated categories together
+in exclusions when useful; do not invent authorization or integration requirements for an isolated
+change. Every committed use-case outcome must have an acceptance scenario or an explicit link to
+one in a detailed specification. Candidates remain outside this coverage.
 
-```md
-<!-- kapelle-workflow: lightweight-v1 -->
-<!-- kapelle-artifacts: progressive-map-v1 -->
-<!-- kapelle-artifact-contract: living-v1 -->
-```
+Review architecturally significant concerns: workload/performance, availability/recovery,
+consistency/concurrent or repeated operations, security/privacy, observability, and
+deployment/compatibility/rollback. Reuse scoped project defaults when applicable. In existing
+spec/design sections, record only constraints or changes that affect a decision:
 
-The workflow marker supports recovery. The artifact marker enables deterministic structural
-validation. The living-contract marker enables the compact current/change/result, technical-delta,
-and workstream checks below. Existing progressive packages without that marker remain compatible
-until the developer explicitly revises their active slice; revision adds the marker and the missing
-compact structure without rewriting unrelated history.
+`operating context -> agreed observable target -> design response -> how to verify`
 
-## High-level specification
+Targets come from the user or cited project evidence. Never invent latency, capacity, retention,
+or recovery numbers. Record unknowns and ask only when they block a safe current-slice decision.
+Choose verification appropriate to the requirement: load tests for capacity/latency, recovery
+checks for restore guarantees, permission checks for access, migration checks for compatibility.
+A numeric requirement does not automatically require a load test. These checks can be planned now
+and performed at verify; planning does not require a new early suite.
 
-`spec.md` uses these headings in this order:
-
-```md
-# Feature specification
-
-## 1. Problem and intent
-## 2. Current behavior
-## 3. Committed behavior
-## 4. Use-case map
-## 5. Business rules and invariants
-## 6. Candidate capabilities
-## 7. Exclusions, assumptions, and open decisions
-```
-
-- `Committed behavior` contains only observable behavior approved for the implemented base or the
-  current slice.
-- `Use-case map` names all currently known user/business outcomes at high level. It is a map, not a
-  task backlog.
-- `Candidate capabilities` contains non-binding hypotheses. They are not requirements, tasks, or
-  implementation permission until promoted through `/kapelle:amend`.
-- Unknown behavior stays explicit. Do not complete the map by inventing requirements.
-
-For a new or explicitly revised active slice, `Committed behavior` uses these subheadings:
-
-```md
-### Intended change
-### Resulting behavior
-### Preserved behavior
-### Acceptance scenarios
-```
-
-- `Intended change` says what this slice changes, not how every file will be edited.
-- `Resulting behavior` says what a user, caller, operator, or downstream system can observe after
-  the slice.
-- `Preserved behavior` names relevant compatibility and invariants. For a brand-new isolated
-  capability it may say that no prior behavior exists, but it is never left empty.
-- `Acceptance scenarios` contains at least one observable success scenario and adds only relevant
-  failure or edge scenarios. It may use compact Given/When/Then prose without forcing identifiers.
-
-For brownfield work, `Current behavior` describes the affected as-built flow before the committed
-delta. Do not describe the requested result as though it already exists.
-
-Prefer at most 250 lines and remain below 320 lines. Move genuinely independent behavior into
-`specs/`, not into more root documents.
-
-## High-level system design
-
-`design.md` uses these headings in this order:
-
-```md
-# System design
-
-## 1. Context and constraints
-## 2. System boundaries and responsibilities
-## 3. End-to-end flow
-## 4. Domain and data
-## 5. Contracts and integrations
-## 6. Decisions, risks, and deferrals
-## 7. Current walking skeleton
-```
-
-The document maps the likely end-state boundaries at high level but designs only committed behavior
-in implementation detail. Candidate components and integrations are labelled directional and
-unconfirmed. Prefer at most 180 lines and remain below 240 lines.
-
-For a new or explicitly revised active slice, `System boundaries and responsibilities` uses:
-
-```md
-### Current architecture
-### Resulting architecture
-### Technical delta
-```
-
-- `Current architecture` is a brief evidence-backed view of only the affected scope. For a new
-  isolated capability, state the existing integration point or that the capability is absent.
-- `Resulting architecture` gives enough as-designed responsibility and boundary detail to guide
-  this slice.
-- `Technical delta` names moved, added, removed, or compatibility-sensitive responsibilities.
-
-For behavior-preserving refactoring, also make preserved observable behavior and public contracts
-explicit in the corresponding specification section. If observable behavior changes, treat the
-slice as a behavior change rather than hiding it under refactoring.
-
-`Current walking skeleton` describes one production-shaped path across every boundary needed to
-prove the first usable outcome. It must not be a list of empty endpoints, services, mocks, or TODOs.
+For a small improvement that reuses existing boundaries and policies, a sentence about the
+applicable default and unchanged concerns is enough. Keep the existing root headings and one
+workstream. Do not add an applicability document, an Arc42 bundle, a diagram, an ADR quota, or a
+test-planning stage. Additional detail follows the existing triggers below.
 
 ## Detailed use-case specifications
 
@@ -126,6 +52,18 @@ an inline section would be hard to review. Use:
 ```
 
 Simple behavior remains in `spec.md`. Candidate use cases are never expanded speculatively.
+
+Within these existing headings, make the scenario executable in prose:
+
+- `Outcome` states success postconditions: what is true after completion, not just the intention.
+- `Main flow` numbers the steps and distinguishes actor actions from system responses.
+- `Alternatives and failures` names the branch point (for example, "At step 3, storage fails"),
+  response, and failure postconditions: what is persisted, unchanged, or partially completed.
+- State retry, cancellation, duplicate/concurrent operation, and compensation behavior only when
+  applicable. Do not infer a guarantee such as atomicity from the happy path.
+- `Acceptance scenarios` covers the meaningful outcomes and references the owning rule when useful.
+
+No new mandatory heading or retroactive detail-file migration is introduced.
 
 ## Domain model
 
@@ -227,6 +165,14 @@ capabilities and high-level use-case-map items are not traced until promoted.
 
 Do not introduce a mandatory machine DAG, owners, estimates, or file inventories for this purpose.
 Internal identifiers never appear in developer questions.
+
+At planning time, `Verify` names the smallest useful evidence for the covered outcomes. At final
+verification, reconcile active scenarios in both the root and detailed specifications with actual
+test paths/names or specific manual observations. A detailed scenario may reference a root AC;
+otherwise give it a stable local reference when needed for unambiguous evidence. Keep this mapping
+in existing workstream results or scenario prose, using a small inline table only when clearer.
+Do not create a separate traceability report by default. Structural AC/workstream validation alone
+does not prove detail-scenario or test coverage; verify owns that semantic check.
 
 ## Final as-built convergence
 

@@ -19,6 +19,7 @@ from feature_state import (
     rebuild_feature_state,
     refresh_feature_status,
     relative_fingerprint,
+    render_status,
 )
 from migrate_feature_layout import apply_migration, migration_plan
 from validate_feature_state import validate
@@ -44,7 +45,7 @@ class FeatureStateTests(unittest.TestCase):
             "status": "ARCHITECTURE_GUIDANCE_READY",
             "capability": {
                 "name": "project-architecture-rules",
-                "kind": "project-subagent",
+                "kind": "project-skill",
             },
             "scope": {
                 "aspects": aspects,
@@ -668,6 +669,46 @@ class FeatureStateTests(unittest.TestCase):
                 + "\n## Slice 2\n\n- [ ] **W2 Add requested business rule**\n"
             )
             self.assertNotEqual(planned, normalized_tasks_fingerprint(tasks_path))
+
+    def test_status_explains_next_workstream_identifier(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = Path(tmp) / "docs" / "features" / "publishing"
+            feature.mkdir(parents=True)
+            (feature / "spec.md").write_text(
+                f"{WORKFLOW_MARKER}\n# Publishing\n"
+            )
+            (feature / "design.md").write_text("# Design\n")
+            (feature / "tasks.md").write_text(
+                "# Tasks\n\n"
+                "- [x] **W1 Publish vehicle**\n"
+                "- [ ] **W2 Remove the legacy unpublish flow**\n"
+            )
+            status = render_status(
+                feature,
+                {
+                    "feature_state": "implementation",
+                    "current_stage": "implement",
+                    "task_counts": {
+                        "completed": 1,
+                        "total": 2,
+                        "implemented-unverified": 0,
+                    },
+                    "tasks": {"W1": "completed", "W2": "pending"},
+                    "next_command": (
+                        "/kapelle:implement publishing "
+                        "--checkpoint=workstream --validation=ask"
+                    ),
+                },
+            )
+            self.assertIn(
+                "Next workstream: W2 — Remove the legacy unpublish flow",
+                status,
+            )
+            self.assertIn(
+                "Next workstream: W2 — Remove the legacy unpublish flow\n\n"
+                "/kapelle:implement publishing --checkpoint=workstream --validation=ask",
+                status,
+            )
 
     def test_symlink_escape_is_refused_before_runtime_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

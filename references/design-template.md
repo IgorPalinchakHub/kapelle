@@ -24,7 +24,7 @@ For a small feature, an inapplicable section contains one sentence such as
 easy to scan. New or explicitly compacted documents include the format marker within the first
 five lines, target at most 220 lines and 2200 words, and must remain below 280 lines/2800 words.
 Legacy documents without the marker keep structural validation and receive a size warning until
-the developer explicitly runs `/kapelle:design <slug> --compact`.
+the developer explicitly runs `/kapelle:start <slug> --revise "compact the active design"`.
 
 Detailed documents under `design/` are created only for independently reviewable boundaries:
 

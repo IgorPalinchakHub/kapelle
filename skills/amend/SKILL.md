@@ -14,6 +14,15 @@ promoting or detailing a use case.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
 bundled Python helper and shell inspection command.
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Mandatory command shape
 
 - One Kapelle helper or inspection tool call is one direct executable invocation.
@@ -35,7 +44,8 @@ Invoke:
 1. Read the current `spec.md`, `design.md`, `tasks.md`, relevant implementation, and verification
    result if present. Classify the request as a next feature increment, active-slice revision,
    behavior-preserving refactor, implementation defect, or documentation-only correction.
-2. Explain the observable impact and at most three real options with trade-offs. Ask one concise
+2. Explain current behavior, the proposed change, and its practical consequence before artifact
+   links or options. Ask one concise
    question only when the developer's choice materially changes behavior. Recommend the
    evidence-backed choice first with its downside and normally offer two options. Use a focused,
    normally at-most-12-line code example only when it materially clarifies an API, schema,
@@ -51,6 +61,11 @@ Invoke:
    Each new or reopened workstream includes `Changes`, `Done when`, and `Verify`, and names the
    active `AC-NN` acceptance scenarios it covers. Ensure every active scenario is covered without
    introducing a mandatory DAG.
+   Apply the proportional completeness review in `progressive-artifacts.md` only to the affected
+   behavior: relevant failures, permissions, invariants, interactions, and quality constraints.
+   Keep simple improvements inline in the existing package with one workstream; do not add a
+   questionnaire, per-document approval, or extra stage. Early tests follow `human-control.md`:
+   only basic or justified critical coverage; all remaining tests stay at verify.
 4. For behavior-preserving refactoring, keep current affected architecture brief, make target
    responsibilities and the technical delta detailed enough to implement, and name preserved user
    behavior and public contracts. Plan focused characterization evidence before production edits.

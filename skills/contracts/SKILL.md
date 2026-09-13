@@ -13,6 +13,15 @@ Follow [`../../references/utility-contract.md`](../../references/utility-contrac
 Use the trigger and boundary rules in
 [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md).
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Inputs
 
 - Gate: `docs/features/<slug>/design.md`.
@@ -49,3 +58,13 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 
 - Hardcoding contract kinds, skill names, agent names, providers, or commands in Kapelle core.
 - Finalizing a contract that contradicts the shared data model.
+
+
+## Feature status commands
+
+After changing feature artifacts, run each separately; omit for a repository-only utility:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/build_feature_status.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>"
+```

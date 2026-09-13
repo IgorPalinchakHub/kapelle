@@ -5,8 +5,8 @@ analysis, linters, builds, and other project-defined checks are never silently t
 
 ## Policy
 
-Read `validation.development_policy` from project config. A command-line override on
-`/kapelle:implement` applies only to that invocation:
+Default to `ask`, respecting explicit validation authorization already given by the developer.
+A command-line policy on `/kapelle:implement` applies only to that invocation:
 
 ```text
 --validation=ask | --validation=allow | --validation=skip
@@ -24,11 +24,14 @@ The validation decision is independent of implementation-plan approval.
 
 Before execution, show:
 
-- task id and validation purpose;
+- current behavior or risk and what the proposed checks will establish;
 - exact commands;
 - command kind: `tests`, `static-analysis`, `lint`, `build`, or `other`;
 - scope, such as focused files, module, or full project;
-- whether each check is required by the task Definition of Done.
+- which checks are required to confirm the promised outcome and which may wait until final review.
+
+Use plain language before exact commands or artifact links. Internal task IDs and evidence fields
+remain available for recording results, but the developer need not decode them to decide.
 
 Under `ask`, accept:
 

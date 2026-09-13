@@ -24,7 +24,7 @@ developer. Workstream is the default.
 
 ## Bounds
 
-- Maximum normal attempts come from config.
+- Use at most two focused correction attempts, as defined by agent-orchestration.md.
 - Optional role runs are bounded; no role loop may self-escalate.
 - Agent Teams require explicit developer approval and pairwise-disjoint ownership.
 - Requirement/design changes pause remaining work and route to `amend`.

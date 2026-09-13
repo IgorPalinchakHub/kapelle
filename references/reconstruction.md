@@ -50,7 +50,7 @@ only at `declared` or `inferred` strength unless implementation corroborates the
 Technical documents clearly distinguish:
 
 - **As-built** — what the current implementation does;
-- **Rule** — scoped guidance returned by the project's architecture-rules subagent;
+- **Rule** — scoped guidance returned by the project's architecture-rules skill;
 - **Deviation** — where the implementation and applicable rule differ.
 
 Do not rewrite a deviation as the desired architecture. Do not invent business rationale for an

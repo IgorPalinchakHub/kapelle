@@ -63,7 +63,7 @@ class ArchitecturePackageValidatorTests(unittest.TestCase):
                 "status": "ARCHITECTURE_GUIDANCE_READY",
                 "capability": {
                     "name": "project architecture rules",
-                    "kind": "project-subagent",
+                    "kind": "project-skill",
                 },
                 "scope": {
                     "aspects": ["backend"],

@@ -1,37 +1,38 @@
 {
   "active_change": null,
   "blockers": [],
-  "current_stage": "verify",
+  "current_stage": "start",
   "deferred_validation": [],
   "document_fingerprints": {
     "adr": null,
     "contracts": null,
     "design": null,
-    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
+    "design.md": "f34527260553e615cc100ae2563af2ed9bad42ffbb8505d492fd09e800ce4a85",
     "diagrams": null,
     "proposal.md": null,
-    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
-    "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
-    "tasks.md": "0cad0eaf4b2af3c5cdf1a66812e364599bfffc9939b00ebe6b0356f34ddfb143",
+    "spec.md": "fc826d7bdd159b91405a18086896e5c61facf0a0f728254d871b93ca31e4eed6",
+    "specs": "8c2a0aeef0722431a8c6a154fecddfe551e99ec6dbaaa44cd42ca8dfff05f005",
+    "tasks.md": "6f9af7d90b491a0c8a05b055729c31849652ac5d78a57a079c847c8340759359",
     "test-plan.md": null
   },
   "documentation_convergence": "missing-or-stale",
   "evidence_gaps": [],
   "feature_review": "missing-or-stale",
-  "feature_state": "verifying",
+  "feature_state": "awaiting-human-review",
   "layout_version": 2,
-  "next_command": "/kapelle:verify fast-complete-feature-artifacts --validation=ask",
+  "next_command": "/kapelle:start fast-complete-feature-artifacts --approve",
   "recovery_status": "native",
   "review_ready": false,
   "revision": null,
   "ship_ready": false,
   "slug": "fast-complete-feature-artifacts",
   "task_counts": {
-    "implemented-unverified": 2,
-    "total": 2
+    "implemented-unverified": 3,
+    "total": 3
   },
   "tasks": {
     "BASE": "implemented-unverified",
-    "W4": "implemented-unverified"
+    "W4": "implemented-unverified",
+    "W5": "implemented-unverified"
   }
 }

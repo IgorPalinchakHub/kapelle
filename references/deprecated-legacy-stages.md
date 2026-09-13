@@ -1,13 +1,14 @@
-# Deprecated legacy command wrappers
+# Removed command migration
+The compatibility wrappers are no longer bundled or advertised as commands. There is one workflow.
 
-Kapelle has one human-controlled pipeline. Deprecated command names never execute their former
-stage protocol.
+| Removed commands | Current route |
+|---|---|
+| spec, specify, clarify, classify-size, design, plan, plan-tests, decompose | start (use --revise for feedback) |
+| change, fix | amend |
+| base-functional-tests | implement |
+| unit-tests, feature-review | verify |
+| finalize, ship | verify --approve |
+| resume-change | status |
 
-On invocation:
-
-1. If the feature lacks a human-controlled marker, return `Status: DEPRECATED` and
-   `/kapelle:migrate <slug>`.
-2. Otherwise return `Status: DEPRECATED` and the replacement command named by the wrapper.
-3. Write no feature or project files and run no agent, validation, git, or migration action.
-
-Wrappers exist for one compatibility release and may be removed afterward.
+For an existing feature without a current workflow marker, use `/kapelle:migrate <slug>` first.
+Removal affects command discovery, not durable feature documents or historical evidence.

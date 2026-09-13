@@ -5,14 +5,11 @@ Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 ## Structural validation
 
-Run:
-
-```text
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-artifact-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<artifact>.schema.json"
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-task-run-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/<component>.schema.json" --pointer /<component>
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "<absolute-events-path>" "${CLAUDE_PLUGIN_ROOT}/dispatcher/execution-telemetry.schema.json" --jsonl
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" ignored "${CLAUDE_PLUGIN_ROOT}/dispatcher/<artifact>.schema.json" --schema-only
-```
+Use validate_json.py with the artifact path and its exact dispatcher schema, following the
+command in the invoking SKILL.md. For nested legacy records use --pointer; for telemetry use
+--jsonl; --schema-only audits a schema without an instance. These are validator options, not
+additional required outputs. Obtain absolute paths from the invoking skill, never from shell
+expansion of text read from this reference.
 
 The bundled validator implements exactly the JSON Schema subset used by Kapelle. It audits every
 schema before validating an instance and fails closed when a new unsupported keyword, unresolved

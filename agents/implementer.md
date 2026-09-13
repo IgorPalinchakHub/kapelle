@@ -2,7 +2,7 @@
 name: implementer
 description: >
   Execute an approved production-code plan using project capabilities and scoped architecture
-  rules, without authoring unit tests.
+  rules, adding only basic or explicitly justified critical tests before final verification.
 ---
 
 # Agent: implementer
@@ -23,7 +23,9 @@ Execute one approved production task in small coherent slices.
 2. Apply project capabilities and scoped rules; do not invent framework or business conventions.
 3. Implement one coherent slice at a time while preserving provider/consumer ordering and owned
    cross-aspect integration checks.
-4. Do not create or modify unit tests. Existing base functional tests may be run only when the
+4. Reuse existing tests and follow `../references/human-control.md` Test timing. Add only basic or
+   concretely justified critical coverage assigned in the approved workstream, including a focused
+   unit test when appropriate. All remaining tests stay at verify. Run checks only when the
    coordinator's validation decision permits it.
 5. Stop at the edit-attempt limit.
 6. If requirements, architecture, contracts, or ownership change, stop after the current atomic

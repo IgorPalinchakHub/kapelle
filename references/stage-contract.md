@@ -19,7 +19,7 @@ Protocol:
    Write nothing.
 3. Read inputs from disk. Do not depend on previous chat context and do not re-run any earlier
    stage — a `/clear`-ed context resumes purely from on-disk state.
-4. Produce only the stage's own artifact(s).
+4. Produce the stage's artifacts; implement and verify may also edit approved source and tests.
 5. Refresh `_kapelle/manifest.json`, `_kapelle/state.json`, and generated `STATUS.md`.
 6. Emit the stage-handoff block in chat; do not append it to a human feature artifact.
 
@@ -46,8 +46,8 @@ historical evidence; it can be rebuilt for continuation, but deleted approvals, 
 output, validation results, and telemetry are never invented. An inapplicable optional stage
 records `SKIPPED-confirmed` in `_kapelle/state.json`.
 
-Writing or overwriting the stage's own artifacts is not an irreversible action. Any other
-irreversible action is governed by [`../stages/_irreversible-guard.md`](../stages/_irreversible-guard.md).
+Approved source, test, and artifact edits are normal stage work. Kapelle performs no Git operations
+and never treats stage approval as permission to deploy, publish, or destroy unrelated data.
 Control flow is one-way: a stage calls skills, subagents, and tools; a skill never calls back up
 into a stage.
 
@@ -57,7 +57,8 @@ Status lines parsed by the caller:
 - `Status: RESUMED | read: <paths> | re-ran-prior: none`
 - `Status: DONE | produced: <paths>`
 
-Normal feature stages write only below `docs/features/<slug>/`. Shared repository artifacts such as
+Feature documentation lives below `docs/features/<slug>/`; approved implementation and test edits
+live in the project's native paths. Shared repository artifacts such as
 `docs/architecture-map.md` are never refreshed from branch drift; see
 [`repository-context.md`](./repository-context.md).
 

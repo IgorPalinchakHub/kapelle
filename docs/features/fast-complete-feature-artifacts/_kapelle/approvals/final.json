@@ -1,12 +1,12 @@
 {
   "artifact_fingerprints": {
-    "_kapelle/verification.json": "a3657cae342a006acfa626ea56abdaaeab46a5ddad86d0bdb9a63e6368837022",
-    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
-    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
-    "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
-    "tasks.md#structural": "94831cd2c6c044447cde720efc71ff7fb7ef557b3e6861682fa5322e377af3be"
+    "_kapelle/verification.json": "06ca2c806b6290aca49f7aba1064eebf17483c308a60245add55c715c59b1c33",
+    "design.md": "f34527260553e615cc100ae2563af2ed9bad42ffbb8505d492fd09e800ce4a85",
+    "spec.md": "fc826d7bdd159b91405a18086896e5c61facf0a0f728254d871b93ca31e4eed6",
+    "specs": "8c2a0aeef0722431a8c6a154fecddfe551e99ec6dbaaa44cd42ca8dfff05f005",
+    "tasks.md#structural": "561cb3ae42b3e1f2e38a768e27d285498cdeb7fe0413d96f13a5bebb1479b7e3"
   },
-  "confirmation": "Developer explicitly authorized autonomous completion of all verified Kapelle improvements without further approval pauses.",
+  "confirmation": "Developer explicitly approved final completion in the conversation: \u041e\u043a, \u0437\u0430\u0440\u0430\u043d\u044c.",
   "gate": "final",
   "status": "approved"
 }

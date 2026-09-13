@@ -10,6 +10,11 @@ Complexity changes only local effort:
 - moderate uncertainty: one explorer or one critic where it removes a real gap;
 - high risk: one bounded critic/reviewer pass and a finer checkpoint if the developer wants it.
 
+A simple feature or improvement keeps the root spec/design/tasks and one workstream. Review
+requirement and quality applicability internally, summarize only consequential findings, and ask
+no question when evidence supports the decision. Do not turn this review into extra stages,
+per-document approvals, a fixed interview, or a test plan requiring a choice for every scenario.
+
 Coverage, architecture guidance, coherent slice boundaries, and final validation are not weakened.
 Map the known large feature at high level, but do not detail or task-plan all future use cases or run
 duplicate roles merely because its future scope may be large.

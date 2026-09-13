@@ -1,48 +1,40 @@
 {
   "status": "ARCHITECTURE_GUIDANCE_READY",
   "capability": {
-    "name": "delegated-project-scoped-architecture-rules-reviewer",
+    "name": "kapelle-scoped-rules-review",
     "kind": "project-subagent"
   },
   "scope": {
     "aspects": [
-      "progressive product specifications",
-      "as-built technical specifications",
-      "brownfield change deltas",
-      "behavior-preserving refactoring",
-      "developer questions",
-      "architecture and runtime diagrams",
-      "lightweight traceability",
-      "deterministic structural validation",
-      "final documentation convergence"
+      "Proportional specifications and system design",
+      "Self-contained developer dialogue",
+      "Basic and critical early tests",
+      "Final verification and behavioral evaluation"
     ],
     "modules": [
       "skills",
       "references",
       "scripts",
-      "docs"
+      "docs",
+      "evals"
     ],
     "entrypoints": [
       "/kapelle:start",
       "/kapelle:amend",
+      "/kapelle:implement",
       "/kapelle:verify",
-      "/kapelle:sequences",
-      "validate_progressive_docs.py",
-      "validate_plugin.py"
+      "scripts/validate_plugin.py"
     ],
     "paths": [
       "skills/start/SKILL.md",
       "skills/amend/SKILL.md",
+      "skills/implement/SKILL.md",
       "skills/verify/SKILL.md",
-      "skills/sequences/SKILL.md",
-      "references/progressive-artifacts.md",
-      "references/artifact-presentation.md",
-      "references/developer-questions.md",
-      "scripts/validate_progressive_docs.py",
-      "scripts/test_validate_progressive_docs.py",
-      "scripts/test_review_gate.py",
-      "scripts/test_feature_state.py",
-      "scripts/validate_plugin.py"
+      "references/",
+      "README.md",
+      "docs/",
+      "scripts/validate_plugin.py",
+      "evals/"
     ]
   },
   "rules": [
@@ -75,6 +67,16 @@
       "title": "Deterministic state and direct execution",
       "summary": "Machine state stays under _kapelle; deterministic scripts own state/status JSON; helpers and inspections are direct; no Git operations.",
       "source": "AGENTS.md; references/script-execution.md"
+    },
+    {
+      "title": "Narrow user-approved early-test exception",
+      "summary": "Only basic or concretely important tests are added early, including a focused unit test when it is the smallest useful evidence. All remaining tests and complete verification stay at verify. This user instruction supersedes the blanket unit-test ban.",
+      "source": "Current user instruction; AGENTS.md invariant 6; references/human-control.md; skills/implement/SKILL.md; skills/verify/SKILL.md"
+    },
+    {
+      "title": "Proportional completeness and standalone decisions",
+      "summary": "Review applicability within the existing root package, never invent numerical targets, and explain current behavior, proposal, and consequence before links. No new stages, mandatory interviews, ADR quotas, or per-criterion approvals. Behavioral fixtures do not imply a live-agent PASS.",
+      "source": "references/progressive-artifacts.md; references/developer-questions.md; references/artifact-presentation.md; docs/features/fast-complete-feature-artifacts/spec.md"
     }
   ],
   "sources": [
@@ -92,7 +94,12 @@
     "scripts/test_validate_progressive_docs.py",
     "scripts/test_review_gate.py",
     "scripts/test_feature_state.py",
-    "scripts/validate_plugin.py"
+    "scripts/validate_plugin.py",
+    "references/human-control.md",
+    "references/validation-execution.md",
+    "skills/implement/SKILL.md",
+    "docs/features/fast-complete-feature-artifacts/spec.md",
+    "docs/features/fast-complete-feature-artifacts/design.md"
   ],
   "gaps": []
 }

@@ -3,7 +3,7 @@
     "design.md": {
       "exists": true,
       "path": "design.md",
-      "sha256": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c"
+      "sha256": "f34527260553e615cc100ae2563af2ed9bad42ffbb8505d492fd09e800ce4a85"
     },
     "proposal.md": {
       "exists": false,
@@ -13,12 +13,12 @@
     "spec.md": {
       "exists": true,
       "path": "spec.md",
-      "sha256": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8"
+      "sha256": "fc826d7bdd159b91405a18086896e5c61facf0a0f728254d871b93ca31e4eed6"
     },
     "tasks.md": {
       "exists": true,
       "path": "tasks.md",
-      "sha256": "0cad0eaf4b2af3c5cdf1a66812e364599bfffc9939b00ebe6b0356f34ddfb143"
+      "sha256": "6f9af7d90b491a0c8a05b055729c31849652ac5d78a57a079c847c8340759359"
     },
     "test-plan.md": {
       "exists": false,
@@ -33,5 +33,5 @@
   },
   "schema_version": "1.0",
   "slug": "fast-complete-feature-artifacts",
-  "state_built_at": "2026-08-22T20:45:58Z"
+  "state_built_at": "2026-09-12T22:00:00Z"
 }

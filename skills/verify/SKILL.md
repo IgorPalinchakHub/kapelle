@@ -1,14 +1,26 @@
 ---
 name: verify
 description: >
-  Reconcile a feature with its specification, write all unit tests at the end, run one risk-based
+  Reconcile a feature with its specification, write the remaining tests at the end, run one risk-based
   validation batch, and obtain final developer approval.
 ---
 
 # Skill: verify
 
+Read `../../references/developer-questions.md` for self-contained review explanations and
+`../../references/progressive-artifacts.md` for proportional completeness and evidence mapping.
+
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
 bundled Python helper and shell inspection command.
+
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
 
 ## Mandatory command shape
 
@@ -51,8 +63,12 @@ Invoke:
    Reconcile active acceptance scenarios with completed workstreams and performed verification.
    Every implemented active scenario remains linked to at least one workstream and relevant test or
    manual evidence; candidate capabilities remain outside this trace.
-3. Plan and write all unit tests now, grouped by changed behavior and failure modes. Do not generate
-   tests for trivial accessors or implementation details merely to increase count.
+3. Reuse the basic and critical tests written earlier. Plan and write all remaining tests now,
+   grouped by changed behavior and failure modes. Follow `../../references/human-control.md` Test
+   timing; do not duplicate existing coverage or generate tests for trivial accessors or
+   implementation details merely to increase count. Reconcile active root and detailed use-case
+   scenarios with concrete test paths/names or manual observations in the existing human package.
+   Check applicable quality targets with suitable evidence, not load tests for every numeric goal.
 4. Build one exact, risk-based validation batch from project-native commands. Include applicable
    functional, unit, integration/contract, static-analysis, lint/format, and build checks. Omit
    categories that genuinely do not apply and explain why in the review summary.
@@ -104,8 +120,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/
    stale diagrams rather than preserving misleading visuals. Run an available project-native
    Mermaid renderer or checker when applicable; otherwise require closed, non-empty source and the
    structural validator's nearby plain-language explanation check.
-9. On PASS, present: implemented flow, test coverage, commands/results, evidence source, remaining
-   manual checks, risks, and the exact final approval command.
+9. On PASS, briefly explain what existed, what changed, and the practical result before links.
+   Present test coverage, commands/results, evidence source, remaining manual checks, material
+   risks, and the exact final approval command. A simple change needs no paragraph-by-paragraph
+   walkthrough or extra review stage.
 
 ## Final approval
 

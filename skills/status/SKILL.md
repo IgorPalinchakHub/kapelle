@@ -16,6 +16,15 @@ Invoke:
 /kapelle:status <slug>
 ```
 
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
+
 ## Protocol
 
 1. Refuse with `Status: REFUSED-missing-input` when `docs/features/<slug>/` does not exist.
@@ -44,7 +53,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
    - final approval → completed.
 6. Show current outcome, slice progress, important blockers/deferred validation, core files plus
    any present use-case/domain/contract detail to review, the optional `amend` route when scope is
-   still evolving, and one exact routed command. Do not expose historical stage internals.
+   still evolving, and one exact routed command. When the route continues an unchecked workstream,
+   show its identifier together with its short title or outcome from `tasks.md`, for example
+   `W2 — remove the legacy unpublish flow`; never show a bare workstream identifier. Do not expose
+   historical stage internals.
 
 This utility performs no implementation edits, validation commands, git actions, or silent
 migration.

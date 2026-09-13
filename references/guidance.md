@@ -22,4 +22,4 @@ Kapelle consumes only provider-neutral evidence:
 ```
 
 Kapelle never prescribes search topics, rule codes, storage layout, a CLI command, or a provider name.
-When project config requires evidence, absent evidence or blocking gaps stop code-writing.
+When native project instructions require evidence, absent evidence or blocking gaps stop code-writing.

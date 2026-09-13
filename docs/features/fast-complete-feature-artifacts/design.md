@@ -31,12 +31,22 @@ public command.
 - The developer-question contract owns recommendation-first standalone choices and focused code
   examples. Progressive diagram selection, location, explanation, and as-built convergence are
   shared. The living validator checks workstream structure and complete active scenario coverage.
+- Progressive guidance now also owns applicability, quality verification, and use-case guarantees;
+  human-control owns the narrow early-test exception. Stage protocols and optional implementer
+  guidance consume it. Maintainer drafting scenarios exercise the conversation and planning floor.
 
 ### Technical delta
 
-Living artifacts, questions, and diagrams remain unchanged. This slice extends the existing
-progressive validator with a compact coverage check sourced directly from `Committed behavior` and
-`tasks.md`. No schema, graph, or routing state is introduced.
+Extend the shared progressive-artifact reference with proportional requirement applicability,
+quality scenarios, use-case postconditions, and evidence mapping. Start/amend/verify consume that
+reference; implement permits only basic or justified high-consequence early tests. Shared question
+and handoff guidance owns the current/proposal/consequence explanation. Keep remaining tests at
+verify and synchronize older timing descriptions so they cannot override the new exception.
+
+Add small manual/model behavior-evaluation fixtures with observable rubrics for simple work, risky
+integration, and refactoring. They are maintainer checks, not a new downstream stage. Existing
+plugin checks are updated only where they enforce superseded timing language. No schema, graph,
+new artifact marker, or runtime routing change is introduced.
 
 ## 3. End-to-end flow
 
@@ -78,6 +88,11 @@ continue to derive from the human package and deterministic internal evidence.
 
 No external integration or network dependency is introduced.
 
+Quality constraints for this slice: a simple improvement uses one workstream and the existing root
+package; no new command or required interview is added. Verify through scenario-based review of
+the resulting plan and dialogue, not elapsed-time or token claims. Scenario completeness is a
+semantic review responsibility; the structural validator remains explicitly limited to structure.
+
 ## 6. Decisions, risks, and deferrals
 
 - **Decision:** strengthen the existing marker instead of introducing `progressive-map-v2` in the
@@ -95,6 +110,10 @@ No external integration or network dependency is introduced.
 - **Risk:** stale checked workstreams could appear covered after meaning changes. Existing approval
   and artifact fingerprints continue to invalidate stale planning and verification evidence.
 - **Deferred:** deprecated-skill exposure and legacy-format simplification are later slices.
+- **Decision:** early tests are an exception for basic or high-consequence evidence, not universal
+  TDD. Final verification writes the remainder and reuses tests already present.
+- **Risk:** a checklist could lengthen every interaction. Review applicability internally, persist
+  only consequential decisions and compact grouped exclusions, and ask only blocking questions.
 
 ## 7. Current walking skeleton
 
@@ -102,3 +121,8 @@ The current implemented base now covers the whole lightweight path: living curre
 artifacts, refactoring delta, recommendation-first questions, evidence-triggered diagrams, compact
 scenario/workstream/verification traceability, and final as-built convergence. Compatibility
 packages and candidate capabilities remain unaffected until explicitly revised or promoted.
+
+The current increment adds proportional completeness and current/proposal explanations throughout
+planning and handoff, reuses existing tests before adding only basic/critical early evidence, and
+leaves remaining tests at final verification. Three independent drafting cases confirmed compact
+planning choices; they do not substitute for an end-to-end stage-execution evaluation.

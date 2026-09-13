@@ -1,12 +1,12 @@
 {
   "artifact_fingerprints": {
-    "_kapelle/architecture-guidance/design.json": "71d7fd2f55605a5a6f7ca249542c404c6ef86df49b2dc92c73ca196a4658e9ba",
-    "design.md": "a6a1747e9fc54f8fd3a0a406e1b40201fc30382470f1a1adc74e477257ebac8c",
-    "spec.md": "63966436e7fc306f051f033a6152de5c7614ccb1bab3d5f30bc773eb6c225ba8",
+    "_kapelle/architecture-guidance/design.json": "b1326497b3f01f891fab29df4ca48dafdfe8f520d6344e4893ade49613859296",
+    "design.md": "97d6d8bea66fe6a0c37ebd9d76f0eb63efc70b1d4ea7dfdf470d43e931de5cbc",
+    "spec.md": "74a06958f7f7331eee606d8ac5484c31ff2244afa1553c8785695197a6f06145",
     "specs": "b887ccd9257f2efe9ffe1ce4a3026df57e8ddd0c9b43096422f50a03ba5132e3",
-    "tasks.md#structural": "94831cd2c6c044447cde720efc71ff7fb7ef557b3e6861682fa5322e377af3be"
+    "tasks.md#structural": "561cb3ae42b3e1f2e38a768e27d285498cdeb7fe0413d96f13a5bebb1479b7e3"
   },
-  "confirmation": "Developer explicitly authorized autonomous implementation, documentation convergence, and verification without further approval pauses.",
+  "confirmation": "The user explicitly approved these improvements and their test/dialogue/short-process constraints in this conversation. Scope is unchanged; workstream result now records implementation and observed checks.",
   "gate": "plan",
   "status": "approved"
 }

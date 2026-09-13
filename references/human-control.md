@@ -9,7 +9,7 @@ raw task
   -> developer slice approval
   -> production implementation
   -> detail/promote the next use case through amend (repeat when needed)
-  -> all unit tests + complete verification
+  -> remaining tests + complete verification
   -> developer final approval
 ```
 
@@ -44,10 +44,19 @@ stable, never a prerequisite for planning or the first skeleton.
 
 ## Test timing
 
-Focused endpoint/use-case functional tests or legacy characterization tests may precede their
-production change. All unit tests are written after production implementation. Complete functional,
-unit, integration/contract, static-analysis, lint, and build verification happens once in
-`/kapelle:verify`.
+Reuse existing coverage first. Before or during production changes, add only basic boundary or
+characterization tests, or a small test protecting a concrete high-consequence behavior: access
+control, money calculations, destructive data, migration compatibility, or duplicate/concurrent
+side effects. A focused unit test is allowed when it is the smallest useful proof of that risk.
+State what failure it prevents and why existing coverage is insufficient in the workstream's
+`Verify` field. A category label alone does not justify a broad early suite.
+
+For a simple reversible change, an existing focused check or smoke/load check may be sufficient;
+do not invent a new test just to satisfy the workflow. Do not introduce universal TDD, a test-author
+agent chain, or separate test workstreams. All remaining tests are planned and written at
+`/kapelle:verify`, which reuses early coverage and runs one complete applicable functional, unit,
+integration/contract, static-analysis, lint, and build batch. Re-run only when changes or failures
+justify it.
 
 Development checks use `ask | allow | skip`. Deferred required checks block PASS and final approval
 until they run successfully or the developer explicitly confirms that the complete applicable

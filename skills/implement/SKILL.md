@@ -8,11 +8,20 @@ description: >
 # Skill: implement
 
 Read [`../../references/developer-questions.md`](../../references/developer-questions.md) before
-asking for input. The project architecture-rules subagent result is cached by `start`.
+asking for input. The project architecture-rules skill result is cached by `start`.
 Read [`../../references/progressive-artifacts.md`](../../references/progressive-artifacts.md) to
 preserve the active workstream and traceability contract.
 Follow [`../../references/script-execution.md`](../../references/script-execution.md) for every
 bundled Python helper and shell inspection command.
+
+
+## Runtime paths
+
+Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.
+Use these resolved absolute paths for commands below. Reference files receive no substitution.
+On a host without skill substitution, derive plugin root from this skill's absolute path (two
+parents above SKILL.md's directory) and project root from the host working directory. Verify both
+exist; if unavailable, report the missing root. Never send unresolved variables to the shell.
 
 ## Mandatory command shape
 
@@ -49,9 +58,11 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" check "${CLAUDE_PROJECT_D
    the narrowest project-native skill or instruction relevant to this workstream and reuse the
    cached architecture guidance. Refresh guidance only if the actual code scope leaves its recorded
    paths/modules/entrypoints or the design changes.
-4. Before production edits, add focused functional or characterization coverage when the workstream
-   changes an endpoint, command, worker, public use-case method, or fragile legacy behavior and such
-   coverage is practical. These are boundary-level tests, not unit tests.
+4. Follow `../../references/human-control.md` Test timing. Reuse existing coverage first; before
+   production edits, add only basic boundary/characterization evidence or a small test protecting a
+   concrete high-consequence behavior. A focused unit test is allowed when it is the smallest
+   useful evidence. Explain the prevented failure and existing coverage gap in `Verify`. Simple
+   reversible changes do not require a new test when an existing check is sufficient.
 5. Implement the thinnest complete end-to-end outcome. Prefer a real narrow path over speculative
    abstractions for future requirements. For the first slice, complete the production-shaped path
    through input/auth/validation, endpoint or command, use-case service, domain and
@@ -59,8 +70,10 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" check "${CLAUDE_PROJECT_D
    future endpoints, empty services, fake success responses, or TODO implementations. Do not leave
    the tree knowingly unloadable between checkpoints. If a schema, enum, or public contract changes,
    update its readers, migration/compatibility handling, and boundary tests in the same slice.
-6. Do not write unit tests, unit-test fixtures, or strict-TDD loops here. All unit tests are planned
-   and written once, after production implementation, by `/kapelle:verify`.
+6. Do not write the remaining test suite or run universal strict-TDD loops here. Beyond the basic
+   and critical early tests above, all remaining tests are planned and written at `/kapelle:verify`.
+   Keep early test setup minimal and reuse it later; do not create speculative fixtures or a
+   separate test-author agent chain.
 7. Use an explorer only for newly discovered ownership uncertainty. Use a fresh critic/reviewer only
    for high-risk changes, unresolved design deviation, or explicit developer request.
    Do not dispatch planner and implementer subagents by default.
@@ -89,7 +102,10 @@ Return only:
 - business outcome implemented;
 - changed areas;
 - observable behavior and important trade-off;
+- a short current-to-result explanation before file or paragraph links;
 - checks passed or deferred;
+- when naming the next workstream, its identifier plus short title or outcome from `tasks.md`, never
+  a bare identifier such as `W2`;
 - two explicit next choices after the slice:
   - `/kapelle:amend <slug> "<next business or technical requirement>"` to evolve the feature;
   - `/kapelle:verify <slug> --validation=ask` when the developer considers the current scope complete.

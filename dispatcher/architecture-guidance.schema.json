@@ -16,7 +16,7 @@
       "required": ["name", "kind"],
       "properties": {
         "name": { "type": "string", "minLength": 1 },
-        "kind": { "const": "project-subagent" }
+        "kind": { "const": "project-skill" }
       }
     },
     "scope": {

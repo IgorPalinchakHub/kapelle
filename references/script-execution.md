@@ -2,15 +2,14 @@
 
 ## Bundled Python helpers
 
-Run every Kapelle Python helper as one plain `python3` command from the project root:
+Run each helper using the concrete command in the invoking SKILL.md. Reference files are plain
+file content: reading them does not apply skill-variable substitution. They describe execution
+rules and never supply runnable commands containing provider variables.
 
-```text
-python3 "${CLAUDE_PLUGIN_ROOT}/scripts/<script>.py" "${CLAUDE_PROJECT_DIR}/<project-path>" ...
-```
-
-Claude Code substitutes both placeholders in plugin skill content before the model sees it. In a
-provider that does not substitute them, replace each placeholder with the normalized absolute
-plugin root and project root shown by that provider before executing the command.
+The invoking skill provides plugin and project roots. Claude Code resolves its supported variables
+in SKILL.md; other providers use the absolute skill location and project working directory supplied
+by the host. Resolve and verify those paths before invocation. If either root cannot be established,
+report the missing root and stop. Never rely on shell expansion of a provider variable.
 
 Never prefix a helper with `cd`, an environment-variable assignment such as `K=...`, `env`, a
 subshell, or a shell wrapper. Never join it to another command with `;`, `&&`, `||`, or a pipe.

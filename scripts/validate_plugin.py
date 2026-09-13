@@ -60,7 +60,6 @@ for rel in [
     'docs/COMMAND_EXECUTION_UK.md',
     'CLAUDE.md',
     'AGENTS.md',
-    'config/kapelle.config.schema.json',
     'dispatcher/task-context.schema.json',
     'dispatcher/task-plan.schema.json',
     'dispatcher/decomposition-review.schema.json',
@@ -110,7 +109,7 @@ for rel in [
     'references/reconstruction.md',
     'references/deprecated-legacy-stages.md',
     'references/repository-context.md',
-    'config/shapes/architecture-rules-agent.shape.md',
+    'config/shapes/architecture-rules-skill.shape.md',
     'references/change-lifecycle.md',
     'references/developer-questions.md',
     'references/json-schema-validation.md',
@@ -246,7 +245,6 @@ for backbone_name in ['start', 'implement', 'amend', 'verify']:
         )
 script_execution = (ROOT / 'references/script-execution.md').read_text()
 for required in [
-    'python3 "${CLAUDE_PLUGIN_ROOT}/scripts/<script>.py"',
     '`Bash(python3:*)`',
     'Never prefix a helper with `cd`',
     'environment-variable assignment',
@@ -291,7 +289,6 @@ for agent in sorted(agent_names):
           f'agent {agent}: missing orchestration contract')
 
 for rel in [
-    'config/kapelle.config.schema.json',
     'dispatcher/task-context.schema.json',
     'dispatcher/task-plan.schema.json',
     'dispatcher/decomposition-review.schema.json',
@@ -331,38 +328,12 @@ for rel in [
 ]:
     load_json(rel)
 
-config = load_json('config/kapelle.config.schema.json')
-if config:
-    implementation = config.get('properties', {}).get('implementation', {})
-    mode = implementation.get('properties', {}).get('mode', {})
-    check(mode.get('enum') == ['sequential', 'agent-team'],
-          'config: implementation.mode must support sequential and agent-team only')
-    props = implementation.get('properties', {})
-    check(props.get('approval_policy', {}).get('enum') == ['always', 'risk-based', 'never'],
-          'config: invalid implementation.approval_policy')
-    check(props.get('checkpoint', {}).get('enum') == ['task', 'workstream', 'none'],
-          'config: invalid implementation.checkpoint')
-    check(props.get('checkpoint', {}).get('default') == 'workstream',
-          'config: implementation.checkpoint default must be workstream')
-    check(props.get('max_task_attempts', {}).get('default') == 3,
-          'config: max_task_attempts default must be 3')
-    check(props.get('max_agent_runs_per_task', {}).get('default') == 3,
-          'config: max_agent_runs_per_task default must be 3')
-    check(props.get('telemetry', {}).get('default') is False,
-          'config: telemetry default must be false')
-    validation = config.get('properties', {}).get('validation', {})
-    validation_policy = validation.get('properties', {}).get('development_policy', {})
-    check(validation_policy.get('enum') == ['ask', 'allow', 'skip'],
-          'config: validation.development_policy must support ask, allow, and skip')
-    check(validation_policy.get('default') == 'ask',
-          'config: validation.development_policy default must be ask')
-
 implementation_skill = (ROOT / 'skills/implement/SKILL.md').read_text()
 for required in [
     '--validation=ask|allow|skip',
     '--checkpoint=workstream|task|none',
     'Default to `--checkpoint=workstream`',
-    'Do not write unit tests',
+    'Do not write the remaining test suite',
     '/kapelle:verify',
     'Do not create per-task run narratives',
     'Do not dispatch planner and implementer subagents by default',
@@ -398,7 +369,7 @@ human_control = (ROOT / 'references/human-control.md').read_text().lower()
 for required in [
     'human-controlled development workflow',
     'production implementation',
-    'all unit tests',
+    'remaining tests',
     'complete verification',
     '--checkpoint=workstream',
 ]:
@@ -439,12 +410,12 @@ for rel in [
         f'{rel}: must keep decision findings internal to the coordinator',
     )
 check('<!-- kapelle-workflow: lightweight-v1 -->' in
-      (ROOT / 'skills/start/SKILL.md').read_text(),
+      (ROOT / 'references/artifact-basics.md').read_text(),
       'start: missing durable workflow recovery marker')
 
 verify_skill = (ROOT / 'skills/verify/SKILL.md').read_text()
-check('write all unit tests now' in verify_skill,
-      'verify: must enforce end-of-implementation unit-test timing')
+check('write all remaining tests now' in verify_skill,
+      'verify: must keep remaining test authoring at final verification')
 check("developer's explicit statement" in verify_skill,
       'verify: invocation must explicitly close the evolving feature scope')
 for required in [
@@ -549,8 +520,8 @@ if architecture_schema:
         .get('kind', {})
         .get('const')
     )
-    check(capability_kind == 'project-subagent',
-          'architecture guidance: capability must be a project subagent')
+    check(capability_kind == 'project-skill',
+          'architecture guidance: capability must be a project skill')
 
 surface_example = load_json('examples/surface-plan.json')
 if surface_example:
@@ -849,7 +820,7 @@ for required in [
     'inferred',
     'declared',
     'unknown',
-    'architecture-rules subagent',
+    'architecture-rules skill',
     'kapelle:business-analyst',
     'kapelle:explorer',
     'kapelle:critic',
@@ -1000,10 +971,7 @@ deprecated_skills = {
     'fix',
     'resume-change',
 }
-for deprecated in sorted(deprecated_skills):
-    text = (ROOT / 'skills' / deprecated / 'SKILL.md').read_text()
-    check('# Deprecated:' in text and 'Write nothing' in text,
-          f'{deprecated}: legacy wrapper must be non-executing')
+check(not (deprecated_skills & skill_names), 'removed legacy commands must not be bundled')
 
 workflow_schema = load_json('dispatcher/workflow-state.schema.json')
 if workflow_schema:
@@ -1121,28 +1089,6 @@ for required in [
     '--change=<change-id>',
 ]:
     check(required in stage_contract, f'stage contract: missing {required!r}')
-stage_contract_pointer = (ROOT / 'stages/_stage-contract.md').read_text()
-check('references/stage-contract.md' in stage_contract_pointer,
-      'stages/_stage-contract.md must point to the canonical stage contract')
-check('REFUSED-missing-input' not in stage_contract_pointer
-      and len(stage_contract_pointer.splitlines()) <= 10,
-      'stages/_stage-contract.md must remain a pointer, not a second contract')
-
-if config:
-    check('providers' in config.get('properties', {}),
-          'config: missing providers adapter section')
-    role_binding = config.get('$defs', {}).get('role_binding', {})
-    check(set(role_binding.get('properties', {})) == {'//', 'model', 'effort'},
-          'config: role_binding must allow only model and effort')
-example_config = load_json('examples/kapelle.config.json')
-if example_config and role_profiles:
-    skill_names = {skill.parent.name for skill in skills}
-    for provider_name, provider in example_config.get('providers', {}).items():
-        check(set(provider.get('roles', {})) <= agent_names,
-              f'example config: provider {provider_name} binds unknown role')
-        check(set(provider.get('stages', {})) <= skill_names,
-              f'example config: provider {provider_name} binds unknown stage')
-
 for forbidden in [
     'rule_query',
     'must_rules',
