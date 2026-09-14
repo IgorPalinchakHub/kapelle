@@ -42,7 +42,7 @@ exist; if unavailable, report the missing root. Never send unresolved variables 
    components, asynchronous ordering, retries, or failure branches would make that section hard to
    scan, create `design/runtime-flow.md` or another focused `design/<aspect>.md`. Follow every
    diagram with a short plain-language explanation. Do not create a new root `sequences.md`; read
-   and preserve that path only as compatibility input until it is explicitly migrated. Do not
+   and read that path as historical context only; write new diagrams in the new feature package. Do not
    write `_kapelle/state.json` directly.
 7. Validate the package, rebuild status, and validate state as three separate commands:
 

@@ -126,7 +126,6 @@ for rel in [
     'scripts/rebuild_feature_state.py',
     'scripts/record_verification.py',
     'scripts/validate_feature_state.py',
-    'scripts/migrate_feature_layout.py',
     'scripts/test_feature_state.py',
     'scripts/validate_design.py',
     'scripts/test_validate_design.py',
@@ -136,8 +135,6 @@ for rel in [
     'scripts/test_validate_architecture_package.py',
     'scripts/review_gate.py',
     'scripts/test_review_gate.py',
-    'scripts/migrate_workflow.py',
-    'scripts/test_migrate_workflow.py',
 ]:
     check((ROOT / rel).exists(), f"missing {rel}")
 
@@ -148,7 +145,7 @@ expected_schema_groups = {
     'core-runtime',
     'optional-agent-runtime',
     'reconstruction',
-    'migration-compatibility',
+    'audited-artifacts',
 }
 classified_schema_names: list[str] = []
 if schema_lifecycle:
@@ -174,7 +171,7 @@ if schema_lifecycle:
 compatibility_schemas = set()
 if schema_lifecycle:
     compatibility_schemas = set(
-        schema_lifecycle.get('groups', {}).get('migration-compatibility', [])
+        schema_lifecycle.get('groups', {}).get('audited-artifacts', [])
     )
 backbone_text = '\n'.join(
     (ROOT / 'skills' / name / 'SKILL.md').read_text()
@@ -848,7 +845,6 @@ for required in [
     '/kapelle:implement <slug>',
     '/kapelle:verify',
     '/kapelle:verify <slug> --approve',
-    '/kapelle:migrate',
     '/kapelle:status <slug>',
     '/kapelle:reconstruct <slug>',
 ]:
@@ -860,7 +856,6 @@ for required in [
     '/kapelle:implement <slug>',
     '/kapelle:verify <slug>',
     '/kapelle:amend <slug>',
-    '/kapelle:migrate <slug>',
     '/kapelle:status <slug>',
     '/kapelle:reconstruct <slug>',
     'Що задати',

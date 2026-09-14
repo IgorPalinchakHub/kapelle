@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import argparse
 
-from feature_state import FeatureStateError, initialize_feature_state, refresh_feature_status
+from feature_state import require_current_feature, resolve_feature_dir, FeatureStateError, initialize_feature_state, refresh_feature_status
 
 
 def main() -> int:
@@ -18,6 +18,7 @@ def main() -> int:
     )
     args = parser.parse_args()
     try:
+        require_current_feature(resolve_feature_dir(args.feature_dir))
         if args.initialize:
             _, state = initialize_feature_state(args.feature_dir)
             recovered = False

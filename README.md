@@ -158,19 +158,12 @@ Utilities do not form another pipeline. If one changes the approved feature pack
 
 ## Existing feature directories
 
-Old Kapelle features are not routed through the former multi-stage pipeline:
+For changes to features from older plugin versions, start a new feature directory and run the full
+current workflow. Read old specifications and documents as context only; never import their state,
+approvals or validation evidence. No migration command or automatic format conversion is provided.
 
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply
-```
-
-Migration preserves human documents and historical evidence, adopts the lightweight marker, and
-never invents approvals or validation results.
-
-If `_kapelle/` is deleted, `/kapelle:status` rebuilds routing from `spec.md`, `design.md`,
-`tasks.md`, and current code. Checked work becomes `implemented-unverified` until a current
-verification PASS exists.
+For a current-format feature whose internal state was deleted, status can recover routing without
+inventing approvals or passing evidence.
 
 ## Documentation-only reconstruction
 
@@ -186,13 +179,13 @@ release.
   off-backbone routes
 - [Quick start (Ukrainian)](docs/QUICK_START_UK.md)
 - [Detailed command order (Ukrainian)](docs/COMMAND_EXECUTION_UK.md)
-- [Usage and migration](docs/USAGE.md)
+- [Usage](docs/USAGE.md)
 - [Reverse engineering guide (Ukrainian)](docs/RECONSTRUCTION_UK.md)
 - [Maintainer behavior-evaluation scenarios](evals/compact-quality.md) — lightweight checks of
   simple-change planning, integration risk, and refactoring; not a required feature stage
 
 ## Removed compatibility commands
 
-Only the 14 active skills are bundled. See the [command migration table](references/deprecated-legacy-stages.md).
+Only the 13 active skills are bundled. See the [removed-command table](references/deprecated-legacy-stages.md).
 Kapelle does not load `kapelle.config.json`: use documented command options and native project
 instructions. Artifacts live under `docs/features`; model selection belongs to the host.

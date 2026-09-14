@@ -23,7 +23,7 @@
       "reconstruction-coverage.schema.json",
       "reconstruction.schema.json"
     ],
-    "migration-compatibility": [
+    "audited-artifacts": [
       "artifact-state.schema.json",
       "base-functional-tests.schema.json",
       "change-request.schema.json",
@@ -40,6 +40,6 @@
     "core-runtime": "Required by the lightweight start/implement/verify/status runtime.",
     "optional-agent-runtime": "Loaded only when a bounded optional subagent or audited execution path is selected.",
     "reconstruction": "Required only by the documentation-only reconstruction workflow.",
-    "migration-compatibility": "Accepted only for migration, recovery, or one-release compatibility; never required by the lightweight backbone."
+    "audited-artifacts": "Only for explicitly triggered audited work or reconstruction; never a migration mechanism."
   }
 }

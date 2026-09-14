@@ -34,7 +34,7 @@
       "additionalProperties": false,
       "required": ["mode", "evidence_loss"],
       "properties": {
-        "mode": { "type": "string", "enum": ["native", "recovered", "migrated"] },
+        "mode": { "type": "string", "enum": ["native", "recovered"] },
         "evidence_loss": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },

@@ -43,7 +43,10 @@ exist; if unavailable, report the missing root. Never send unresolved variables 
 
 ## Draft or revise
 
-1. Require a stable slug and raw task. Inspect affected current behavior, ownership, entrypoints,
+1. Require a stable slug and raw task. For a change to a feature from an older plugin version,
+   create a new feature directory with a new slug. Read its old specs/docs as context only; do not
+   rewrite, migrate, resume or copy its machine state. Follow the entire current workflow, including
+   fresh architecture guidance, slice approval, implementation and final verification. Inspect affected current behavior, ownership, entrypoints,
    and nearby evidence. Map known outcomes and candidate capabilities at high level; design only
    the first production-shaped end-to-end slice. Distinguish new behavior, behavior change,
    behavior-preserving refactor, defect, and documentation correction.
@@ -93,7 +96,7 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_progressive_docs.py" "${CLAUDE_P
 }
 ```
 
-   Preserve `created_from: legacy-migration` when revising a migrated feature.
+   Never import old workflow state, approvals, task completion or verification.
    Validate it with `workflow-state.schema.json`, then run these as separate commands:
 
 ```text
@@ -102,6 +105,9 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 ```
 10. On revision, add the living-contract marker and compact structure when they are absent, then
     correct the high-level map or active slice without detailing candidate use cases.
+    If `_kapelle/architecture-guidance/*.json` records `capability.kind: project-subagent`,
+    move that file unchanged to `_kapelle/history/legacy/architecture-guidance/` and reacquire
+    guidance through the project skill (step 4); never relabel the old evidence.
     Any plan, verification, or final approval whose fingerprints no longer match becomes stale
     automatically. Do not promote candidate capabilities into committed behavior until the
     developer requests them through `/kapelle:amend`.

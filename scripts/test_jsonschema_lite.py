@@ -72,9 +72,9 @@ class JsonSchemaLiteTests(unittest.TestCase):
             validate_instance(
                 {
                     "workflow": "human-controlled",
-                    "version": 1,
+                    "version": 2,
                     "created_from": "raw-task",
-                    "lane": "standard",
+                    "profile": "lightweight",
                 },
                 schema,
             ),

@@ -14,6 +14,10 @@ Follow [`../../references/script-execution.md`](../../references/script-executio
 bundled Python helper and shell inspection command.
 
 
+Before changing an existing package, require the current workflow. For a feature from an older
+plugin version, read its specs/docs as context only and start a new change with a new slug through
+start. Never modify that old package or reuse its approvals, completed tasks or verification.
+
 ## Runtime paths
 
 Plugin root: `${CLAUDE_PLUGIN_ROOT}`. Project root: `${CLAUDE_PROJECT_DIR}`.

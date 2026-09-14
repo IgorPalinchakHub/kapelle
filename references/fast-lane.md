@@ -8,4 +8,4 @@ walking skeleton. Larger features accumulate developer-requested vertical slices
 they do not add mandatory stages or receive detailed up-front use-case designs or a complete
 workstream plan.
 
-Existing `human-controlled-v1; lane: fast|standard` features route to `/kapelle:migrate <slug>`.
+Older features are read-only context. Start a new change through the full current workflow.

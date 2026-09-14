@@ -61,10 +61,6 @@
       "reasoning": "high",
       "cost": "premium"
     },
-    "migrate": {
-      "reasoning": "medium",
-      "cost": "balanced"
-    },
     "survey": {
       "reasoning": "medium",
       "cost": "balanced"

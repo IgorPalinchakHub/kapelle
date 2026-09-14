@@ -280,7 +280,7 @@ class ReviewGateTests(unittest.TestCase):
                     json.dumps({"gate": gate, "status": "accepted"})
                 )
             self.assertEqual(
-                ("migrate", f"/kapelle:migrate {feature.name}"),
+                ("start", f'/kapelle:start {feature.name}-change "<requested change; read docs/features/{feature.name} as context>"'),
                 choose_next_command(feature.name, feature, {}, False, False),
             )
             approve(feature, "outline", "Developer accepted outline.", refresh=False)
@@ -291,7 +291,7 @@ class ReviewGateTests(unittest.TestCase):
                 refresh=False,
             )
             self.assertEqual(
-                ("migrate", f"/kapelle:migrate {feature.name}"),
+                ("start", f'/kapelle:start {feature.name}-change "<requested change; read docs/features/{feature.name} as context>"'),
                 choose_next_command(feature.name, feature, {}, False, False),
             )
 

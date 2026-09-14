@@ -85,3 +85,6 @@ Every backbone stage refreshes `STATUS.md` and ends its chat response with:
 **Run next**
 `/kapelle:<next-stage> <slug>`
 ```
+
+Older feature packages are read-only context. Changes to them start a new feature directory and
+the full current Kapelle process. Never migrate or import old approvals, execution state or evidence.

@@ -6,33 +6,45 @@
     {
       "type": "object",
       "additionalProperties": false,
-      "required": ["workflow", "version", "created_from", "profile"],
+      "required": [
+        "workflow",
+        "version",
+        "created_from",
+        "profile"
+      ],
       "properties": {
-        "workflow": { "const": "human-controlled" },
-        "version": { "const": 2 },
-        "created_from": { "type": "string", "enum": ["raw-task", "legacy-migration"] },
-        "profile": { "const": "lightweight" }
+        "workflow": {
+          "const": "human-controlled"
+        },
+        "version": {
+          "const": 2
+        },
+        "created_from": {
+          "const": "raw-task"
+        },
+        "profile": {
+          "const": "lightweight"
+        }
       }
     },
     {
       "type": "object",
       "additionalProperties": false,
-      "required": ["workflow", "version", "created_from", "lane"],
+      "required": [
+        "workflow",
+        "version",
+        "created_from"
+      ],
       "properties": {
-        "workflow": { "const": "human-controlled" },
-        "version": { "const": 1 },
-        "created_from": { "type": "string", "enum": ["raw-task", "legacy-migration"] },
-        "lane": { "type": "string", "enum": ["fast", "standard"] }
-      }
-    },
-    {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["workflow", "version", "created_from"],
-      "properties": {
-        "workflow": { "const": "reconstruction" },
-        "version": { "const": 1 },
-        "created_from": { "const": "existing-code" }
+        "workflow": {
+          "const": "reconstruction"
+        },
+        "version": {
+          "const": 1
+        },
+        "created_from": {
+          "const": "existing-code"
+        }
       }
     }
   ]

@@ -4,6 +4,8 @@ Kapelle utilities enrich durable human documentation without creating another wo
 Bundled helpers follow [`script-execution.md`](./script-execution.md).
 
 1. Read only the named feature or project artifacts and refuse missing inputs instead of guessing.
+   Older feature packages are read-only context; do not enrich or rewrite them. Start a new change
+   with a new slug through the full current workflow.
 2. Write the smallest independently useful human artifact. Utilities never hand-edit
    `_kapelle/manifest.json`, `_kapelle/state.json`, review gates, or `STATUS.md`.
 3. After a feature artifact changes, run build_feature_status.py and validate_feature_state.py

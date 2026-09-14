@@ -1,4 +1,4 @@
-# Removed command migration
+# Removed commands
 The compatibility wrappers are no longer bundled or advertised as commands. There is one workflow.
 
 | Removed commands | Current route |
@@ -10,5 +10,6 @@ The compatibility wrappers are no longer bundled or advertised as commands. Ther
 | finalize, ship | verify --approve |
 | resume-change | status |
 
-For an existing feature without a current workflow marker, use `/kapelle:migrate <slug>` first.
+The migrate command and migration scripts are also removed. For an older feature, read its specs
+and docs as context and start a new change with a new slug through the full current workflow.
 Removal affects command discovery, not durable feature documents or historical evidence.

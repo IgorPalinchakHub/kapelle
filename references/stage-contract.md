@@ -24,7 +24,7 @@ Protocol:
 6. Emit the stage-handoff block in chat; do not append it to a human feature artifact.
 
 The single human-controlled workflow uses deterministic fingerprints for explicit approvals and
-phase evidence. An unmarked feature is routed to `migrate`, never to a second stage graph. Task
+phase evidence. An older feature is read-only context for a new feature directory and the full start workflow. Task
 checkbox/status changes use structural fingerprints so progress does not invalidate an approved
 plan. Amendments use revision fingerprints and the dependency graph.
 

@@ -101,15 +101,10 @@ start -> погодження -> implement -> verify -> фінальне пог�
 /kapelle:amend <slug> "<нова вимога або feedback>"
 ```
 
-## Статус або відновлення
+## Changes to older features
 
-```text
-/kapelle:status <slug>
-```
+Read their specs and documents as context only. Start a new feature directory with a new slug:
+start → fresh guidance and approval → implement → verify → final approval.
+Old machine state and evidence are never imported. No migrations are supported.
+Recovery applies only to current-format features.
 
-Для старої фічі Kapelle:
-
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply
-```

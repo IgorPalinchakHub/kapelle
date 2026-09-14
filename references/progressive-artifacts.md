@@ -115,7 +115,7 @@ that prose would make hard to review:
 
 Use diffable Mermaid source. Prefer one focused block inline in `design.md`; move complex detail to
 `design/<aspect>.md`. New work does not create root `sequences.md`; that path remains compatibility
-input until explicitly migrated. A normal slice has zero or one diagram; a genuinely complex slice
+read-only context for a new feature. A normal slice has zero or one diagram; a genuinely complex slice
 may have two or three focused diagrams rather than one crowded visual.
 
 Every diagram is followed by a short plain-language explanation of participants, responsibilities,

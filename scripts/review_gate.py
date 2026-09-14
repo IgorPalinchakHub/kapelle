@@ -17,6 +17,7 @@ from feature_state import (
     reconstruction_review_current,
     relative_fingerprint,
     resolve_feature_dir,
+    require_current_feature,
     schema_valid,
     lightweight_workflow,
     phase_evidence_current,
@@ -187,6 +188,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         feature_dir = resolve_feature_dir(args.feature_dir)
+        require_current_feature(feature_dir)
         if args.action == "check":
             ready = not (
                 args.gate == "plan" and plan_readiness_errors(feature_dir)

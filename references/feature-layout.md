@@ -104,14 +104,8 @@ architecture guidance and planning replace it.
 There is one physical path for each logical artifact. Skills must not write a second source of truth
 under a legacy path.
 
-## Compatibility
+## Older feature packages
 
-Unmarked or `human-controlled-v1` feature directories are never silently routed through old
-stages. First use
-`/kapelle:migrate <slug>` or the bundled `migrate_workflow.py`. Physical layout-v1 directories may
-also require physical layout migration. The migrate skill contains its dry-run and apply
-commands; use its resolved paths. Layout migration is separate from workflow adoption.
-
-Migration parses and semantically validates legacy coordination and change state before writing,
-preserves legacy evidence under `_kapelle/history/legacy/`, reports collisions before writing, and
-is idempotent. The migration marker is written only after rebuilt feature-state validation passes.
+Read old specs and documentation as context only. Changes start in a new feature directory through
+start and the full current workflow. Never migrate old paths, import machine state or reuse old
+approvals and validation. Current-format state recovery remains supported for current features.

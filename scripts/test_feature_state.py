@@ -21,7 +21,6 @@ from feature_state import (
     relative_fingerprint,
     render_status,
 )
-from migrate_feature_layout import apply_migration, migration_plan
 from validate_feature_state import validate
 from validate_task_plan import validate as validate_task_plan
 from validate_design import REQUIRED_HEADINGS
@@ -491,7 +490,7 @@ class FeatureStateTests(unittest.TestCase):
             self.assertFalse(recovered)
             self.assertEqual("completed", state["tasks"]["T01"])
             self.assertFalse(state["review_ready"])
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
             self.assertEqual([], validate(feature))
 
     def test_ad_hoc_validation_pass_is_not_completion_evidence(self) -> None:
@@ -574,51 +573,6 @@ class FeatureStateTests(unittest.TestCase):
             self.assertEqual("implemented-unverified", state["tasks"]["T01"])
             self.assertFalse(state["ship_ready"])
 
-    def test_legacy_review_evidence_never_bypasses_migration(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = self.make_feature(Path(tmp), checked=True)
-            rebuild_feature_state(feature)
-            validation_path = self.write_pass_validation(feature)
-            fingerprints = input_fingerprints(feature)
-            implementation = feature.parent.parent.parent / "src" / "feature.txt"
-            reviews = feature / "_kapelle" / "reviews"
-            reviews.mkdir()
-            (reviews / "documentation-convergence.json").write_text(
-                json.dumps(
-                    {
-                        "status": "PASS",
-                        "revision": None,
-                        "input_fingerprints": fingerprints,
-                        "implementation_fingerprints": {
-                            "src/feature.txt": file_fingerprint(implementation)
-                        },
-                        "requirement_mismatches": [],
-                        "design_mismatches": [],
-                        "contract_mismatches": [],
-                        "undocumented_decisions": [],
-                        "unresolved_deferrals": [],
-                    }
-                )
-            )
-            (reviews / "feature-review.json").write_text(
-                json.dumps(
-                    {
-                        "status": "PASS",
-                        "summary": "Historical review passed.",
-                        "input_fingerprints": fingerprints,
-                        "validation_files": [str(validation_path.relative_to(feature))],
-                        "reviewed_aspects": ["core"],
-                        "findings": [],
-                    }
-                )
-            )
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("migrate", state["current_stage"])
-            self.assertEqual(
-                f"/kapelle:migrate {feature.name}", state["next_command"]
-            )
-            self.assertFalse(state["review_ready"])
-            self.assertFalse(state["ship_ready"])
 
     def test_corrupt_coordination_routes_to_producing_stage(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -626,13 +580,13 @@ class FeatureStateTests(unittest.TestCase):
             initialize_feature_state(feature)
             (feature / "_kapelle" / "task-plan.json").write_text("{broken")
             _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
             self.assertTrue(
                 any("task-plan" in error for error in validate(feature))
             )
             (feature / "_kapelle" / "surface-plan.json").write_text("{broken")
             _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
 
     def test_wrapped_task_metadata_and_ac_ranges_are_parsed(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -745,7 +699,7 @@ class FeatureStateTests(unittest.TestCase):
             self.assertTrue((feature / "_kapelle" / "surface-plan.json").is_file())
             self.assertTrue((feature / "_kapelle" / "task-plan.json").is_file())
             self.assertEqual("implemented-unverified", state["tasks"]["T01"])
-            self.assertEqual("/kapelle:migrate readable-feature", report["next_command"])
+            self.assertEqual('/kapelle:start readable-feature-change "<requested change; read docs/features/readable-feature as context>"', report["next_command"])
             self.assertIn(
                 "current scoped architecture guidance",
                 report["evidence_unavailable"],
@@ -771,9 +725,9 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "_kapelle").rmdir()
             _, state, _ = rebuild_feature_state(feature)
             self.assertEqual("pending", state["tasks"]["T01"])
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
             self.assertEqual(
-                "/kapelle:migrate readable-feature", state["next_command"]
+                '/kapelle:start readable-feature-change "<requested change; read docs/features/readable-feature as context>"', state["next_command"]
             )
 
     def test_missing_downstream_human_artifacts_selects_minimal_stage(self) -> None:
@@ -783,9 +737,9 @@ class FeatureStateTests(unittest.TestCase):
             (feature / "tasks.md").unlink()
             (feature / "test-plan.md").unlink()
             _, state, _ = rebuild_feature_state(feature)
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
             self.assertEqual(
-                "/kapelle:migrate readable-feature", state["next_command"]
+                '/kapelle:start readable-feature-change "<requested change; read docs/features/readable-feature as context>"', state["next_command"]
             )
             self.assertEqual([], validate(feature))
 
@@ -824,280 +778,7 @@ class FeatureStateTests(unittest.TestCase):
             self.assertTrue(any("execution.jsonl schema" in item for item in errors))
             self.assertTrue(any("request.json schema" in item for item in errors))
 
-    def test_legacy_human_controlled_workflow_requires_migration(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
-            feature = self.make_feature(root)
-            internal = feature / "_kapelle"
-            (internal / "workflow.json").write_text(
-                json.dumps(
-                    {
-                        "workflow": "human-controlled",
-                        "version": 1,
-                        "created_from": "raw-task",
-                        "lane": "standard",
-                    }
-                )
-            )
-            (feature / "proposal.md").write_text(
-                "<!-- kapelle-workflow: human-controlled-v1; lane: standard -->\n"
-                + (feature / "proposal.md").read_text()
-            )
-            (feature / "specs").mkdir()
-            (feature / "specs" / "scenarios.md").write_text("# Scenarios\n")
-            docs = document_fingerprints(feature)
-            self.write_approval(
-                feature,
-                "outline",
-                {
-                    "proposal.md": docs["proposal.md"],
-                    "_context/architecture.md": file_fingerprint(
-                        feature / "_context" / "architecture.md"
-                    ),
-                },
-            )
-            self.write_approval(
-                feature,
-                "business-spec",
-                {
-                    "proposal.md": docs["proposal.md"],
-                    "spec.md": docs["spec.md"],
-                    "specs": docs["specs"],
-                },
-            )
-            (feature / "design").mkdir()
-            (feature / "design" / "components.md").write_text("# Components\n")
-            (feature / "contracts").mkdir()
-            (feature / "contracts" / "README.md").write_text("# Contracts\n\nNone.\n")
-            guidance = internal / "architecture-guidance"
-            guidance.mkdir()
-            (guidance / "design.json").write_text(
-                json.dumps(self.valid_guidance(["core"]))
-            )
-            docs = document_fingerprints(feature)
-            self.write_approval(
-                feature,
-                "architecture",
-                {
-                    "spec.md": docs["spec.md"],
-                    "specs": docs["specs"],
-                    "design.md": docs["design.md"],
-                    "design": docs["design"],
-                    "contracts": docs["contracts"],
-                    "_kapelle/surface-plan.json": file_fingerprint(
-                        internal / "surface-plan.json"
-                    ),
-                    "_kapelle/architecture-guidance/design.json": file_fingerprint(
-                        guidance / "design.json"
-                    ),
-                },
-            )
-            self.write_approval(
-                feature,
-                "delivery-plan",
-                {
-                    "tasks.md#structural": normalized_tasks_fingerprint(
-                        feature / "tasks.md"
-                    ),
-                    "test-plan.md": file_fingerprint(feature / "test-plan.md"),
-                    "_kapelle/task-plan.json#structural": (
-                        normalized_task_plan_fingerprint(
-                            internal / "task-plan.json"
-                        )
-                    ),
-                },
-            )
-            _, state = initialize_feature_state(feature)
-            self.assertEqual("migrate", state["current_stage"])
-            self.assertEqual(
-                f"/kapelle:migrate {feature.name}",
-                state["next_command"],
-            )
-            return
 
-            phase_inputs = {
-                "spec.md": file_fingerprint(feature / "spec.md"),
-                "specs": document_fingerprints(feature)["specs"],
-                "contracts": document_fingerprints(feature)["contracts"],
-                "test-plan.md": file_fingerprint(feature / "test-plan.md"),
-                "tasks.md#structural": normalized_tasks_fingerprint(
-                    feature / "tasks.md"
-                ),
-                "_kapelle/task-plan.json#structural": (
-                    normalized_task_plan_fingerprint(internal / "task-plan.json")
-                ),
-            }
-            (internal / "base-functional-tests.json").write_text(
-                json.dumps(
-                    {
-                        "status": "READY",
-                        "scope": ["endpoint"],
-                        "test_files": ["tests/functional.txt"],
-                        "covered_contracts": [],
-                        "input_fingerprints": phase_inputs,
-                    }
-                )
-            )
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("implement", state["current_stage"])
-
-            (feature / "tasks.md").write_text(
-                (feature / "tasks.md").read_text().replace("- [ ]", "- [x]")
-            )
-            task_plan = json.loads((internal / "task-plan.json").read_text())
-            task_plan["tasks"][0]["status"] = "implemented-unverified"
-            (internal / "task-plan.json").write_text(json.dumps(task_plan))
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("unit-tests", state["current_stage"])
-
-            implementation_fingerprints = {
-                "src/feature.txt": file_fingerprint(root / "src" / "feature.txt")
-            }
-            post_implementation_inputs = {
-                "spec.md": file_fingerprint(feature / "spec.md"),
-                "tasks.md#structural": normalized_tasks_fingerprint(
-                    feature / "tasks.md"
-                ),
-                "_kapelle/task-plan.json#structural": (
-                    normalized_task_plan_fingerprint(internal / "task-plan.json")
-                ),
-            }
-            (internal / "unit-tests.json").write_text(
-                json.dumps(
-                    {
-                        "status": "PASS",
-                        "planned_units": ["feature unit"],
-                        "test_files": ["tests/unit.txt"],
-                        "commands": ["unit-test"],
-                        "input_fingerprints": post_implementation_inputs,
-                        "implementation_fingerprints": implementation_fingerprints,
-                    }
-                )
-            )
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("verify", state["current_stage"])
-
-            (internal / "verification.json").write_text(
-                json.dumps({"status": "PASS"})
-            )
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("verify", state["current_stage"])
-
-            (internal / "verification.json").write_text(
-                json.dumps(
-                    {
-                        "status": "PASS",
-                        "categories": ["functional", "unit", "lint"],
-                        "commands": ["test-all", "lint"],
-                        "input_fingerprints": post_implementation_inputs,
-                        "implementation_fingerprints": implementation_fingerprints,
-                    }
-                )
-            )
-            self.write_pass_validation(feature)
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("finalize", state["current_stage"])
-            self.assertTrue(state["review_ready"])
-
-            (feature / "diagrams").mkdir()
-            diagrams = [
-                "diagrams/feature-flow.mmd",
-                "diagrams/architecture.mmd",
-            ]
-            for relative in diagrams:
-                (feature / relative).write_text("flowchart LR\n  A --> B\n")
-            self.write_approval(
-                feature,
-                "final",
-                {
-                    "diagrams": document_fingerprints(feature)["diagrams"],
-                    "_kapelle/verification.json": file_fingerprint(
-                        internal / "verification.json"
-                    ),
-                },
-            )
-            release_docs = {
-                name: digest
-                for name, digest in document_fingerprints(feature).items()
-                if digest is not None
-            }
-            (internal / "release.json").write_text(
-                json.dumps(
-                    {
-                        "status": "completed",
-                        "version": "1.0",
-                        "developer_confirmation": "Manual testing complete",
-                        "document_fingerprints": release_docs,
-                        "implementation_fingerprints": implementation_fingerprints,
-                        "diagrams": diagrams,
-                    }
-                )
-            )
-            _, state, _ = refresh_feature_status(feature)
-            self.assertEqual("completed", state["current_stage"])
-            self.assertEqual("completed", state["feature_state"])
-            self.assertTrue(state["ship_ready"])
-            self.assertEqual([], validate(feature))
-
-            for path in sorted(internal.rglob("*"), reverse=True):
-                if path.is_file():
-                    path.unlink()
-                else:
-                    path.rmdir()
-            internal.rmdir()
-            _, recovered_state, _ = rebuild_feature_state(feature)
-            self.assertTrue((internal / "workflow.json").is_file())
-            self.assertEqual("spec", recovered_state["current_stage"])
-            self.assertEqual(
-                f"/kapelle:spec {feature.name}",
-                recovered_state["next_command"],
-            )
-            self.assertEqual([], validate(feature))
-
-    def test_legacy_fast_lane_requires_migration(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = self.make_feature(Path(tmp))
-            internal = feature / "_kapelle"
-            (feature / "test-plan.md").unlink()
-            (internal / "workflow.json").write_text(
-                json.dumps(
-                    {
-                        "workflow": "human-controlled",
-                        "version": 1,
-                        "created_from": "raw-task",
-                        "lane": "fast",
-                    }
-                )
-            )
-            (feature / "proposal.md").write_text(
-                "<!-- kapelle-workflow: human-controlled-v1; lane: fast -->\n"
-                + (feature / "proposal.md").read_text()
-            )
-            self.write_approval(
-                feature,
-                "feature-plan",
-                {
-                    "proposal.md": file_fingerprint(feature / "proposal.md"),
-                    "spec.md": file_fingerprint(feature / "spec.md"),
-                    "design.md": file_fingerprint(feature / "design.md"),
-                    "tasks.md#structural": normalized_tasks_fingerprint(
-                        feature / "tasks.md"
-                    ),
-                    "_kapelle/surface-plan.json": file_fingerprint(
-                        internal / "surface-plan.json"
-                    ),
-                    "_kapelle/task-plan.json#structural": (
-                        normalized_task_plan_fingerprint(internal / "task-plan.json")
-                    ),
-                },
-            )
-            _, state = initialize_feature_state(feature)
-            self.assertEqual("migrate", state["current_stage"])
-            self.assertEqual(
-                f"/kapelle:migrate {feature.name}",
-                state["next_command"],
-            )
-            self.assertEqual([], validate(feature))
 
     def test_legacy_fast_lane_size_no_longer_routes_old_stages(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -1135,9 +816,9 @@ class FeatureStateTests(unittest.TestCase):
             (internal / "task-plan.json").write_text(json.dumps(task_plan))
             (feature / "tasks.md").write_text("\n".join(human_tasks) + "\n")
             _, state = initialize_feature_state(feature)
-            self.assertEqual("migrate", state["current_stage"])
+            self.assertEqual("start", state["current_stage"])
             self.assertEqual(
-                f"/kapelle:migrate {feature.name}",
+                f'/kapelle:start {feature.name}-change "<requested change; read docs/features/{feature.name} as context>"',
                 state["next_command"],
             )
 
@@ -1246,6 +927,7 @@ class FeatureStateTests(unittest.TestCase):
             self.assertTrue(state["ship_ready"])
             self.assertEqual([], validate(feature))
 
+
     def test_developer_attested_pass_supersedes_deferred_lightweight_validation(
         self,
     ) -> None:
@@ -1331,194 +1013,9 @@ class FeatureStateTests(unittest.TestCase):
             self.assertEqual("start", state["current_stage"])
             self.assertEqual([], validate(feature))
 
-    def test_legacy_migration_is_planned_applied_and_idempotent(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = Path(tmp) / "legacy-feature"
-            feature.mkdir()
-            (feature / "spec.md").write_text("# Legacy spec\n\n**AC-01** Preserve behavior.\n")
-            (feature / "sad.md").write_text("# Legacy design\n")
-            (feature / "test-plan.md").write_text("# Tests\n")
-            (feature / "surface-plan.json").write_text(
-                json.dumps(
-                    {
-                        "slug": "legacy-feature",
-                        "aspects": [
-                            {
-                                "id": "core",
-                                "intent": "Preserve behavior",
-                                "modules": [],
-                                "entrypoints": [],
-                                "depends_on": [],
-                            }
-                        ],
-                        "contracts": [],
-                        "integration_checks": [],
-                    }
-                )
-            )
-            (feature / "tasks.json").write_text(
-                json.dumps(
-                    {
-                        "slug": "legacy-feature",
-                        "decomposition_depth": "standard",
-                        "architecture_guidance_path": "_context/architecture.md",
-                        "workstreams": [
-                            {
-                                "id": "WS",
-                                "title": "Legacy delivery",
-                                "intent": "Preserve legacy behavior",
-                                "aspects": ["core"],
-                                "depends_on": [],
-                                "completion_task_id": "T1",
-                                "completion_signal": "Behavior is preserved",
-                            }
-                        ],
-                        "tasks": [
-                            {
-                                "id": "T1",
-                                "title": "Preserve task",
-                                "intent": "Preserve task",
-                                "workstream_id": "WS",
-                                "deps": [],
-                                "status": "completed",
-                                "acs": ["AC-01"],
-                                "dod": "Behavior is preserved",
-                                "module_hint": None,
-                                "primary_aspect": "core",
-                                "aspects": ["core"],
-                                "entrypoint_hint": None,
-                                "provides_contracts": [],
-                                "consumes_contracts": [],
-                                "integration_checks": [],
-                                "validation": [
-                                    {
-                                        "kind": "inspection",
-                                        "procedure": "Inspect preserved behavior",
-                                        "expected": "Behavior is unchanged",
-                                    }
-                                ],
-                                "risk": "low",
-                                "parallel_candidate": False,
-                                "ownership_status": "known",
-                                "files_hint": [],
-                            }
-                        ],
-                        "split_recommendations": [],
-                    }
-                )
-            )
-            audit = feature / "_audit"
-            audit.mkdir()
-            (audit / "evidence.txt").write_text("historical")
-            (feature / ".size").write_text("Size: M\nExecution depth: standard\n")
-            change = feature / "changes" / "active-change"
-            change.mkdir(parents=True)
-            (change / "active-state.json").write_text(
-                json.dumps({"state": "running", "revision": "r001"})
-            )
 
-            dry_run = migration_plan(feature)
-            self.assertEqual("ready", dry_run["status"])
-            self.assertTrue((feature / "sad.md").exists())
-            apply_migration(feature, dry_run)
-            self.assertTrue((feature / "design.md").exists())
-            self.assertTrue((feature / "proposal.md").exists())
-            self.assertTrue((feature / "tasks.md").exists())
-            self.assertTrue((feature / "_kapelle" / "task-plan.json").exists())
-            self.assertTrue(
-                (feature / "_kapelle" / "history" / "legacy" / "audit" / "evidence.txt").exists()
-            )
-            self.assertEqual(
-                "M",
-                json.loads((feature / "_kapelle" / "size.json").read_text())["size"],
-            )
-            self.assertTrue(
-                (feature / "_kapelle" / "changes" / "active-change" / "state.json").exists()
-            )
-            migrated_state = json.loads(
-                (
-                    feature
-                    / "_kapelle"
-                    / "changes"
-                    / "active-change"
-                    / "state.json"
-                ).read_text()
-            )
-            self.assertEqual("active-change", migrated_state["change_id"])
-            self.assertEqual(1, migrated_state["current_revision"])
-            self.assertIsNone(migrated_state["paused_task"])
-            self.assertEqual("already-migrated", migration_plan(feature)["status"])
 
-    def test_migration_refuses_malformed_or_duplicate_tasks_before_mutation(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = Path(tmp) / "legacy"
-            feature.mkdir()
-            (feature / "spec.md").write_text("# Spec\n\n**AC-01** Behavior.\n")
-            (feature / "surface-plan.json").write_text(
-                json.dumps(
-                    {
-                        "slug": "legacy",
-                        "aspects": [],
-                        "contracts": [],
-                        "integration_checks": [],
-                    }
-                )
-            )
-            (feature / "tasks.json").write_text("{broken")
-            with self.assertRaises(FeatureStateError):
-                migration_plan(feature)
-            self.assertFalse((feature / "_kapelle").exists())
 
-            (feature / "tasks.json").write_text(
-                json.dumps(
-                    {
-                        "slug": "legacy",
-                        "workstreams": [],
-                        "tasks": [{"id": "T1"}, {"id": "T1"}],
-                    }
-                )
-            )
-            with self.assertRaises(FeatureStateError):
-                apply_migration(feature, {"status": "ready", "collisions": []})
-            self.assertTrue((feature / "tasks.json").exists())
-            self.assertFalse(
-                (feature / "_kapelle" / "history" / "migration-v2.json").exists()
-            )
-
-    def test_malformed_or_inconsistent_migration_marker_never_suppresses_work(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = Path(tmp) / "legacy"
-            marker = feature / "_kapelle" / "history" / "migration-v2.json"
-            marker.parent.mkdir(parents=True)
-            marker.write_text("{broken")
-            (feature / "sad.md").write_text("# Legacy design\n")
-            with self.assertRaises(FeatureStateError):
-                migration_plan(feature)
-            self.assertTrue((feature / "sad.md").exists())
-
-            marker.write_text(
-                json.dumps(
-                    {
-                        "layout_version": 2,
-                        "status": "migrated",
-                        "actions": [],
-                        "warnings": [],
-                    }
-                )
-            )
-            with self.assertRaises(FeatureStateError):
-                migration_plan(feature)
-
-    def test_migration_preflight_rejects_malformed_canonical_change_state(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            feature = Path(tmp) / "legacy"
-            state_path = feature / "changes" / "change-a" / "state.json"
-            state_path.parent.mkdir(parents=True)
-            state_path.write_text("{broken")
-            with self.assertRaises(FeatureStateError):
-                migration_plan(feature)
-            self.assertTrue(state_path.exists())
-            self.assertFalse((feature / "_kapelle").exists())
 
     def test_indented_checkboxes_stay_inside_their_workstream_block(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

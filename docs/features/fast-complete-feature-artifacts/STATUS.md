@@ -18,6 +18,7 @@ Completed: No
 ## Workflow readiness
 
 - Workflow: Lightweight human-controlled
+- Architecture guidance: Legacy evidence; reacquire it through the project architecture-rules skill
 - Current slice: Missing or awaiting approval
 - Implementation: Complete
 - Verification: Missing, deferred, failed, or stale
@@ -32,4 +33,4 @@ Completed: No
 
 ## Next action
 
-/kapelle:start fast-complete-feature-artifacts --approve
+/kapelle:start fast-complete-feature-artifacts --revise

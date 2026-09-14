@@ -20,7 +20,7 @@
   "feature_review": "missing-or-stale",
   "feature_state": "awaiting-human-review",
   "layout_version": 2,
-  "next_command": "/kapelle:start human-readable-artifacts-refactor --approve",
+  "next_command": "/kapelle:start human-readable-artifacts-refactor --revise",
   "recovery_status": "native",
   "review_ready": false,
   "revision": null,

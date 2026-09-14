@@ -41,8 +41,8 @@ Do not require a specific skill name, agent name, or provider. Keep lookup withi
 it does not add a separate approval round. Explain applicable constraints and proposed consequences
 briefly to the developer before linking to sources; do not forward raw lookup output.
 
-Legacy evidence with `capability.kind: project-subagent` must be reacquired through the project
-skill before reuse. Do not relabel old evidence as skill-derived without performing the lookup.
+Only current project-skill evidence is accepted. No legacy conversion or special validation bypass
+is supported. Old feature documents may inform a new slice; old guidance and approvals may not.
 
 ## Lifecycle
 

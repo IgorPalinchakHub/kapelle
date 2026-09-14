@@ -350,19 +350,26 @@ def main() -> int:
     parser.add_argument("feature_dir")
     parser.add_argument("--json", action="store_true", dest="as_json")
     args = parser.parse_args()
+    remarks: list[str] = []
     try:
         feature_dir = resolve_feature_dir(args.feature_dir)
         errors = validate(feature_dir)
     except (ValueError, OSError, json.JSONDecodeError) as exc:
         errors = [str(exc)]
     if args.as_json:
-        print(json.dumps({"valid": not errors, "errors": errors}, indent=2))
+        print(
+            json.dumps(
+                {"valid": not errors, "errors": errors, "notes": remarks}, indent=2
+            )
+        )
     elif errors:
         print(f"FAILED: {len(errors)} feature-state error(s)")
         for error in errors:
             print(f"- {error}")
     else:
         print("PASSED: feature state is consistent")
+        for remark in remarks:
+            print(f"- note: {remark}")
     return 1 if errors else 0
 
 

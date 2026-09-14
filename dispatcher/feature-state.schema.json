@@ -105,7 +105,7 @@
     },
     "recovery_status": {
       "type": "string",
-      "enum": ["native", "recovered", "recovered-with-gaps", "migrated"]
+      "enum": ["native", "recovered", "recovered-with-gaps"]
     }
   }
 }

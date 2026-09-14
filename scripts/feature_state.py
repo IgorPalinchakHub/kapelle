@@ -322,17 +322,6 @@ def rebuild_coordination_skeleton(feature_dir: Path) -> list[str]:
                 "profile": "lightweight",
             },
         )
-    elif has_durable_human_workflow_marker(feature_dir) and not workflow_path.is_file():
-        lane = durable_workflow_lane(feature_dir) or "standard"
-        atomic_write_json(
-            workflow_path,
-            {
-                "workflow": "human-controlled",
-                "version": 1,
-                "created_from": "raw-task",
-                "lane": lane,
-            },
-        )
     elif has_durable_reconstruction_marker(feature_dir) and not workflow_path.is_file():
         atomic_write_json(
             workflow_path,
@@ -606,8 +595,6 @@ def human_controlled_workflow(feature_dir: Path) -> bool:
         marker
         and schema_valid(marker, "workflow-state.schema.json")
         and marker.get("workflow") == "human-controlled"
-    ) or has_durable_human_workflow_marker(
-        feature_dir
     ) or has_durable_lightweight_marker(feature_dir)
 
 
@@ -1104,7 +1091,7 @@ def choose_next_command(
         return choose_reconstruction_next_command(slug, feature_dir)
     if human_controlled_workflow(feature_dir):
         return choose_human_controlled_next_command(slug, feature_dir, task_states)
-    return "migrate", f"/kapelle:migrate {slug}"
+    return "start", f'/kapelle:start {slug}-change "<requested change; read docs/features/{slug} as context>"'
 
 
 def choose_reconstruction_next_command(
@@ -1191,7 +1178,7 @@ def choose_human_controlled_next_command(
         if not approval_current(feature_dir, "plan"):
             return "start", f"/kapelle:start {slug} --approve"
         return "verify", f"/kapelle:verify {slug} --validation=ask"
-    return "migrate", f"/kapelle:migrate {slug}"
+    return "start", f'/kapelle:start {slug}-change "<requested change; read docs/features/{slug} as context>"'
 
 
 def coordination_integrity(feature_dir: Path) -> tuple[list[str], list[str], bool]:
@@ -1342,7 +1329,7 @@ def derive_state(
 
     gaps = sorted(set(evidence_gaps or (previous_state or {}).get("evidence_gaps", [])))
     human_workflow = human_controlled_workflow(feature_dir)
-    if current_stage == "migrate":
+    if current_stage == "unsupported":
         feature_state = "awaiting-human-review"
     elif reconstruction and current_stage == "documented":
         feature_state = "documented"
@@ -1356,7 +1343,7 @@ def derive_state(
         feature_state = "validation-deferred"
     elif human_workflow and current_stage == "completed":
         feature_state = "completed"
-    elif human_workflow and current_stage in {"finalize", "start", "migrate"}:
+    elif human_workflow and current_stage in {"start"}:
         feature_state = "awaiting-human-review"
     elif human_workflow and current_stage == "verify":
         feature_state = "verifying"
@@ -1776,6 +1763,24 @@ def render_status(feature_dir: Path, state: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def require_current_feature(feature_dir: Path) -> None:
+    """Old packages are read-only context, never upgraded or resumed."""
+    workflow_path = feature_dir / "_kapelle" / "workflow.json"
+    workflow = read_json(workflow_path)
+    supported = lightweight_workflow(feature_dir) or reconstruction_workflow(feature_dir)
+    if not supported or (workflow_path.exists() and not schema_valid(workflow, "workflow-state.schema.json")):
+        raise FeatureStateError(
+            f"unsupported feature package; read its documents only and run /kapelle:start "
+            f'{feature_dir.name}-change "<requested change>" in a new feature directory'
+        )
+    for path in (feature_dir / "_kapelle" / "architecture-guidance").glob("*.json"):
+        if not schema_valid(read_json(path), "architecture-guidance.schema.json"):
+            raise FeatureStateError(
+                f"invalid architecture guidance: {path.name}; no conversion is supported. "
+                "For an old feature, start a new change using its documents as context."
+            )
+
+
 def rebuild_feature_state(
     feature_dir: Path,
     *,
@@ -1786,13 +1791,7 @@ def rebuild_feature_state(
     coordination_gaps = rebuild_coordination_skeleton(feature_dir)
     gaps = list(evidence_loss if evidence_loss is not None else EVIDENCE_LOSS)
     gaps.extend(coordination_gaps)
-    recovery_status = (
-        "migrated"
-        if mode == "migrated"
-        else "recovered-with-gaps"
-        if gaps
-        else "recovered"
-    )
+    recovery_status = "recovered-with-gaps" if gaps else "recovered"
     state = derive_state(
         feature_dir,
         recovery_status=recovery_status,

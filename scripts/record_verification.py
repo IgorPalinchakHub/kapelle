@@ -15,6 +15,7 @@ from feature_state import (
     input_fingerprints,
     refresh_feature_status,
     resolve_feature_dir,
+    require_current_feature,
     schema_errors,
 )
 
@@ -129,6 +130,7 @@ def main() -> int:
 
     try:
         feature_dir = resolve_feature_dir(Path(args.feature_dir))
+        require_current_feature(feature_dir)
         payload = build_verification(
             feature_dir,
             status=args.status,

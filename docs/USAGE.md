@@ -141,16 +141,13 @@ and does not generate `for`/`if` shell programs to inspect lists of files. It re
 worktree through native file tools and does not inspect other branches with Git, including Git
 hidden behind a wrapper such as `rtk proxy`.
 
-## Old feature directories
+## Changes to older features
 
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply
-```
+Read their specs and documents as context only. Start a new feature directory with a new slug:
+start → fresh guidance and approval → implement → verify → final approval.
+Old machine state and evidence are never imported. No migrations are supported.
+Recovery applies only to current-format features.
 
-The first command is a dry-run. Migration preserves old documents/evidence and adopts the
-lightweight workflow. Former commands such as `spec`, `design`, `plan`,
-`base-functional-tests`, `unit-tests`, and `finalize` have been removed. See the [command migration table](../references/deprecated-legacy-stages.md).
 
 ## Documentation-only reconstruction
 

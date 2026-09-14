@@ -2,12 +2,35 @@ from pathlib import Path
 import json
 import re
 import unittest
+import subprocess
+import sys
+import tempfile
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 
 
 class PluginSurfaceTests(unittest.TestCase):
+    def test_old_feature_status_commands_refuse_without_writing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            feature = Path(tmp) / "old-feature"
+            feature.mkdir()
+            (feature / "spec.md").write_text("# Historical specification\n")
+            (feature / "tasks.md").write_text("- [x] Historical completion\n")
+            before = {p.name: p.read_bytes() for p in feature.iterdir()}
+            for script in ("build_feature_status.py", "rebuild_feature_state.py"):
+                result = subprocess.run(
+                    [sys.executable, str(ROOT / "scripts" / script), str(feature)],
+                    capture_output=True, text=True,
+                )
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn("new feature directory", result.stdout)
+                self.assertEqual(before, {p.name: p.read_bytes() for p in feature.iterdir()})
+
+    def test_migration_entrypoints_are_not_shipped(self):
+        self.assertFalse((ROOT / "skills/migrate").exists())
+        self.assertEqual([], list((ROOT / "scripts").glob("migrate_*.py")))
+
     def test_discoverable_skills_match_executable_profiles(self):
         profiles = json.loads((ROOT / "dispatcher/role-profiles.json").read_text())
         skills = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}

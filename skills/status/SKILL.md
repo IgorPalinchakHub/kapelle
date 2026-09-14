@@ -41,11 +41,13 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 
    Recovery may infer checked work as `implemented-unverified`; it never fabricates approvals,
    command results, reviews, or PASS evidence.
-4. A `human-controlled-v1` marker or unmarked feature routes to `/kapelle:migrate <slug>`. Keep the
-   reconstruction workflow documentation-only and use its existing marker/routing.
+4. For an older or unsupported feature, read its specs/docs only and explain that changes require
+   a new slug through start. Do not rebuild, migrate, edit or import its machine state.
 5. For lightweight features, select only the earliest necessary route:
    - new raw-task package without a valid progressive artifact format → `/kapelle:start --revise`;
    - missing package/guidance or stale plan → `/kapelle:start`;
+   - architecture guidance recorded by a removed capability kind (`project-subagent`) →
+     `/kapelle:start <slug> --revise` to reacquire it through the project skill;
    - approved slice with unchecked work → `/kapelle:implement`;
    - implemented slice without current PASS → show the scope decision: add the next requirement
      through `/kapelle:amend`, or run `/kapelle:verify` when accumulated behavior is sufficient;
@@ -59,4 +61,4 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
    historical stage internals.
 
 This utility performs no implementation edits, validation commands, git actions, or silent
-migration.
+conversion of older packages.

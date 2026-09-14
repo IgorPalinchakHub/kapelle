@@ -23,6 +23,7 @@ Refactor Kapelle so a user can understand and control a feature through a small 
 ## Workflow readiness
 
 - Workflow: Lightweight human-controlled
+- Architecture guidance: Legacy evidence; reacquire it through the project architecture-rules skill
 - Current slice: Missing or awaiting approval
 - Implementation: Complete
 - Verification: Missing, deferred, failed, or stale
@@ -36,4 +37,4 @@ Refactor Kapelle so a user can understand and control a feature through a small 
 
 ## Next action
 
-/kapelle:start human-readable-artifacts-refactor --approve
+/kapelle:start human-readable-artifacts-refactor --revise

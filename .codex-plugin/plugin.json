@@ -26,7 +26,6 @@
       "Survey this repository with Kapelle.",
       "Show or recover a feature status with Kapelle.",
       "Amend an in-progress feature safely with Kapelle.",
-      "Migrate an older Kapelle feature to the current workflow.",
       "Reconstruct an existing feature's product behavior and as-built architecture from code evidence."
     ]
   }

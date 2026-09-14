@@ -191,18 +191,11 @@ Failed required check дає `FAILED`. Skipped/cancelled required check дає `
 точна наступна команда. Якщо `_kapelle/` видалено, state відновлюється без вигадування approvals чи
 PASS evidence.
 
-## 6. `/kapelle:migrate <slug>`
+## 6. Зміни до старих фіч
 
-Для feature directory зі старим workflow:
-
-```text
-/kapelle:migrate <slug>
-/kapelle:migrate <slug> --apply
-```
-
-Перший виклик — dry-run. Другий додає lightweight marker і routing, зберігаючи старі документи та
-history. Старі команди `spec`, `design`, `plan`, `base-functional-tests`, `unit-tests`, `finalize`
-видалені з плагіна. Відповідники наведено в [таблиці міграції команд](../references/deprecated-legacy-stages.md).
+Старі спеки й документи — лише контекст для читання. Створи нову фічу з новим slug і пройди
+повний процес: start → нові правила й погодження → implement → verify → фінальне погодження.
+Старі state, approvals і результати перевірок не переносяться. Міграцій немає.
 
 ## 7. `/kapelle:reconstruct <slug>`
 
