@@ -1008,7 +1008,7 @@ if review_gate_schema:
     gates = (
         review_gate_schema.get('properties', {})
         .get('gate', {})
-        .get('enum', [])
+        .get('oneOf', [{}])[0].get('enum', [])
     )
     for required in [
         'plan',

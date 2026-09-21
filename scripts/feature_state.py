@@ -11,6 +11,7 @@ from collections import Counter, OrderedDict
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+import staged_design
 
 from acceptance_criteria import AC_PATTERN, expand_acceptance_criteria
 from jsonschema_lite import validate_instance
@@ -571,6 +572,11 @@ def review_gate_artifacts(gate: str) -> tuple[str, ...]:
 def feature_review_gate_artifacts(
     feature_dir: Path, gate: str
 ) -> tuple[str, ...]:
+    if gate == "design-vision" or gate.startswith(staged_design.PREFIX):
+        try:
+            return staged_design.artifacts(feature_dir, gate)
+        except ValueError as exc:
+            raise FeatureStateError(str(exc)) from exc
     artifacts = list(review_gate_artifacts(gate))
     if lightweight_workflow(feature_dir) and gate in {"plan", "final"}:
         for relative in ("specs", "design", "contracts", "adr", "sequences.md"):
@@ -631,6 +637,22 @@ def workflow_lane(feature_dir: Path) -> str:
 
 
 def approval_current(feature_dir: Path, gate: str) -> bool:
+    if staged_design.enabled(feature_dir):
+        try:
+            parts = staged_design.parts(feature_dir)
+            if gate.startswith(staged_design.PREFIX):
+                if not approval_current(feature_dir, "design-vision"):
+                    return False
+            if gate in {"plan", "final"}:
+                if not approval_current(feature_dir, "design-vision") or any(
+                    not approval_current(feature_dir, staged_design.PREFIX + part)
+                    for part in parts
+                ):
+                    return False
+                if not relative_fingerprint(feature_dir, staged_design.INTEGRATION):
+                    return False
+        except ValueError:
+            return False
     approval = read_json(
         feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
     )
@@ -1139,6 +1161,18 @@ def choose_human_controlled_next_command(
 ) -> tuple[str, str]:
     """Choose the next explicit stage in the single human-controlled workflow."""
     if lightweight_workflow(feature_dir):
+        if staged_design.enabled(feature_dir):
+            try:
+                parts = staged_design.parts(feature_dir)
+            except ValueError:
+                return "start", f"/kapelle:start {slug} --revise"
+            if not approval_current(feature_dir, "design-vision"):
+                return "start", f"/kapelle:start {slug} --approve-vision"
+            for part in parts:
+                if not approval_current(feature_dir, staged_design.PREFIX + part):
+                    return "start", f"/kapelle:start {slug} --part {part}"
+            if not relative_fingerprint(feature_dir, staged_design.INTEGRATION):
+                return "start", f"/kapelle:start {slug} --revise"
         required = (
             feature_dir / "spec.md",
             feature_dir / "design.md",

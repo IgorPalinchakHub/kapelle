@@ -13,6 +13,9 @@ Invoke:
 /kapelle:start <slug> "<raw task>"
 /kapelle:start <slug> --revise "<developer feedback>"
 /kapelle:start <slug> --approve
+/kapelle:start <slug> --approve-vision
+/kapelle:start <slug> --part <id>
+/kapelle:start <slug> --approve-part <id>
 ```
 
 Use [artifact-basics.md](../../references/artifact-basics.md) for the compact document format.
@@ -63,7 +66,9 @@ exist; if unavailable, report the missing root. Never send unresolved variables 
 python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/docs/features/<slug>/_kapelle/architecture-guidance/design.json" "${CLAUDE_PLUGIN_ROOT}/dispatcher/architecture-guidance.schema.json"
 ```
 
-5. Write the three documents using artifact-basics.md:
+5. Before detailing the slice, select simple or staged design using the trigger in step 6.
+   In staged design, first draft only the high-level documents and direction review; later
+   steps fill in approved detail and integration. Write the documents using artifact-basics.md:
    - spec.md: current flow, Intended change, Resulting behavior, Preserved behavior,
      Acceptance scenarios; candidates remain non-binding.
    - design.md: Current architecture, Resulting architecture, Technical delta and the usable flow.
@@ -76,6 +81,13 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_json.py" "${CLAUDE_PROJECT_DIR}/
    or a diagram that makes a complex flow clearer. No detail or diagram quota.
    Review applicable failure, permission, invariant and interaction risks. Reuse project quality
    defaults; never invent performance or recovery targets.
+   For several consequential architecture decisions, shared cross-component contracts, or an
+   explicit request for staged approval, follow [staged-system-design.md](../../references/staged-system-design.md).
+   Draft only the overall direction and review order first; stop for direction approval before
+   part detail. Then design and approve each active part in order, reconcile integration, and
+   approve the end-to-end slice. Initial tasks are provisional and never authorize implementation.
+   `--part <id>` resumes that planning step; it does not approve anything. Local changes retain
+   the single ordinary approval. Do not load the staged reference for them.
 7. Reuse coverage. Add only basic or critical early tests with a concrete risk rationale; a focused
    unit test is allowed. All remaining tests stay at verify. Keep each slice coherent: update
    affected readers, contracts and migrations together without knowingly broken steps.
@@ -114,6 +126,21 @@ python3 "${CLAUDE_PLUGIN_ROOT}/scripts/validate_feature_state.py" "${CLAUDE_PROJ
 
 ## Approve
 
+For staged design, `--approve-vision` records the reviewed direction and `--approve-part <id>`
+records the reviewed part. Both require explicit approval of that particular content; neither
+authorizes implementation. These are pure gate actions, with no document edits. Run respectively:
+
+```text
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" design-vision --confirmation "Developer explicitly approved the architecture direction."
+python3 "${CLAUDE_PLUGIN_ROOT}/scripts/review_gate.py" approve "${CLAUDE_PROJECT_DIR}/docs/features/<slug>" design-part-<id> --confirmation "Developer explicitly approved this architecture part."
+```
+
+Select only the command matching the approval actually received. After either, hand off to the
+next part's planning (`--part <id>`), or `--revise` to integrate once all parts are current.
+Do not suggest implementation yet. Staged `--approve` requires current direction and part
+approvals plus `design/integration.md`; explain and obtain approval for integration and the slice
+together. The deterministic helper rejects missing/stale prerequisite approvals.
+
 `--approve` is a pure gate action: do not inspect the repository, dispatch agents, or edit the
 human package. Run `validate_progressive_docs.py`, validate architecture guidance and the existing
 documents, then run:
@@ -131,7 +158,7 @@ current-slice approval. Never write approval JSON manually. Missing or invalid i
 
 Show the high-level feature outcome, the usable outcome of the first slice, what remains candidate
 or unknown, important trade-offs, files to review, and no more than three unresolved decisions.
-After approval, the next command is:
+After current-slice approval (`--approve`), the next command is:
 
 ```text
 /kapelle:implement <slug> --checkpoint=workstream --validation=ask

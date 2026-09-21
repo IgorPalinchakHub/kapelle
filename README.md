@@ -50,6 +50,14 @@ high-level map of the known feature and system boundaries. It details and plans 
 production-shaped walking skeleton. Future capabilities remain non-binding candidates. The
 developer approves this first vertical slice before code.
 
+Complex architecture can be reviewed progressively within `start`: approve the overall direction
+(`--approve-vision`), design each active part (`--part <id>`) and approve it
+(`--approve-part <id>`), then approve the integrated end-to-end slice (`--approve`). The durable
+review order lives in `design/architecture-review.md`; focused part documents and shared contracts
+carry the detail. A changed contract makes its consumers' approvals stale; a private part change
+preserves independent approvals. Simple improvements still need only the ordinary slice approval.
+See [staged system design](references/staged-system-design.md) for triggers and the review format.
+
 New and explicitly revised slices use a compact living-artifact contract. The specification states
 the affected current behavior, intended change, resulting behavior, preserved behavior, and
 observable acceptance scenarios. The design contrasts brief current affected architecture with

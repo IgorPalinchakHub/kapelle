@@ -86,6 +86,11 @@ Invoke:
    `sequences.md`.
 6. For an active-slice revision, update only affected sections and work. Fingerprints make the
    `plan`, verification, and final approvals stale; do not build a separate revision graph.
+   If staged design is active, follow [staged-system-design.md](../../references/staged-system-design.md):
+   preserve unrelated part approvals, review changed shared-contract consumers, and renew
+   direction approval when the decomposition or scope changes. Return to the earliest stale
+   architecture review before slice approval. Use the same process when the new requirement
+   first introduces several consequential architecture decisions; simple changes stay inline.
 7. Use immutable `_kapelle/changes/` history only when the amendment follows PASS verification,
    changes authorization/money/destructive data/public contracts/migrations, or the developer asks
    for an audit trail. When used, validate every machine record against the applicable

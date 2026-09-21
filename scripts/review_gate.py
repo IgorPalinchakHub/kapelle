@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+import staged_design
 
 from feature_state import (
     FeatureStateError,
@@ -76,10 +77,41 @@ def plan_readiness_errors(feature_dir: Path) -> list[str]:
     )
     if new_raw_task or progressive_format(feature_dir):
         errors.extend(validate_progressive_docs(feature_dir))
+    if staged_design.enabled(feature_dir):
+        try:
+            require_prior_gate(feature_dir, "plan")
+        except FeatureStateError as exc:
+            errors.append(str(exc))
     return errors
 
 
 def require_prior_gate(feature_dir: Path, gate: str) -> None:
+    if staged_design.enabled(feature_dir) or gate.startswith("design-"):
+        try:
+            parts = staged_design.parts(feature_dir)
+        except ValueError as exc:
+            raise FeatureStateError(str(exc)) from exc
+        if gate.startswith(staged_design.PREFIX):
+            part = gate.removeprefix(staged_design.PREFIX)
+            if part not in parts:
+                raise FeatureStateError(f"unknown architecture part: {part}")
+            preceding = list(parts)[:list(parts).index(part)]
+            required = ["design-vision", *(staged_design.PREFIX + p for p in preceding)]
+        elif gate in {"plan", "final"}:
+            required = ["design-vision", *(staged_design.PREFIX + p for p in parts)]
+            if not relative_fingerprint(feature_dir, staged_design.INTEGRATION):
+                raise FeatureStateError("integration review document is required before slice approval")
+        else:
+            required = []
+        for previous in required:
+            if not approval_current(feature_dir, previous):
+                raise FeatureStateError(f"gate {gate} requires current prior gate {previous}")
+        if gate.startswith("design-"):
+            guidance = read_json(feature_dir / "_kapelle/architecture-guidance/design.json")
+            if not (guidance and schema_valid(guidance, "architecture-guidance.schema.json")
+                    and guidance.get("status") == "ARCHITECTURE_GUIDANCE_READY"
+                    and guidance.get("gaps") == []):
+                raise FeatureStateError("ready scoped architecture guidance without gaps is required")
     prior = PRIOR_GATES.get(gate)
     if gate == "final":
         prior = (
@@ -160,6 +192,8 @@ def approve(
                 "architecture package is not approval-ready: " + "; ".join(errors)
             )
     payload = build_gate(feature_dir, gate, confirmation)
+    if not schema_valid(payload, "review-gate.schema.json"):
+        raise FeatureStateError("invalid review gate payload")
     path = feature_dir / "_kapelle" / "approvals" / f"{gate}.json"
     atomic_write_json(path, payload)
     if refresh:

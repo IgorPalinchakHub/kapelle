@@ -4,26 +4,44 @@
   "title": "Kapelle explicit human review gate",
   "type": "object",
   "additionalProperties": false,
-  "required": ["gate", "status", "confirmation", "artifact_fingerprints"],
+  "required": [
+    "gate",
+    "status",
+    "confirmation",
+    "artifact_fingerprints"
+  ],
   "properties": {
     "gate": {
       "type": "string",
-      "enum": [
-        "plan",
-        "feature-plan",
-        "outline",
-        "business-spec",
-        "architecture",
-        "delivery-plan",
-        "final",
-        "reconstruction-scope",
-        "reconstruction-spec",
-        "reconstruction-design",
-        "reconstruction"
+      "oneOf": [
+        {
+          "enum": [
+            "plan",
+            "feature-plan",
+            "outline",
+            "business-spec",
+            "architecture",
+            "delivery-plan",
+            "final",
+            "reconstruction-scope",
+            "reconstruction-spec",
+            "reconstruction-design",
+            "reconstruction",
+            "design-vision"
+          ]
+        },
+        {
+          "pattern": "^design-part-[a-z][a-z0-9-]{0,63}$"
+        }
       ]
     },
-    "status": { "const": "approved" },
-    "confirmation": { "type": "string", "minLength": 1 },
+    "status": {
+      "const": "approved"
+    },
+    "confirmation": {
+      "type": "string",
+      "minLength": 1
+    },
     "artifact_fingerprints": {
       "type": "object",
       "minProperties": 1,

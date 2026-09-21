@@ -192,7 +192,7 @@
         <mxCell id="s5" value="Discover narrow project skills/instructions + architecture-rules capability" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="150" y="270" width="260" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="s6" value="Design only first production-shaped E2E walking skeleton" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
+        <mxCell id="s6" value="Simple: design one E2E slice&#xa;Complex: approve direction → each part → integrated slice" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="500" y="270" width="250" height="75" as="geometry" />
         </mxCell>
         <mxCell id="s7" value="Write minimum durable package&#xa;spec.md — 3 markers, 7 headings, §3 split into&#xa;Intended change / Resulting / Preserved / Acceptance scenarios&#xa;design.md — §2 split into Current / Resulting architecture / Technical delta&#xa;tasks.md — 1 active workstream: Changes • Done when • Verify • covers AC-NN&#xa;(full contract on page 07)" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontStyle=1;" parent="1" vertex="1">
@@ -234,7 +234,7 @@
         <mxCell id="gate" value="review_gate.py approve … plan&#xa;--confirmation &quot;Developer explicitly approved…&quot;&#xa;pure gate: no inspection, no agents, no edits&#xa;approval JSON is never hand-written" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontStyle=1;" parent="1" vertex="1">
           <mxGeometry x="1300" y="795" width="220" height="75" as="geometry" />
         </mxCell>
-        <mxCell id="candidate" value="Candidate capabilities stay non-binding hypotheses. They are not tasks and do not authorize code until promoted through amend." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" parent="1" vertex="1">
+        <mxCell id="candidate" value="Complex design: --approve-vision → --part / --approve-part → integration + --approve. Shared-contract changes invalidate consumers; private detail preserves unrelated approvals. Candidates remain non-binding." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=13;" parent="1" vertex="1">
           <mxGeometry x="420" y="970" width="760" height="65" as="geometry" />
         </mxCell>
         <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;strokeWidth=2;" parent="1" source="s1" target="s2" edge="1">
